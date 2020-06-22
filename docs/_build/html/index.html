@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Metagenome assembled genomes generation workflow &#8212; NMDC Workflows 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="metagenome-assembled-genomes-generation-workflow">
+<h1>Metagenome assembled genomes generation workflow<a class="headerlink" href="#metagenome-assembled-genomes-generation-workflow" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>The workflow is based on <a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/">IMG MAGs pipeline</a> for metagenome assembled genomes generation.</p>
+</div>
+<div class="section" id="workflow-diagram">
+<h2>Workflow Diagram<a class="headerlink" href="#workflow-diagram" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/MAG_workflow.png"><img alt="Metagenome assembled genomes generation" src="_images/MAG_workflow.png" style="width: 1148.3999999999999px; height: 384.0px;" /></a>
+</div>
+<div class="section" id="workflow-dependencies">
+<h2>Workflow Dependencies<a class="headerlink" href="#workflow-dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="third-party-software-packages">
+<h3>Third party software / packages<a class="headerlink" href="#third-party-software-packages" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Biopython v1.74 (BSD-3-Clause)</p></li>
+<li><p>Sqlite (Public Domain)</p></li>
+<li><p>Pymysql (MIT License)</p></li>
+<li><p>requests (Apache 2.0)</p></li>
+<li><p>samtools &gt; v1.9 (MIT License)</p></li>
+<li><p>Metabat2 v2.15 (BSD-3-Clause)</p></li>
+<li><p>CheckM v1.1.2 (GPLv3)</p></li>
+<li><p>GTDB-TK v1.1.1 (GPLv3)</p></li>
+<li><p>FastANI v1.3 (Apache 2.0)</p></li>
+<li><p>FastTree v2.1.10 (GPLv2)</p></li>
+</ul>
+</div>
+<div class="section" id="database">
+<h3>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/">CheckM</a> database is a 275MB file contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory)</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
+tar -xvf checkm_data_2015_01_16.tar.gz
+mv checkm_data checkM_DB
+rm checkm_data_2015_01_16.tar.gz
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.1093/bioinformatics/btz848">GTDB-Tk</a> requires ~27G of external data that need to be downloaded and unarchived.</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
+tar xvzf gtdbtk_r89_data.tar.gz
+mv gtdbtk_r89_data GTDBTK_DB
+rm gtdbtk_r89_data.tar.gz
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="workflow-availability">
+<h2>Workflow Availability<a class="headerlink" href="#workflow-availability" title="Permalink to this headline">¶</a></h2>
+<p>The workflow is available in GitHub:
+<a class="reference external" href="https://github.com/microbiomedata/metaMAGs">https://github.com/microbiomedata/metaMAGs</a></p>
+<p>The container is available at Docker Hub (microbiomedata):</p>
+<p><a class="reference external" href="https://hub.docker.com/r/microbiomedata/nmdc_mbin">https://hub.docker.com/r/microbiomedata/nmdc_mbin</a></p>
+</div>
+<div class="section" id="test-datasets">
+<h2>Test datasets<a class="headerlink" href="#test-datasets" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_test_dataset.tgz">metaMAGs_test_dataset.tgz</a></p>
+</div>
+<div class="section" id="details">
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
+<p>The workflow is based the <a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/">IMG metagenome binning pipeline</a> and has been modified specifically for the <a class="reference external" href="https://www.nature.com/articles/s41579-020-0377-0">NMDC project</a>. For all processed metagenomes, it classifies contigs using <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/31388474/">MetaBat2</a> into bins. Next, the bins are refined by given Annotation (gff) and contig lineage information. The completeness and contamination were evaluated by <a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/">CheckM</a> and assign High Quality (HQ), Medium Quality (MQ), Low Quality (LQ) bins based on <a class="reference external" href="https://www.nature.com/articles/nbt.3893#Tab1">MiMAG standards</a> . In the end, <a class="reference external" href="https://doi.org/10.1093/bioinformatics/btz848">GTDB-Tk</a> was used to assign lineage for HQ and MQ bins.</p>
+<div class="section" id="inputs">
+<h3>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h3>
+<p>A json files with following entries:</p>
+<ol class="arabic simple">
+<li><p>Number of CPUs,</p></li>
+<li><p>Output directory</p></li>
+<li><p>Project name</p></li>
+<li><p>Metagenome Assembled Contig fasta file</p></li>
+<li><p>Sam/Bam file from reads mapping back to contigs.</p></li>
+<li><p>Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA&lt;tab&gt;ID in GFF)</p></li>
+<li><p>The database directory path which includes <cite>checkM_DB</cite> and <cite>GTDBTK_DB</cite> subdirectories.</p></li>
+</ol>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;nmdc_mags.cpu&quot;</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span>
+  <span class="nt">&quot;nmdc_mags.outdir&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/output&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;nmdc_mags.proj_name&quot;</span><span class="p">:</span><span class="s2">&quot;3300037552&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;nmdc_mags.contig_file&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/3300037552.a.fna&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;nmdc_mags.sam_file&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/3300037552.bam.sorted.bam&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;nmdc_mags.gff_file&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/3300037552.a.gff&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;nmdc_mags.map_file&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/3300037552.a.map.txt&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;nmdc_mags.database&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/database&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="outputs">
+<h3>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h3>
+<p>The output will have a bunch of output directories, files, including statistical numbers, status log and a shell script to reproduce the steps etc.</p>
+<p>The final <a class="reference external" href="https://www.nature.com/articles/nbt.3893#Tab1">MiMAG</a> output is in <cite>hqmq-metabat-bins</cite> directory and its corresponding lineage result in <cite>gtdbtk_output</cite> directory.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>|-- 3300037552.bam.sorted
+|-- 3300037552.depth
+|-- 3300037552.depth.mapped
+|-- bins.lowDepth.fa
+|-- bins.tooShort.fa
+|-- bins.unbinned.fa
+|-- checkm-out
+|   |-- bins/
+|   |-- checkm.log
+|   |-- lineage.ms
+|   `-- storage
+|-- checkm_qa.out
+|-- gtdbtk_output
+|   |-- align/
+|   |-- classify/
+|   |-- identify/
+|   |-- gtdbtk.ar122.classify.tree -&gt; classify/gtdbtk.ar122.classify.tree
+|   |-- gtdbtk.ar122.markers_summary.tsv -&gt; identify/gtdbtk.ar122.markers_summary.tsv
+|   |-- gtdbtk.ar122.summary.tsv -&gt; classify/gtdbtk.ar122.summary.tsv
+|   |-- gtdbtk.bac120.classify.tree -&gt; classify/gtdbtk.bac120.classify.tree
+|   |-- gtdbtk.bac120.markers_summary.tsv -&gt; identify/gtdbtk.bac120.markers_summary.tsv
+|   |-- gtdbtk.bac120.summary.tsv -&gt; classify/gtdbtk.bac120.summary.tsv
+|   `-- ..etc
+|-- hqmq-metabat-bins
+|   |-- bins.11.fa
+|   |-- bins.13.fa
+|   `-- ... etc
+|-- mbin-2020-05-24.sqlite
+|-- mbin-nmdc.20200524.log
+|-- metabat-bins
+|   |-- bins.1.fa
+|   |-- bins.10.fa
+|   `-- ... etc
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="requirements-for-execution">
+<h2>Requirements for Execution<a class="headerlink" href="#requirements-for-execution" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Docker or other Container Runtime</p></li>
+<li><p>Cromwell or other WDL-capable Workflow Execution Tool</p></li>
+<li><p>~120GB memory for GTDB-tk.</p></li>
+</ul>
+</div>
+<div class="section" id="running-workflow-in-cromwell-on-cori">
+<h2>Running Workflow in Cromwell on Cori<a class="headerlink" href="#running-workflow-in-cromwell-on-cori" title="Permalink to this headline">¶</a></h2>
+<p>We provide two ways to run the workflow.</p>
+<ol class="arabic simple">
+<li><p><cite>SlurmCromwellShifter/</cite>: The submit script will request a node and launch the Cromwell.  The Cromwell manages the workflow by using Shifter to run applications.</p></li>
+<li><p><cite>CromwellSlurmShifter/</cite>: The Cromwell run in head node and manages the workflow by submitting each step of workflow to compute node where applications were ran by Shifter.</p></li>
+</ol>
+<p>Description of the files in each sud-directory:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>.wdl</cite> file: the WDL file for workflow definition</p></li>
+<li><p><cite>.json</cite> file: the example input for the workflow</p></li>
+<li><p><cite>.conf</cite> file: the conf file for running Cromwell.</p></li>
+<li><p><cite>.sh</cite> file: the shell script for running the example workflow</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="version-history">
+<h2>Version History<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>1.0.0</p></li>
+</ul>
+</div>
+<div class="section" id="point-of-contact">
+<h2>Point of contact<a class="headerlink" href="#point-of-contact" title="Permalink to this headline">¶</a></h2>
+<p>Original author: Neha Varghese &lt;<a class="reference external" href="mailto:njvarghese&#37;&#52;&#48;lbl&#46;gov">njvarghese<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+<p>Package maintainer: Chienchi Lo &lt;<a class="reference external" href="mailto:chienchi&#37;&#52;&#48;lanl&#46;gov">chienchi<span>&#64;</span>lanl<span>&#46;</span>gov</a>&gt;</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">NMDC Workflows</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, National Microbiome Data Collaborative.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

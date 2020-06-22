@@ -2,7 +2,7 @@
 
 ## Summary
 
-The nmdc_mbin are based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation.
+The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation.
 
 ## Required Database
 
@@ -25,13 +25,13 @@ Description of the files in each sud-directory:
  - `.conf` file: the conf file for running Cromwell.
  - `.sh` file: the shell script for running the example workflow
 
-## The Docker image and Dockerfile can be found here
+## The Docker image 
 
 [microbiomedata/nmdc_mbin](https://hub.docker.com/r/microbiomedata/nmdc_mbin)
 
 ## Input files
 
-A json files with following entry:
+A json files with following entries:
 
 1. Number of CPUs, 
 2. Output directory
@@ -39,12 +39,12 @@ A json files with following entry:
 4. Metagenome Assembled Contig fasta file
 5. Sam/Bam file from reads mapping back to contigs.
 6. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
-7. The database directory path which have `checkM_DB` and `GTDBTK_DB` subdirectories. 
+7. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
 
 ```
 {
   "nmdc_mags.cpu":32,
-  "nmdc_mags.outdir":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/output2",
+  "nmdc_mags.outdir":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/output",
   "nmdc_mags.proj_name":"3300037552",
   "nmdc_mags.contig_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.fna",
   "nmdc_mags.sam_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.bam.sorted.bam",
