@@ -141,7 +141,7 @@ Requirements for Execution
 --------------------------
 
 - Docker or other Container Runtime
-- Cromwell or other WDL-capable Workflow Execution Tool
+- `Cromwell <https://github.com/broadinstitute/cromwell>`_ or other WDL-capable Workflow Execution Tool
 - ~120GB memory for GTDB-tk.
 
 Running Workflow in Cromwell on Cori
