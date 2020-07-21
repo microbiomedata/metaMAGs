@@ -10,7 +10,7 @@ Workflow Diagram
 ------------------
 
 .. image:: MAG_workflow.png
-   :scale: 60%
+   :scale: 40%
    :alt: Metagenome assembled genomes generation 
 
 Workflow Dependencies
@@ -37,7 +37,7 @@ Database
 .. code-block:: bash
 
 	wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
-	tar -xvf checkm_data_2015_01_16.tar.gz
+	tar -xvzf checkm_data_2015_01_16.tar.gz
 	mv checkm_data checkM_DB
 	rm checkm_data_2015_01_16.tar.gz
 
@@ -46,7 +46,7 @@ Database
 .. code-block:: bash
 
 	wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
-	tar xvzf gtdbtk_r89_data.tar.gz
+	tar -xvzf gtdbtk_r89_data.tar.gz
 	mv gtdbtk_r89_data GTDBTK_DB
 	rm gtdbtk_r89_data.tar.gz
 
