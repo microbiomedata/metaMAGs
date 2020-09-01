@@ -35,10 +35,10 @@ Database
 - `CheckM <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/>`_ database is a 275MB file contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory)
 
 .. code-block:: bash
-
+	
+	mkdir checkM_DB
 	wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
-	tar -xvzf checkm_data_2015_01_16.tar.gz
-	mv checkm_data checkM_DB
+	tar -xvzf checkm_data_2015_01_16.tar.gz -C checkM_DB
 	rm checkm_data_2015_01_16.tar.gz
 
 - `GTDB-Tk <https://doi.org/10.1093/bioinformatics/btz848>`_ requires ~27G of external data that need to be downloaded and unarchived.
@@ -47,7 +47,7 @@ Database
 
 	wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
 	tar -xvzf gtdbtk_r89_data.tar.gz
-	mv gtdbtk_r89_data GTDBTK_DB
+	mv release89 GTDBTK_DB
 	rm gtdbtk_r89_data.tar.gz
 
 Workflow Availability
