@@ -6,13 +6,24 @@ The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/ar
 
 ## Required Database
 
-checkM database
-
 * [CheckM](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/)<sup>2</sup> database is 275MB contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory) 
     * https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
 
 * [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~27G of external data that need to be downloaded and unarchived.
     * https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
+
+* Prepare the Database
+```bash
+    mkdir -p database/checkM_DB 
+    wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
+    tar -xvzf checkm_data_2015_01_16.tar.gz --directory=database/checkM_DB
+    
+    wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
+    tar -xvzf gtdbtk_r89_data.tar.gz
+    mv release89 database/GTDBTK_DB
+    
+    rm checkm_data_2015_01_16.tar.gz gtdbtk_r89_data.tar.gz
+```
 
 ## Running Workflow in Cromwell
 You should run this on cori. We provide two ways to run the workflow.  
