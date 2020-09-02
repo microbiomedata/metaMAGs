@@ -13,28 +13,26 @@ The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/ar
     * https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
 
 * Prepare the Database
+
 ```bash
-    mkdir -p database/checkM_DB 
+    mkdir -p refdata/checkM_DB 
     wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
     tar -xvzf checkm_data_2015_01_16.tar.gz --directory=database/checkM_DB
     
     wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
     tar -xvzf gtdbtk_r89_data.tar.gz
-    mv release89 database/GTDBTK_DB
+    mv release89 refdata/GTDBTK_DB
     
     rm checkm_data_2015_01_16.tar.gz gtdbtk_r89_data.tar.gz
 ```
 
 ## Running Workflow in Cromwell
-You should run this on cori. We provide two ways to run the workflow.  
-1. `SlurmCromwellShifter/`: The submit script will request a node and launch the Cromwell.  The Cromwell manages the workflow by using Shifter to run applications. 
-2. `CromwellSlurmShifter/`: The Cromwell run in head node and manages the workflow by submitting each step of workflow to compute node where applications were ran by Shifter.
 
-Description of the files in each sud-directory:
+Description of the files:
  - `.wdl` file: the WDL file for workflow definition
  - `.json` file: the example input for the workflow
  - `.conf` file: the conf file for running Cromwell.
- - `.sh` file: the shell script for running the example workflow
+ - `.sh` file: the shell script for running the example workflow (sbatch)
 
 ## The Docker image 
 
@@ -61,7 +59,7 @@ A json files with following entries:
   "nmdc_mags.sam_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.bam.sorted.bam",
   "nmdc_mags.gff_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.gff",
   "nmdc_mags.map_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.map.txt",
-  "nmdc_mags.database":"/global/cfs/projectdirs/m3408/aim2/database"
+  "nmdc_mags.database":"/path/to/refdata"
 }
 ```
 

@@ -1,2 +1,0 @@
-
-java -Dconfig.file=slurm.conf -jar /global/common/software/m3408/cromwell-45.jar run -i input.json mbin_nmdc_shifter.wdl 

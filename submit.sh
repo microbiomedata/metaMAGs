@@ -13,4 +13,4 @@
 
 cd /global/cfs/projectdirs/m3408/aim2/metagenome/MAGs
 
-java -Dconfig.file=shifter.conf -jar /global/common/software/m3408/cromwell-45.jar run -i input.json mbin_nmdc.wdl 
+java -Dconfig.file=shifter.conf -jar /global/common/software/m3408/cromwell-45.jar run -i input.json -o options.json -m /global/cfs/projectdirs/m3408/aim2/metagenome/MAGs/metadataOut/test.json mbin_nmdc.wdl 

@@ -92,7 +92,7 @@ A json files with following entries:
 	  "nmdc_mags.sam_file":"/path/to/3300037552.bam.sorted.bam",
 	  "nmdc_mags.gff_file":"/path/to/3300037552.a.gff",
 	  "nmdc_mags.map_file":"/path/to/3300037552.a.map.txt",
-	  "nmdc_mags.database":"/path/to/database"
+	  "nmdc_mags.database":"/path/to/refdata"
 	}
 
 Outputs
@@ -144,20 +144,15 @@ Requirements for Execution
 - `Cromwell <https://github.com/broadinstitute/cromwell>`_ or other WDL-capable Workflow Execution Tool
 - ~120GB memory for GTDB-tk.
 
-Running Workflow in Cromwell on Cori
+Running Workflow in Cromwell in Cori
 ------------------------------------
-We provide two ways to run the workflow.  
 
-1. `SlurmCromwellShifter/`: The submit script will request a node and launch the Cromwell.  The Cromwell manages the workflow by using Shifter to run applications. 
-
-2. `CromwellSlurmShifter/`: The Cromwell run in head node and manages the workflow by submitting each step of workflow to compute node where applications were ran by Shifter.
-
-Description of the files in each sud-directory:
+Description of the files
 
  - `.wdl` file: the WDL file for workflow definition
  - `.json` file: the example input for the workflow
  - `.conf` file: the conf file for running Cromwell.
- - `.sh` file: the shell script for running the example workflow
+ - `.sh` file: the shell script for running the example workflow (sbatch)
 
 Version History
 ---------------
