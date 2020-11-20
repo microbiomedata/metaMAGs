@@ -79,8 +79,9 @@ A json files with following entries:
 3. Project name
 4. Metagenome Assembled Contig fasta file
 5. Sam/Bam file from reads mapping back to contigs.
-6. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
-7. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
+6. Contigs functional annotation result in gff format"
+7. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
+8. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
 
 .. code-block:: JSON
 
