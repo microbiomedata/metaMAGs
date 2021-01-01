@@ -23,15 +23,15 @@ workflow nmdc_mags {
     }
   
     call make_output {
-       	input: outdir= outdir, mbin_nmdc_output=mbin_nmdc.stat
+       	input: outdir= outdir, mbin_nmdc_output=mbin_nmdc.runScript
     }
 
     output {
-	Array[File] final_hqmq_bins = make_output.hqmq_bin_fasta_files
-	Array[File] metabat_bins = make_output.metabat_bin_fasta_files
-	File final_checkm = make_output.checkm_output
-	File final_gtdbtk_bac_summary = make_output.gtdbtk_bac_summary
-	File final_gtdbtk_ar_summary = make_output.gtdbtk_ar_summary
+	Array[File?] final_hqmq_bins = make_output.hqmq_bin_fasta_files
+	Array[File?] metabat_bins = make_output.metabat_bin_fasta_files
+	File? final_checkm = make_output.checkm_output
+	File? final_gtdbtk_bac_summary = make_output.gtdbtk_bac_summary
+	File? final_gtdbtk_ar_summary = make_output.gtdbtk_ar_summary
     }
     parameter_meta {
 	cpu: "number of CPUs"
@@ -83,9 +83,9 @@ task mbin_nmdc {
 	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
      }
      output {
-	#File stdout = filename_outlog
+	File runScript = "script"
 	#File stderr = filename_errlog
-	File stat = filename_stat
+	File? stat = filename_stat
      }
 }
 
