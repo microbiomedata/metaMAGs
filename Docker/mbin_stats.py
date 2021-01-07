@@ -56,7 +56,7 @@ def mag_meta(dbname):
 
 if __name__ == "__main__":
        
-	outdir= os.getcwd() if not sys.argv[1] else sys.argv[1]
+	outdir= os.getcwd() if len(sys.argv) < 2 else sys.argv[1]
 	outfile= outdir + "/MAGs_stats.json"
 
 	#input contigs #
@@ -76,11 +76,11 @@ if __name__ == "__main__":
 	#end_time = datetime.fromtimestamp(os.path.getmtime(end_file)).strftime("%Y-%m-%d")
 	depth_file= glob.glob(outdir + "/*.depth") 
 	input_contig_num = line_count(depth_file[0]) - 1
-	too_short_file = outdir + "bins.tooShort.fa"
+	too_short_file = outdir + "/bins.tooShort.fa"
 	too_short_contig_num = 0 if not os.path.isfile(too_short_file) else count_fasta(too_short_file)
-	lowDepth_file = outdir + "bins.lowDepth.fa"
+	lowDepth_file = outdir + "/bins.lowDepth.fa"
 	lowDepth_contig_num = 0 if not os.path.isfile(lowDepth_file) else count_fasta(lowDepth_file)
-	unbinned_file = outdir + "bins.unbinned.fa"
+	unbinned_file = outdir + "/bins.unbinned.fa"
 	unbinned_contig_num = 0 if not os.path.isfile(unbinned_file) else count_fasta(unbinned_file)
 	sql_files = glob.glob(outdir + "/*.sqlite")
 	if len(sql_files) > 0:
