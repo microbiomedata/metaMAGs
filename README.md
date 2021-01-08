@@ -78,7 +78,6 @@ The final [MiMAG](https://www.nature.com/articles/nbt.3893#Tab1) output is in `h
 |-- bins.lowDepth.fa
 |-- bins.tooShort.fa
 |-- bins.unbinned.fa
-|-- bins.unbinned.fa
 |-- checkm-out
 |   |-- bins/
 |   |-- checkm.log
