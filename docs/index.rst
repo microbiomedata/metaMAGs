@@ -103,6 +103,7 @@ The output will have a bunch of output directories, files, including statistical
 
 The final `MiMAG <https://www.nature.com/articles/nbt.3893#Tab1>`_ output is in `hqmq-metabat-bins` directory and its corresponding lineage result in `gtdbtk_output` directory.::
 
+	|-- MAGs_stats.json
 	|-- 3300037552.bam.sorted
 	|-- 3300037552.depth
 	|-- 3300037552.depth.mapped
