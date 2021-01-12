@@ -70,7 +70,7 @@ task mbin_nmdc {
 	String filename_stat="checkm_qa.out"
 	String dollar="$"
 	runtime {
-		memory: "120 GiB"
+		mem: "120 GiB"
 		cpu:  cpu
 		database: database
  	}   
@@ -108,7 +108,7 @@ task make_output{
 		String gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
 	}
 	runtime {
-            memory: "1 GiB"
+            mem: "1 GiB"
             cpu:  1
         }
 }
