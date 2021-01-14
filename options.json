@@ -1,5 +1,0 @@
-{
-    "default_runtime_attributes": {
-        "docker": "microbiomedata/nmdc_mbin:0.1.0"
-    }
-}

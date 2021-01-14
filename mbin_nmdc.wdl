@@ -4,6 +4,7 @@ workflow nmdc_mags {
     File contig_file
     File sam_file
     File gff_file
+    String container = "microbiomedata/nmdc_mbin:0.1.0"
     File? map_file
     File? domain_file
     Int cpu=32
@@ -19,7 +20,8 @@ workflow nmdc_mags {
                  map=map_file, 
                  domain=domain_file, 
 		 cpu=cpu,
-                 database=database
+                 database=database,
+	         container=container
     }
   
     call make_output {
@@ -65,11 +67,13 @@ task mbin_nmdc {
 	File? domain
         String database
 	Int cpu
+        String container
 	String filename_outlog="stdout.log"
 	String filename_errlog="stderr.log"
 	String filename_stat="checkm_qa.out"
 	String dollar="$"
 	runtime {
+                docker: container
 		mem: "120 GiB"
 		cpu:  cpu
 		database: database
