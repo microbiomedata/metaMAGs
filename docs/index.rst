@@ -41,7 +41,7 @@ Database
 	tar -xvzf checkm_data_2015_01_16.tar.gz -C checkM_DB
 	rm checkm_data_2015_01_16.tar.gz
 
-- `GTDB-Tk <https://doi.org/10.1093/bioinformatics/btz848>`_ requires ~27G of external data that need to be downloaded and unarchived.
+- `GTDB-Tk <https://doi.org/10.1093/bioinformatics/btz848>`_ requires ~27G of external data that need to be downloaded and unarchived. (requires ~100GB of memory)
 
 .. code-block:: bash
 
