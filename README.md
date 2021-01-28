@@ -9,7 +9,7 @@ The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/ar
 * [CheckM](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/)<sup>2</sup> database is 275MB contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory) 
     * https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
 
-* [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~27G of external data that need to be downloaded and unarchived.
+* [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~27G of external data that need to be downloaded and unarchived. (requires ~100GB of memory)
     * https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
 
 * Prepare the Database
