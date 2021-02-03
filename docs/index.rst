@@ -85,16 +85,17 @@ A json files with following entries:
 
 .. code-block:: JSON
 
-	{
-	  "nmdc_mags.cpu":32,
-	  "nmdc_mags.outdir":"/path/to/output",
-	  "nmdc_mags.proj_name":"3300037552",
-	  "nmdc_mags.contig_file":"/path/to/3300037552.a.fna",
-	  "nmdc_mags.sam_file":"/path/to/3300037552.bam.sorted.bam",
-	  "nmdc_mags.gff_file":"/path/to/3300037552.a.gff",
-	  "nmdc_mags.map_file":"/path/to/3300037552.a.map.txt",
-	  "nmdc_mags.database":"/path/to/refdata"
-	}
+        {
+          "nmdc_mags.cpu":32,
+          "nmdc_mags.outdir":"/path/to/MAGs_output",
+          "nmdc_mags.proj_name":"1781_86089",
+          "nmdc_mags.contig_file":"/path/to/Ga0482263_contigs.fna",
+          "nmdc_mags.sam_file":"/path/to/pairedMapped_sorted.bam",
+          "nmdc_mags.gff_file":"/path/to/Ga0482263_functional_annotation.gff",
+          "nmdc_mags.database":"/path/to/refdata",
+          "nmdc_mags.map_file":"/path/to/Ga0482263_contig_names_mapping.tsv"
+        }
+
 
 Outputs
 ~~~~~~~
