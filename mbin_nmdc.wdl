@@ -1,4 +1,4 @@
-workflow nmdc_mags {
+workflow nmdc_mags 
     String? outdir
     String  proj_name
     File contig_file
@@ -36,6 +36,9 @@ workflow nmdc_mags {
 	File? final_checkm = make_output.checkm_output
 	File? final_gtdbtk_bac_summary = make_output.gtdbtk_bac_summary
 	File? final_gtdbtk_ar_summary = make_output.gtdbtk_ar_summary
+	File? final_tooShort_fa = make_output.tooShort_fa
+	File? final_lowDepth_fa = make_output.lowDepth_fa
+	File? final_unbinned_fa = make_output.unbinned_fa
     }
     parameter_meta {
 	cpu: "number of CPUs"
@@ -52,6 +55,9 @@ workflow nmdc_mags {
 	final_checkm: "metabat bin checkm result"
 	final_gtdbtk_bac_summary: "gtdbtk bacterial assignment result summary table"
 	final_gtdbtk_ar_summary: "gtdbtk archaea assignment result summary table"
+	final_tooShort_fa: "tooShort (< 3kb) filtered contigs fasta file by metaBat2"
+	final_lowDepth_fa: "lowDepth (mean cov <1 )  filtered contigs fasta file by metabat2"
+	final_unbinned_fa: "unbinned fasta file from metabat2"
     }
     meta {
         author: "Chienchi Lo, B10, LANL"
@@ -114,6 +120,9 @@ task make_output{
 		String checkm_output = "${outdir}/checkm_qa.out"
 		String gtdbtk_bac_summary = "${outdir}/gtdbtk_output/gtdbtk.bac120.summary.tsv"
 		String gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
+		String unbinned_fa = "${outdir}/gtdbtk_output/bins.unbinned.fa"
+		String tooShort_fa = "${outdir}/gtdbtk_output/bins.tooShort.fa
+		String lowDepth_fa = "${outdir}/gtdbtk_output/bins.lowDepth.fa"
 	}
 	runtime {
             mem: "1 GiB"
