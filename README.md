@@ -42,18 +42,20 @@ Description of the files:
 
 A json files with following entries:
 
-1. Number of CPUs, 
-2. Output directory
-3. Project name
-4. Metagenome Assembled Contig fasta file
-5. Sam/Bam file from reads mapping back to contigs.
-6. Contigs functional annotation result in gff format
-7. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
-8. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
+1. Number of CPUs,
+2. The number of threads used by pplacer (Use lower number to reduce the memory usage)
+3. Output directory
+4. Project name
+5. Metagenome Assembled Contig fasta file
+6. Sam/Bam file from reads mapping back to contigs.
+7. Contigs functional annotation result in gff format
+8. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
+9. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
 
 ```
 {
   "nmdc_mags.cpu":32,
+  "nmdc_mags.pplacer_cpu":1,
   "nmdc_mags.outdir":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/output",
   "nmdc_mags.proj_name":"3300037552",
   "nmdc_mags.contig_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.fna",

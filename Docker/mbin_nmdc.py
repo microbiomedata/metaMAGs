@@ -83,17 +83,16 @@ def move_bins(log,odir, bins_dir):
    wh = open(bins_dir + '/bins\.' + numbins + '.fa')
    wh.write('>' + record.id + '\n' + record.seq + '\n')
 
-def checkm(log,clean_bins_dir,checkm_dir,checkm_qa_out, numCPU):
+def checkm(log,clean_bins_dir,checkm_dir,checkm_qa_out, numCPU, pplacerCPU):
  #run checkm
- pplacer_threads = 3 
- cl_rcode = subprocess.check_call(["/usr/bin/time", "checkm", "lineage_wf", "--pplacer_threads", str(pplacer_threads) , "-x", "fa", "-t", str(numCPU), clean_bins_dir, checkm_dir])
+ cl_rcode = subprocess.check_call(["/usr/bin/time", "checkm", "lineage_wf", "--pplacer_threads", str(pplacerCPU) , "-x", "fa", "-t", str(numCPU), clean_bins_dir, checkm_dir])
  if cl_rcode !=0 : sys.exit('Checkm lineage_wf failed. Please check\n')
 
  cq_rcode = subprocess.check_call(["/usr/bin/time", "checkm","qa", "-f", checkm_qa_out, checkm_dir + "/lineage.ms", checkm_dir])
  if cq_rcode !=0 : sys.exit('Checkm qa failed. Please check\n')
 
-def gtdbtk_lineage(log,bins_dir, godir, sdb, numCPU):
- rcode = subprocess.check_call(["/usr/bin/time", "gtdbtk", "classify_wf", "--cpus", str(numCPU) , "--genome_dir", bins_dir, "--out_dir", godir, "--extension", "fa"])
+def gtdbtk_lineage(log,bins_dir, godir, sdb, numCPU, pplacerCPU):
+ rcode = subprocess.check_call(["/usr/bin/time", "gtdbtk", "classify_wf", "--pplacer_cpus", str(pplacerCPU), "--cpus", str(numCPU) , "--genome_dir", bins_dir, "--out_dir", godir, "--extension", "fa"])
  if rcode !=0 : sys.exit('GTDBK-TK failed.please check\n')
 
  conn = sqlite3.connect(sdb)
@@ -130,7 +129,7 @@ def gtdbtk_lineage(log,bins_dir, godir, sdb, numCPU):
  conn.commit()
  conn.close() 
 
-def run(toid, fna, sam, gff, map_fn, domain_fn, numCPU):
+def run(toid, fna, sam, gff, map_fn, domain_fn, numCPU, pplacerCPU):
  #predefined file names
  odir = os.getcwd()
  bins_dir = odir + '/metabat-bins'
@@ -202,7 +201,7 @@ def run(toid, fna, sam, gff, map_fn, domain_fn, numCPU):
  #run checkm
  log.info('..run checkm')
  if not os.path.isfile(checkm_qa_out):
-  checkm(log,clean_bins_dir,checkm_dir,checkm_qa_out,numCPU)
+  checkm(log,clean_bins_dir,checkm_dir,checkm_qa_out,numCPU, pplacerCPU)
 
  #mimag based hq,mq,lq assignment & move hq.mq to sep dir
  log.info('..assign quality and move hq,mq to sep dir')
@@ -214,7 +213,7 @@ def run(toid, fna, sam, gff, map_fn, domain_fn, numCPU):
  
   #gtdb-tk lineage
   log.info('..run gtdb-tk on hq,mq bins')
-  gtdbtk_lineage(log,hqmq_bins_dir, godir, sdb_name, numCPU)
+  gtdbtk_lineage(log,hqmq_bins_dir, godir, sdb_name, numCPU, pplacerCPU)
  
  else:
   #touch file to avoid pickup
@@ -232,8 +231,9 @@ if __name__ == '__main__':
  parser.add_argument("sam", help = "Mapped reads in SAM format or sorted BAM format")
  parser.add_argument("gff", help = "GFF file from IMG annotation pipeline")
  parser.add_argument("--map", help = "MAP file containing mapping of headers between SAM and FNA : ID in FNA<tab>ID in GFF")
- parser.add_argument("--cpu", default=8, type=int, help = "number of CPU")
+ parser.add_argument("--cpu", default=8, type=int, help = "number of CPU [8]")
+ parser.add_argument("--pplacer_cpu", default=1, type=int, help = "number of pplacer CPU [1]")
  parser.add_argument("--domain", help = "Per scaffold domain information : soid<tab>domain")
  
  args = parser.parse_args()
- run(args.toid, args.fna, args.sam, args.gff, args.map, args.domain, args.cpu)
+ run(args.toid, args.fna, args.sam, args.gff, args.map, args.domain, args.cpu, args.pplacer_cpu)

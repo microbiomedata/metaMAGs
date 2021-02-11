@@ -4,10 +4,11 @@ workflow nmdc_mags {
     File contig_file
     File sam_file
     File gff_file
-    String container = "microbiomedata/nmdc_mbin:0.1.0"
+    String container = "microbiomedata/nmdc_mbin:0.1.1"
     File? map_file
     File? domain_file
     Int cpu=32
+    Int pplacer_cpu=1
     
     ## Need have db name with checkM_DB and GTDBTK_DB in the database directory
     String database="/refdata"
@@ -20,6 +21,7 @@ workflow nmdc_mags {
                  map=map_file, 
                  domain=domain_file, 
 		 cpu=cpu,
+                 pplacer_cpu=pplacer_cpu,
                  database=database,
 	         container=container
     }
@@ -37,6 +39,7 @@ workflow nmdc_mags {
     }
     parameter_meta {
 	cpu: "number of CPUs"
+        pplacer_cpu: "number of threads used by pplacer"
 	outdir: "the final output directory path"
 	proj_name: "project name"
 	contig_file: "input assembled contig fasta file"
@@ -53,7 +56,7 @@ workflow nmdc_mags {
     meta {
         author: "Chienchi Lo, B10, LANL"
         email: "chienchi@lanl.gov"
-        version: "1.0.0"
+        version: "1.0.1"
     }
 
 }
@@ -67,6 +70,7 @@ task mbin_nmdc {
 	File? domain
         String database
 	Int cpu
+        Int pplacer_cpu
         String container
 	String filename_outlog="stdout.log"
 	String filename_errlog="stderr.log"
@@ -84,7 +88,7 @@ task mbin_nmdc {
 	set -eo pipefail
 	# set TMPDIR to avoid AF_UNIX path too long error 
 	export TMPDIR=/tmp
-	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
+	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
 	mbin_stats.py $PWD
      }
      output {

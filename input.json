@@ -1,5 +1,6 @@
 {
   "nmdc_mags.cpu":32,
+  "nmdc_mags.pplacer_cpu":1,
   "nmdc_mags.outdir":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/output2",
   "nmdc_mags.proj_name":"3300037552",
   "nmdc_mags.contig_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.fna",
