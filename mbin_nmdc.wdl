@@ -1,4 +1,4 @@
-workflow nmdc_mags 
+workflow nmdc_mags {
     String? outdir
     String  proj_name
     File contig_file
