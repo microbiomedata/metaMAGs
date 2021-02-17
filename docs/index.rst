@@ -39,16 +39,16 @@ Workflow Dependencies
 Third party software (These are included in the Docker image.)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
  
-    - `Biopython v1.74 <https://biopython.org>`_ (License: `BSD-3-Clause <https://github.com/biopython/biopython/blob/master/LICENSE.rst>`_)
-    - `Sqlite <https://www.sqlite.org/index.html>`_ (License: `Public Domain <https://www.sqlite.org/copyright.html>`_)
-    - `Pymysql <https://github.com/PyMySQL/PyMySQL>`_ (License: `MIT License <https://github.com/PyMySQL/PyMySQL/blob/master/LICENSE>`_)
-    - `requests <https://github.com/psf/requests>`_ (License: `Apache 2.0 <https://github.com/psf/requests/blob/master/LICENSE>`_)
-    - `samtools > v1.9 <https://github.com/samtools/samtools>`_ (License: `MIT License <https://github.com/samtools/samtools/blob/develop/LICENSE>`_)
-    - `Metabat2 v2.15 <https://pubmed.ncbi.nlm.nih.gov/31388474/>`_ (License: `BSD-3-Clause <https://bitbucket.org/berkeleylab/metabat/src/master/license.txt>`_)
-    - `CheckM v1.1.2 <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/>`_ (License: `GPLv3 <https://github.com/Ecogenomics/CheckM/blob/master/LICENSE>`_)
-    - `GTDB-TK v1.1.1 <https://doi.org/10.1093/bioinformatics/btz848>`_ (License: `GPLv3 <https://github.com/Ecogenomics/GTDBTk/blob/master/LICENSE>`_)
-    - `FastANI v1.3 <https://github.com/ParBLiSS/FastANI>`_ (License: `Apache 2.0 <https://github.com/ParBLiSS/FastANI/blob/master/LICENSE>`_)
-    - `FastTree v2.1.10 <http://www.microbesonline.org/fasttree/>`_ (License: `GPLv2 <http://www.microbesonline.org/fasttree/FastTree.c>`_)
+- `Biopython v1.74 <https://biopython.org>`_ (License: `BSD-3-Clause <https://github.com/biopython/biopython/blob/master/LICENSE.rst>`_)
+- `Sqlite <https://www.sqlite.org/index.html>`_ (License: `Public Domain <https://www.sqlite.org/copyright.html>`_)
+- `Pymysql <https://github.com/PyMySQL/PyMySQL>`_ (License: `MIT License <https://github.com/PyMySQL/PyMySQL/blob/master/LICENSE>`_)
+- `requests <https://github.com/psf/requests>`_ (License: `Apache 2.0 <https://github.com/psf/requests/blob/master/LICENSE>`_)
+- `samtools > v1.9 <https://github.com/samtools/samtools>`_ (License: `MIT License <https://github.com/samtools/samtools/blob/develop/LICENSE>`_)
+- `Metabat2 v2.15 <https://pubmed.ncbi.nlm.nih.gov/31388474/>`_ (License: `BSD-3-Clause <https://bitbucket.org/berkeleylab/metabat/src/master/license.txt>`_)
+- `CheckM v1.1.2 <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/>`_ (License: `GPLv3 <https://github.com/Ecogenomics/CheckM/blob/master/LICENSE>`_)
+- `GTDB-TK v1.1.1 <https://doi.org/10.1093/bioinformatics/btz848>`_ (License: `GPLv3 <https://github.com/Ecogenomics/GTDBTk/blob/master/LICENSE>`_)
+- `FastANI v1.3 <https://github.com/ParBLiSS/FastANI>`_ (License: `Apache 2.0 <https://github.com/ParBLiSS/FastANI/blob/master/LICENSE>`_)
+- `FastTree v2.1.10 <http://www.microbesonline.org/fasttree/>`_ (License: `GPLv2 <http://www.microbesonline.org/fasttree/FastTree.c>`_)
 
 
 Requisite databases
@@ -57,19 +57,19 @@ Requisite databases
 Both the CheckM database and the GTDB-Tk database must be downloaded and installed. The CheckM database is a 275MB file contains the databases used for the Metagenome Binned contig quality assessment. The GTDB-Tk (27GB) database is used to assign lineages to the binned contigs.
 
 
-    - The following commands will download the CheckM database::
+- The following commands will download the CheckM database::
 
-        mkdir checkM_DB
-        wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
-        tar -xvzf checkm_data_2015_01_16.tar.gz -C checkM_DB
-        rm checkm_data_2015_01_16.tar.gz
+    mkdir checkM_DB
+    wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
+    tar -xvzf checkm_data_2015_01_16.tar.gz -C checkM_DB
+    rm checkm_data_2015_01_16.tar.gz
 
-    - The following commands will download and unarchive the GTDB-Tk database::
+- The following commands will download and unarchive the GTDB-Tk database::
 
-        wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
-        tar -xvzf gtdbtk_r89_data.tar.gz
-        mv release89 GTDBTK_DB
-        rm gtdbtk_r89_data.tar.gz
+    wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
+    tar -xvzf gtdbtk_r89_data.tar.gz
+    mv release89 GTDBTK_DB
+    rm gtdbtk_r89_data.tar.gz
 
 .. note:: 
 
@@ -204,7 +204,7 @@ complete.mbin                                       the dummy file to indicate t
 Version History
 ---------------
 
-- 1.0.1 (release date 02/11/2021; previous versions: 1.0.0)
+- 1.0.1 (release date **02/11/2021**; previous versions: 1.0.0)
 
 Point of contact
 ----------------
