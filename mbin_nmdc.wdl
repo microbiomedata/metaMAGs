@@ -121,7 +121,7 @@ task make_output{
 		String gtdbtk_bac_summary = "${outdir}/gtdbtk_output/gtdbtk.bac120.summary.tsv"
 		String gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
 		String unbinned_fa = "${outdir}/gtdbtk_output/bins.unbinned.fa"
-		String tooShort_fa = "${outdir}/gtdbtk_output/bins.tooShort.fa
+		String tooShort_fa = "${outdir}/gtdbtk_output/bins.tooShort.fa"
 		String lowDepth_fa = "${outdir}/gtdbtk_output/bins.lowDepth.fa"
 	}
 	runtime {
