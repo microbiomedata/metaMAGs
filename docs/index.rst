@@ -1,4 +1,4 @@
-Metagenome Assembled Genomes Workflow, v1.0.1
+Metagenome Assembled Genomes Workflow (v1.0.1)
 =============================================
 
 .. image:: MAG_workflow.png
