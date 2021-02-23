@@ -7,6 +7,7 @@ workflow nmdc_mags {
     String container = "microbiomedata/nmdc_mbin:0.1.1"
     File? map_file
     File? domain_file
+    String? scratch_dir
     Int cpu=32
     Int pplacer_cpu=1
     
@@ -19,9 +20,10 @@ workflow nmdc_mags {
                  sam=sam_file, 
                  gff=gff_file, 
                  map=map_file, 
-                 domain=domain_file, 
+                 domain=domain_file,
 		 cpu=cpu,
                  pplacer_cpu=pplacer_cpu,
+		 scratch_dir=scratch_dir,
                  database=database,
 	         container=container
     }
@@ -77,6 +79,7 @@ task mbin_nmdc {
         String database
 	Int cpu
         Int pplacer_cpu
+	String? scratch_dir
         String container
 	String filename_outlog="stdout.log"
 	String filename_errlog="stderr.log"
@@ -94,7 +97,7 @@ task mbin_nmdc {
 	set -eo pipefail
 	# set TMPDIR to avoid AF_UNIX path too long error 
 	export TMPDIR=/tmp
-	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
+	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
 	mbin_stats.py $PWD
      }
      output {

@@ -91,7 +91,8 @@ def checkm(log,clean_bins_dir,checkm_dir,checkm_qa_out, numCPU, pplacerCPU):
  cq_rcode = subprocess.check_call(["/usr/bin/time", "checkm","qa", "-f", checkm_qa_out, checkm_dir + "/lineage.ms", checkm_dir])
  if cq_rcode !=0 : sys.exit('Checkm qa failed. Please check\n')
 
-def gtdbtk_lineage(log,bins_dir, godir, sdb, numCPU, pplacerCPU):
+def gtdbtk_lineage(log,bins_dir, godir, sdb, numCPU, pplacerCPU, scratchdir):
+ if not os.path.isdir(scratchdir) : subprocess.check_call(["mkdir",scratchdir])
  rcode = subprocess.check_call(["/usr/bin/time", "gtdbtk", "classify_wf", "--pplacer_cpus", str(pplacerCPU), "--cpus", str(numCPU) , "--genome_dir", bins_dir, "--out_dir", godir, "--extension", "fa"])
  if rcode !=0 : sys.exit('GTDBK-TK failed.please check\n')
 
@@ -129,7 +130,7 @@ def gtdbtk_lineage(log,bins_dir, godir, sdb, numCPU, pplacerCPU):
  conn.commit()
  conn.close() 
 
-def run(toid, fna, sam, gff, map_fn, domain_fn, numCPU, pplacerCPU):
+def run(toid, fna, sam, gff, map_fn, domain_fn, numCPU, pplacerCPU, scratchDir):
  #predefined file names
  odir = os.getcwd()
  bins_dir = odir + '/metabat-bins'
@@ -213,7 +214,7 @@ def run(toid, fna, sam, gff, map_fn, domain_fn, numCPU, pplacerCPU):
  
   #gtdb-tk lineage
   log.info('..run gtdb-tk on hq,mq bins')
-  gtdbtk_lineage(log,hqmq_bins_dir, godir, sdb_name, numCPU, pplacerCPU)
+  gtdbtk_lineage(log,hqmq_bins_dir, godir, sdb_name, numCPU, pplacerCPU, scratchDir)
  
  else:
   #touch file to avoid pickup
@@ -233,7 +234,8 @@ if __name__ == '__main__':
  parser.add_argument("--map", help = "MAP file containing mapping of headers between SAM and FNA : ID in FNA<tab>ID in GFF")
  parser.add_argument("--cpu", default=8, type=int, help = "number of CPU [8]")
  parser.add_argument("--pplacer_cpu", default=1, type=int, help = "number of pplacer CPU [1]")
+ parser.add_argument("--scratch_dir", type=str, help = "scratch directory of pplacer. use disk instead of memory")
  parser.add_argument("--domain", help = "Per scaffold domain information : soid<tab>domain")
  
  args = parser.parse_args()
- run(args.toid, args.fna, args.sam, args.gff, args.map, args.domain, args.cpu, args.pplacer_cpu)
+ run(args.toid, args.fna, args.sam, args.gff, args.map, args.domain, args.cpu, args.pplacer_cpu, args.scratch_dir)
