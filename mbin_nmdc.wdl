@@ -45,6 +45,7 @@ workflow nmdc_mags {
 	cpu: "number of CPUs"
         pplacer_cpu: "number of threads used by pplacer"
 	outdir: "the final output directory path"
+	scratch_dir: "use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime"
 	proj_name: "project name"
 	contig_file: "input assembled contig fasta file"
 	sam_file: "Sam/Bam file from reads mapping back to contigs. [sam.gz or bam]"
