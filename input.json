@@ -7,5 +7,5 @@
   "nmdc_mags.sam_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.bam.sorted.bam",
   "nmdc_mags.gff_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.gff",
   "nmdc_mags.map_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.map.txt",
-  "nmdc_mags.database":"/global/cfs/projectdirs/m3408/aim2/database"
+  "nmdc_mags.gtdbtk_database":"/global/cfs/projectdirs/m3408/aim2/database/GTDBTK_DB"
 }

@@ -11,8 +11,7 @@ workflow nmdc_mags {
     Int cpu=32
     Int pplacer_cpu=1
     
-    ## Need have db name with checkM_DB and GTDBTK_DB in the database directory
-    String database="/refdata"
+    String gtdbtk_database="/refdata/GTDBTK_DB"
 
     call mbin_nmdc{
          input:  name=proj_name, 
@@ -24,7 +23,7 @@ workflow nmdc_mags {
 		 cpu=cpu,
                  pplacer_cpu=pplacer_cpu,
 		 scratch_dir=scratch_dir,
-                 database=database,
+                 database=gtdbtk_database,
 	         container=container
     }
   
@@ -51,7 +50,7 @@ workflow nmdc_mags {
 	sam_file: "Sam/Bam file from reads mapping back to contigs. [sam.gz or bam]"
 	gff_file: "contigs functional annotation result in gff format"
 	map_file: "text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA ID in GFF)"
-	database: "database directory path which includes checkM_DB and GTDBTK_DB subdirectories"
+	database: "GTDBTK_DB database directory path"
 	final_hqmq_bins: "high quality and medium quality bin fasta output"
 	metabat_bins: "initial metabat bining result fasta output"
 	final_checkm: "metabat bin checkm result"
@@ -89,7 +88,6 @@ task mbin_nmdc {
                 docker: container
 		mem: "120 GiB"
 		cpu:  cpu
-		database: database
  	}   
 
      command {
@@ -97,6 +95,7 @@ task mbin_nmdc {
 	set -eo pipefail
 	# set TMPDIR to avoid AF_UNIX path too long error 
 	export TMPDIR=/tmp
+	export GTDBTK_DATA_PATH=database
 	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
 	mbin_stats.py $PWD
      }
