@@ -98,6 +98,7 @@ An example JSON file is shown below::
         "nmdc_mags.gff_file":"/path/to/Ga0482263_functional_annotation.gff",
         "nmdc_mags.map_file":"/path/to/Ga0482263_contig_names_mapping.tsv",
         "nmdc_mags.gtdbtk_database":"/path/to/GTDBTK_DB"
+        "nmdc_mags.scratch_dir":"/path/to/scratch_dir"
     }
 
 

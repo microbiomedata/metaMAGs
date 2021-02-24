@@ -88,6 +88,7 @@ task mbin_nmdc {
                 docker: container
 		mem: "120 GiB"
 		cpu:  cpu
+		database: database
  	}   
 
      command {
@@ -95,7 +96,7 @@ task mbin_nmdc {
 	set -eo pipefail
 	# set TMPDIR to avoid AF_UNIX path too long error 
 	export TMPDIR=/tmp
-	export GTDBTK_DATA_PATH=${database}
+	export GTDBTK_DATA_PATH=/databases
 	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
 	mbin_stats.py $PWD
      }
