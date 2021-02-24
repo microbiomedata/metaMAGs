@@ -11,7 +11,7 @@ ENV container docker
 
 ADD *.py /opt/conda/bin/
 ADD metabat2_bin/* /opt/conda/bin/
-#ADD init.sh /
+ADD init.sh /
 RUN apt update && apt install -y vim procps gzip time libgomp1 && \
     conda config --add channels defaults && \ 
     conda config --add channels conda-forge && \
@@ -33,7 +33,7 @@ ENV GTDBTK_DATA_PATH /databases/GTDBTK_DB
 
 WORKDIR /data
 
-#ENTRYPOINT ["/init.sh"]
+ENTRYPOINT ["/init.sh"]
 
 CMD ["/bin/bash"]
 
