@@ -92,8 +92,11 @@ def checkm(log,clean_bins_dir,checkm_dir,checkm_qa_out, numCPU, pplacerCPU):
  if cq_rcode !=0 : sys.exit('Checkm qa failed. Please check\n')
 
 def gtdbtk_lineage(log,bins_dir, godir, sdb, numCPU, pplacerCPU, scratchdir):
- if not os.path.isdir(scratchdir) : subprocess.check_call(["mkdir",scratchdir])
- rcode = subprocess.check_call(["/usr/bin/time", "gtdbtk", "classify_wf", "--pplacer_cpus", str(pplacerCPU), "--cpus", str(numCPU) , "--genome_dir", bins_dir, "--out_dir", godir, "--extension", "fa"])
+ if scratchdir:
+  if not os.path.isdir(scratchdir) : subprocess.check_call(["mkdir",scratchdir])
+  rcode = subprocess.check_call(["/usr/bin/time", "gtdbtk", "classify_wf", "--scratch_dir",scratchdir,"--pplacer_cpus", str(pplacerCPU), "--cpus", str(numCPU) , "--genome_dir", bins_dir, "--out_dir", godir, "--extension", "fa"])
+ else:
+  rcode = subprocess.check_call(["/usr/bin/time", "gtdbtk", "classify_wf", "--pplacer_cpus", str(pplacerCPU), "--cpus", str(numCPU) , "--genome_dir", bins_dir, "--out_dir", godir, "--extension", "fa"])
  if rcode !=0 : sys.exit('GTDBK-TK failed.please check\n')
 
  conn = sqlite3.connect(sdb)
