@@ -6,24 +6,21 @@ The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/ar
 
 ## Required Database
 
-* [CheckM](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/)<sup>2</sup> database is 275MB contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory) 
+* [CheckM](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/)<sup>2</sup> database is 275MB contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory, included in the image) 
     * https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
 
 * [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~27G of external data that need to be downloaded and unarchived. (requires ~100GB of memory)
     * https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
 
-* Prepare the Database
+* Prepare the GTDB-Tk Database
 
 ```bash
-    mkdir -p refdata/checkM_DB 
-    wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
-    tar -xvzf checkm_data_2015_01_16.tar.gz --directory=database/checkM_DB
     
     wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
     tar -xvzf gtdbtk_r89_data.tar.gz
     mv release89 refdata/GTDBTK_DB
     
-    rm checkm_data_2015_01_16.tar.gz gtdbtk_r89_data.tar.gz
+    rm gtdbtk_r89_data.tar.gz
 ```
 
 ## Running Workflow in Cromwell
@@ -51,6 +48,7 @@ A json files with following entries:
 7. Contigs functional annotation result in gff format
 8. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
 9. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
+10. (optional) scratch_dir: use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime
 
 ```
 {
@@ -62,7 +60,7 @@ A json files with following entries:
   "nmdc_mags.sam_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.bam.sorted.bam",
   "nmdc_mags.gff_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.gff",
   "nmdc_mags.map_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.map.txt",
-  "nmdc_mags.database":"/path/to/refdata"
+  "nmdc_mags.gtdbtk_database":"/path/to/GTDBTK_DB"
 }
 ```
 

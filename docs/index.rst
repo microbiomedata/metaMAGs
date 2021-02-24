@@ -1,4 +1,4 @@
-Metagenome Assembled Genomes Workflow (v1.0.1)
+Metagenome Assembled Genomes Workflow (v1.0.2)
 =============================================
 
 .. image:: MAG_workflow.png
@@ -54,15 +54,7 @@ Third party software (These are included in the Docker image.)
 Requisite databases
 ~~~~~~~~~~~~~~~~~~~~~
 
-Both the CheckM database and the GTDB-Tk database must be downloaded and installed. The CheckM database is a 275MB file contains the databases used for the Metagenome Binned contig quality assessment. The GTDB-Tk (27GB) database is used to assign lineages to the binned contigs.
-
-
-- The following commands will download the CheckM database::
-
-    mkdir checkM_DB
-    wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
-    tar -xvzf checkm_data_2015_01_16.tar.gz -C checkM_DB
-    rm checkm_data_2015_01_16.tar.gz
+The GTDB-Tk database must be downloaded and installed. The CheckM database included in the Docker image is a 275MB file contains the databases used for the Metagenome Binned contig quality assessment. The GTDB-Tk (27GB) database is used to assign lineages to the binned contigs.
 
 - The following commands will download and unarchive the GTDB-Tk database::
 
@@ -70,10 +62,6 @@ Both the CheckM database and the GTDB-Tk database must be downloaded and install
     tar -xvzf gtdbtk_r89_data.tar.gz
     mv release89 GTDBTK_DB
     rm gtdbtk_r89_data.tar.gz
-
-.. note:: 
-
-    The two databases need to be stored in the same directory path in subdirectories named  checkM_DB and GTDBTK_DB.
 
 Sample dataset(s)
 -----------------
@@ -87,25 +75,29 @@ Input
 A JSON file containing the following: 
 
 1. the number of CPUs requested
-2. the path to the output directory
-3. the project name
-4. the path to the Metagenome Assembled Contig fasta file (FNA)
-5. the path to the Sam/Bam file from read mapping back to contigs (SAM.gz or BAM)
-6. the path to contigs functional annotation result (GFF)
-7. the path to the text file which contains mapping of headers between SAM or BAM and GFF (ID in SAM/FNA<tab>ID in GFF)
-8. the path to the database directory which includes *checkM_DB* and *GTDBTK_DB* subdirectories.
+2. The number of threads used by pplacer (Use lower number to reduce the memory usage)
+3. the path to the output directory
+4. the project name
+5. the path to the Metagenome Assembled Contig fasta file (FNA)
+6. the path to the Sam/Bam file from read mapping back to contigs (SAM.gz or BAM)
+7. the path to contigs functional annotation result (GFF)
+8. the path to the text file which contains mapping of headers between SAM or BAM and GFF (ID in SAM/FNA<tab>ID in GFF)
+9. the path to the database directory which includes *checkM_DB* and *GTDBTK_DB* subdirectories.
+10. (optional) scratch_dir: use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime
+
 
 An example JSON file is shown below::
 
     {
         "nmdc_mags.cpu":32,
+        "nmdc_mags.pplacer_cpu":1,
         "nmdc_mags.outdir":"/path/to/output",
         "nmdc_mags.proj_name":" Ga0482263",
         "nmdc_mags.contig_file":"/path/to/Ga0482263_contigs.fna ",
         "nmdc_mags.sam_file":"/path/to/pairedMapped_sorted.bam ",
         "nmdc_mags.gff_file":"/path/to/Ga0482263_functional_annotation.gff",
         "nmdc_mags.map_file":"/path/to/Ga0482263_contig_names_mapping.tsv",
-        "nmdc_mags.database":"/path/to/refdata"
+        "nmdc_mags.gtdbtk_database":"/path/to/GTDBTK_DB"
     }
 
 
@@ -204,7 +196,7 @@ complete.mbin                                       the dummy file to indicate t
 Version History
 ---------------
 
-- 1.0.1 (release date **02/11/2021**; previous versions: 1.0.0)
+- 1.0.2 (release date **02/24/2021**; previous versions: 1.0.1)
 
 Point of contact
 ----------------
