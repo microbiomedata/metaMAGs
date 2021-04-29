@@ -32,8 +32,8 @@ workflow nmdc_mags {
     }
 
     output {
-	Array[File?] final_hqmq_bins = make_output.hqmq_bin_fasta_files
-	Array[File?] metabat_bins = make_output.metabat_bin_fasta_files
+	Array[File] final_hqmq_bins = make_output.hqmq_bin_fasta_files
+	Array[File] metabat_bins = make_output.metabat_bin_fasta_files
 	File? final_checkm = make_output.checkm_output
 	File? final_gtdbtk_bac_summary = make_output.gtdbtk_bac_summary
 	File? final_gtdbtk_ar_summary = make_output.gtdbtk_ar_summary
@@ -119,8 +119,8 @@ task make_output{
  		chmod 764 -R ${outdir}
  	}
 	output {
-		Array [String] hqmq_bin_fasta_files = glob("${outdir}/hqmq-metabat-bins/*fa")
-		Array [String] metabat_bin_fasta_files = glob("${outdir}/metabat-bins/*fa")
+		Array[String] hqmq_bin_fasta_files = glob("${outdir}/hqmq-metabat-bins/*fa")
+		Array[String] metabat_bin_fasta_files = glob("${outdir}/metabat-bins/*fa")
 		String checkm_output = "${outdir}/checkm_qa.out"
 		String gtdbtk_bac_summary = "${outdir}/gtdbtk_output/gtdbtk.bac120.summary.tsv"
 		String gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
