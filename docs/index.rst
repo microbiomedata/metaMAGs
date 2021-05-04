@@ -66,7 +66,13 @@ The GTDB-Tk database must be downloaded and installed. The CheckM database inclu
 Sample dataset(s)
 -----------------
 
-The following test dataset include an assembled contigs file, a BAM file, and a functional annotation file: `metaMAGs_test_dataset.tgz <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_test_dataset.tgz>`_
+
+The following test datasets include an assembled contigs file, a BAM file, and a functional annotation file:
+
+- small dataset: `LQ only (3.1G) <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_small_test_data.tgz>`_ . You can find input/output in the downloaded tar gz file.
+
+- large dataset: `with HQ and MQ bins (12G) <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_large_test_data.tgz>`_ . You can find input/output in the downloaded tar gz file.
+
 
 
 Input
