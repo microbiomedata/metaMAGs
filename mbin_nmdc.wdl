@@ -40,6 +40,7 @@ workflow nmdc_mags {
 	File? final_tooShort_fa = make_output.tooShort_fa
 	File? final_lowDepth_fa = make_output.lowDepth_fa
 	File? final_unbinned_fa = make_output.unbinned_fa
+	File? final_stats = make_output.json_stats
     }
     parameter_meta {
 	cpu: "number of CPUs"
@@ -119,14 +120,15 @@ task make_output{
  		chmod 764 -R ${outdir}
  	}
 	output {
-		Array[String] hqmq_bin_fasta_files = glob("${outdir}/hqmq-metabat-bins/*fa")
-		Array[String] metabat_bin_fasta_files = glob("${outdir}/metabat-bins/*fa")
-		String checkm_output = "${outdir}/checkm_qa.out"
-		String gtdbtk_bac_summary = "${outdir}/gtdbtk_output/gtdbtk.bac120.summary.tsv"
-		String gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
-		String unbinned_fa = "${outdir}/gtdbtk_output/bins.unbinned.fa"
-		String tooShort_fa = "${outdir}/gtdbtk_output/bins.tooShort.fa"
-		String lowDepth_fa = "${outdir}/gtdbtk_output/bins.lowDepth.fa"
+		Array[File] hqmq_bin_fasta_files = glob("${outdir}/hqmq-metabat-bins/*fa")
+		Array[File] metabat_bin_fasta_files = glob("${outdir}/metabat-bins/*fa")
+		File? checkm_output = "${outdir}/checkm_qa.out"
+		File? gtdbtk_bac_summary = "${outdir}/gtdbtk_output/gtdbtk.bac120.summary.tsv"
+		File? gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
+		File? unbinned_fa = "${outdir}/gtdbtk_output/bins.unbinned.fa"
+		File? tooShort_fa = "${outdir}/gtdbtk_output/bins.tooShort.fa"
+		File? lowDepth_fa = "${outdir}/gtdbtk_output/bins.lowDepth.fa"
+		File? json_stats = "${outdir}/MAGs_stats.json"
 	}
 	runtime {
             mem: "1 GiB"
