@@ -125,9 +125,9 @@ task make_output{
 		File? checkm_output = "${outdir}/checkm_qa.out"
 		File? gtdbtk_bac_summary = "${outdir}/gtdbtk_output/gtdbtk.bac120.summary.tsv"
 		File? gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
-		File? unbinned_fa = "${outdir}/gtdbtk_output/bins.unbinned.fa"
-		File? tooShort_fa = "${outdir}/gtdbtk_output/bins.tooShort.fa"
-		File? lowDepth_fa = "${outdir}/gtdbtk_output/bins.lowDepth.fa"
+		File? unbinned_fa = "${outdir}/bins.unbinned.fa"
+		File? tooShort_fa = "${outdir}/bins.tooShort.fa"
+		File? lowDepth_fa = "${outdir}/bins.lowDepth.fa"
 		File? json_stats = "${outdir}/MAGs_stats.json"
 	}
 	runtime {
