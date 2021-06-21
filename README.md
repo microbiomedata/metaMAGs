@@ -2,7 +2,7 @@
 
 ## Summary
 
-The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation.
+The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation. It takes assembled contigs, reads mapping result bam file and contigs annotations result to to associate groups of contigs as deriving from a seemingly coherent microbial species (binning) and evaluted by checkM and gtdb-tk. 
 
 ## Required Database
 
