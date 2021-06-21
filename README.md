@@ -46,7 +46,7 @@ A json files with following entries:
 5. Metagenome Assembled Contig fasta file
 6. Sam/Bam file from reads mapping back to contigs.
 7. Contigs functional annotation result in gff format
-8. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
+8. Optioal: Tab-delimited text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF). A two column tab-delimited file. When the annotation and assembly are performed using different identifiers for contigs. The map file is to link the gff file content and mapping result bam file content to the assembled contigs ID.
 9. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
 10. (optional) scratch_dir: use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime
 
