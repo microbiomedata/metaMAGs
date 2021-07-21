@@ -88,7 +88,7 @@ task mbin_nmdc {
 	String dollar="$"
 	runtime {
                 docker: container
-		mem: "120 GiB"
+		memory: "120 GiB"
 		cpu:  cpu
 		database: database
  	}   
@@ -133,7 +133,7 @@ task make_output{
 	}
 	runtime {
 	    docker: container
-            mem: "1 GiB"
+            memory: "1 GiB"
             cpu:  1
         }
 }
