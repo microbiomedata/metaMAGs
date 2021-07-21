@@ -28,7 +28,7 @@ workflow nmdc_mags {
     }
   
     call make_output {
-       	input: outdir= outdir, mbin_nmdc_output=mbin_nmdc.runScript
+       	input: outdir= outdir, mbin_nmdc_output=mbin_nmdc.runScript, container=container
     }
 
     output {
@@ -112,6 +112,7 @@ task mbin_nmdc {
 task make_output{
  	String outdir
 	String mbin_nmdc_output
+	String container
  
  	command{
 		mbin_nmdc_path=`dirname ${mbin_nmdc_output}`
@@ -131,6 +132,7 @@ task make_output{
 		File? json_stats = "${outdir}/MAGs_stats.json"
 	}
 	runtime {
+	    docker: container
             mem: "1 GiB"
             cpu:  1
         }
