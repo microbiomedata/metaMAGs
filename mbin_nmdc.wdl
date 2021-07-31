@@ -159,7 +159,7 @@ task mbin_nmdc {
         File short = "bins.tooShort.fa"
         File low = "bins.lowDepth.fa"
         File unbinned = "bins.unbinned.fa"
-        File checkm = "checkm_qa.out"
+        File? checkm = "checkm_qa.out"
         File json_stats= "MAGs_stats.json"
         File? bacsum = "gtdbtk_output/gtdbtk.bac120.summary.tsv"
         File? arcsum = "gtdbtk_output/gtdbtk.ar122.summary.tsv"
@@ -177,7 +177,7 @@ task generate_objects{
     String git_url
     File fasta
     File bam
-    File checkm
+    File? checkm
     File functional_gff
     File short
     File lowdepth
@@ -210,7 +210,7 @@ task generate_objects{
              ${short} "tooShort (< 3kb) filtered contigs fasta file by metaBat2" \
              ${lowdepth} "lowDepth (mean cov <1 )  filtered contigs fasta file by metabat2" \
              ${unbinned} "unbinned fasta file from metabat2" \
-             ${checkm} "metabat2 bin checkm quality assessment result" \
+             ${checkm + "\"metabat2 bin checkm quality assessment result\""} \
              ${bac_summary + " \"gtdbtk bacterial assignment result summary table\""} \
              ${ar_summary + " \"gtdbtk archaea assignment result summary table\""}  
     >>>
@@ -235,7 +235,7 @@ task make_output{
     File unbinned
     File? hqmq_bin_fasta_zip
     File? bin_fasta_zip
-    File checkm
+    File? checkm
     File json_stats
     File? gtdbtk_bac_summary
     File? gtdbtk_ar_summary
@@ -245,7 +245,7 @@ task make_output{
  
     command{
         mkdir -p ${outdir}
-        cp ${short} ${low} ${unbinned} ${json_stats} \
+        cp ${short} ${low} ${unbinned} ${json_stats} ${checkm} \
                    ${gtdbtk_bac_summary} ${gtdbtk_ar_summary} \
                    ${activity_json} ${object_json} \
                    ${outdir}
