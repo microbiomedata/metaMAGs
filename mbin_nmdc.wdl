@@ -210,7 +210,7 @@ task generate_objects{
              ${short} "tooShort (< 3kb) filtered contigs fasta file by metaBat2" \
              ${lowdepth} "lowDepth (mean cov <1 )  filtered contigs fasta file by metabat2" \
              ${unbinned} "unbinned fasta file from metabat2" \
-             ${checkm + "\"metabat2 bin checkm quality assessment result\""} \
+             ${checkm + " \"metabat2 bin checkm quality assessment result\""} \
              ${bac_summary + " \"gtdbtk bacterial assignment result summary table\""} \
              ${ar_summary + " \"gtdbtk archaea assignment result summary table\""}  
     >>>
