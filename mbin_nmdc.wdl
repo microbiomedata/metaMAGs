@@ -32,7 +32,7 @@ workflow nmdc_mags {
                  container=container
     }
     call generate_objects {
-         input: container="microbiomedata/workflowmeta:1.0.0",
+         input: container="microbiomedata/workflowmeta:1.0.4",
                 start = mbin_nmdc.start,
                 activity_id = "${activity_id}",
                 resource = "${resource}",
@@ -148,6 +148,7 @@ task mbin_nmdc {
         date --iso-8601=seconds > start.txt
         # set TMPDIR to avoid AF_UNIX path too long error 
         export TMPDIR=/tmp
+        #export TMPDIR=$HOME 
         export GTDBTK_DATA_PATH=/databases
         mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
         mbin_stats.py $PWD
@@ -210,9 +211,9 @@ task generate_objects{
              ${short} "tooShort (< 3kb) filtered contigs fasta file by metaBat2" \
              ${lowdepth} "lowDepth (mean cov <1 )  filtered contigs fasta file by metabat2" \
              ${unbinned} "unbinned fasta file from metabat2" \
-             ${checkm + " \"metabat2 bin checkm quality assessment result\""} \
-             ${bac_summary + " \"gtdbtk bacterial assignment result summary table\""} \
-             ${ar_summary + " \"gtdbtk archaea assignment result summary table\""}  
+             ${" " + checkm + " \"metabat2 bin checkm quality assessment result\""} \
+             ${" " + bac_summary + " \"gtdbtk bacterial assignment result summary table\""} \
+             ${" " + ar_summary + " \"gtdbtk archaea assignment result summary table\""}  
     >>>
     runtime {
         docker: container
