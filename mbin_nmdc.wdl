@@ -26,20 +26,36 @@ workflow nmdc_mags {
                  database=gtdbtk_database,
 	         container=container
     }
-  
-    call make_output {
-       	input: outdir= outdir, mbin_nmdc_output=mbin_nmdc.runScript
+
+    if (defined(outdir)){
+        call make_output {
+           	input: short=mbin_nmdc.short,
+                   low=mbin_nmdc.low,
+                   unbinned=mbin_nmdc.unbinned,
+                   hqmq_bin_fasta_files=mbin_nmdc.hqmq_bin_fasta_files,
+                   bin_fasta_files=mbin_nmdc.bin_fasta_files,
+        	       checkm=mbin_nmdc.checkm,
+        	       gtdbtk_bac_summary=mbin_nmdc.bacsum,
+        	       gtdbtk_ar_summary=mbin_nmdc.arcsum,
+                   outdir=outdir
+        }
     }
 
     output {
-	Array[File] final_hqmq_bins = make_output.hqmq_bin_fasta_files
-	Array[File] metabat_bins = make_output.metabat_bin_fasta_files
+	File? final_hqmq_bins_zip = make_output.hqmq_bin_fasta_zip
+	File? metabat_bins_zip = make_output.metabat_bin_fasta_zip
 	File? final_checkm = make_output.checkm_output
-	File? final_gtdbtk_bac_summary = make_output.gtdbtk_bac_summary
-	File? final_gtdbtk_ar_summary = make_output.gtdbtk_ar_summary
+	File? final_gtdbtk_bac_summary = make_output.bac_summary
+	File? final_gtdbtk_ar_summary = make_output.ar_summary
 	File? final_tooShort_fa = make_output.tooShort_fa
 	File? final_lowDepth_fa = make_output.lowDepth_fa
 	File? final_unbinned_fa = make_output.unbinned_fa
+        File short = mbin_nmdc.short
+        File low = mbin_nmdc.low
+        File unbinned = mbin_nmdc.unbinned
+        File checkm = mbin_nmdc.checkm
+	Array[File] hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files
+	Array[File] bin_fasta_files = mbin_nmdc.bin_fasta_files
     }
     parameter_meta {
 	cpu: "number of CPUs"
@@ -84,7 +100,6 @@ task mbin_nmdc {
 	String filename_outlog="stdout.log"
 	String filename_errlog="stderr.log"
 	String filename_stat="checkm_qa.out"
-	String dollar="$"
 	runtime {
                 docker: container
 		mem: "120 GiB"
@@ -97,38 +112,65 @@ task mbin_nmdc {
 	set -eo pipefail
 	# set TMPDIR to avoid AF_UNIX path too long error 
 	export TMPDIR=/tmp
-	export GTDBTK_DATA_PATH=/databases
+	export GTDBTK_DATA_PATH=${database}
 	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
 	mbin_stats.py $PWD
+
      }
      output {
 	File runScript = "script"
-	#File stderr = filename_errlog
 	File? stat = filename_stat
+        File short = "bins.tooShort.fa"
+        File low = "bins.lowDepth.fa"
+        File unbinned = "bins.unbinned.fa"
+        File checkm = "checkm_qa.out"
+        File? bacsum = "gtdbtk.bac120.summary.tsv"
+        File? arcsum = "gtdbtk.ar122.summary.tsv"
+	Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
+	Array[File] bin_fasta_files = glob("metabat-bins/*fa")
      }
 }
 
 task make_output{
- 	String outdir
-	String mbin_nmdc_output
+        File short
+        File low
+        File unbinned
+        Array[File] hqmq_bin_fasta_files
+        Array[File] bin_fasta_files
+	File checkm
+	File? gtdbtk_bac_summary
+	File? gtdbtk_ar_summary
+ 	String? outdir
+        String container="scanon/nmdc-meta:v0.0.2"
  
  	command{
-		mbin_nmdc_path=`dirname ${mbin_nmdc_output}`
-		mkdir -p ${outdir}
-		mv -f $mbin_nmdc_path/* ${outdir}/
- 		chmod 764 -R ${outdir}
+                zip hqmq-metabat-bins.zip ${sep=" " hqmq_bin_fasta_files}
+                zip metabat-bins.zip ${sep=" " bin_fasta_files}
+                if [ ! -z ${outdir} ] ; then
+                    mkdir -p ${outdir}
+                    cp ${short} ${low} ${unbinned} \
+                       ${gtdbtk_bac_summary} ${gtdbtk_ar_summary} \
+                       ${outdir}
+                    # These may not exist
+                    [ -e hqmq-metabat-bins.zip ] && cp hqmq-metabat-bins.zip ${outdir}
+                    [ -e metabat-bins.zip ] && cp metabat-bins.zip ${outdir}
+     		    chmod 764 -R ${outdir}
+                fi
  	}
 	output {
-		Array[String] hqmq_bin_fasta_files = glob("${outdir}/hqmq-metabat-bins/*fa")
-		Array[String] metabat_bin_fasta_files = glob("${outdir}/metabat-bins/*fa")
 		String checkm_output = "${outdir}/checkm_qa.out"
-		String gtdbtk_bac_summary = "${outdir}/gtdbtk_output/gtdbtk.bac120.summary.tsv"
-		String gtdbtk_ar_summary = "${outdir}/gtdbtk_output/gtdbtk.ar122.summary.tsv"
-		String unbinned_fa = "${outdir}/gtdbtk_output/bins.unbinned.fa"
-		String tooShort_fa = "${outdir}/gtdbtk_output/bins.tooShort.fa"
-		String lowDepth_fa = "${outdir}/gtdbtk_output/bins.lowDepth.fa"
+		String bac_summary = "${outdir}/gtdbtk.bac120.summary.tsv"
+		String ar_summary = "${outdir}/gtdbtk.ar122.summary.tsv"
+		String unbinned_fa = "${outdir}/bins.unbinned.fa"
+		String tooShort_fa = "${outdir}/bins.tooShort.fa"
+		String lowDepth_fa = "${outdir}/bins.lowDepth.fa"
+		String hqmq_bin_fasta_zip = "${outdir}/hqmq-metabat-bins.zip"
+		String metabat_bin_fasta_zip = "${outdir}/metabat-bins.zip"
+		File? hqmq_bin_zip = "hqmq-metabat-bins.zip"
+		File? metabat_bin_zip = "metabat-bins.zip"
 	}
 	runtime {
+            docker: container
             mem: "1 GiB"
             cpu:  1
         }
