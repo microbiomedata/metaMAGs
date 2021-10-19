@@ -27,7 +27,7 @@ def mag_meta(dbname):
   d[row[0]]=row[1]
   total_bin_contig += row[1]
 
- qsql="select * from bin order by bin_name ASC;"
+ qsql="select * from bin order by case when bin_quality = 'HQ' then 1 when bin_quality = 'MQ' then 2 when bin_quality = 'LQ' then 3 end,completeness DESC;"
  rvals = c.execute(qsql)
  out_list=[]
  for row in rvals:
