@@ -4,7 +4,7 @@ workflow nmdc_mags {
     File contig_file
     File sam_file
     File gff_file
-    String container = "microbiomedata/nmdc_mbin:0.1.2"
+    String container = "microbiomedata/nmdc_mbin:0.1.3"
     File? map_file
     File? domain_file
     String? scratch_dir
