@@ -11,7 +11,7 @@ workflow nmdc_mags {
     Int cpu=32
     Int pplacer_cpu=1
     String? proj = "MAGs" 
-    String? activity_id = "${proj}"  # "nmdc:xxxxxxxxxxxxxxx"
+    String? informed_by = "${proj}"  # "nmdc:xxxxxxxxxxxxxxx"
     String resource = "NERSC - Cori"
     String url_root = "https://data.microbiomedata.org/data/"
     String git_url = "https://github.com/microbiomedata/metaMAGs/releases/tag/1.0.2"
@@ -32,9 +32,10 @@ workflow nmdc_mags {
                  container=container
     }
     call generate_objects {
-         input: container="microbiomedata/workflowmeta:1.0.4",
+         input: container="microbiomedata/workflowmeta:1.0.5.1",
+                proj=proj,
                 start = mbin_nmdc.start,
-                activity_id = "${activity_id}",
+                informed_by = "${informed_by}",
                 resource = "${resource}",
                 url_base = "${url_root}",
                 git_url = "${git_url}",
@@ -53,7 +54,7 @@ workflow nmdc_mags {
     }
     if (defined(outdir)){
         call make_output {
-            input: container="microbiomedata/workflowmeta:1.0.0",
+            input: container="microbiomedata/workflowmeta:1.0.5.1",
                    activity_json=generate_objects.activity_json,
                    object_json=generate_objects.data_object_json,
                    short=mbin_nmdc.short,
@@ -171,8 +172,9 @@ task mbin_nmdc {
 
 task generate_objects{
     String container
+    String proj
     String start
-    String activity_id
+    String informed_by
     String resource
     String url_base
     String git_url
@@ -202,10 +204,11 @@ task generate_objects{
         [ -e hqmq-metabat-bins.zip ] && outputs+=( "hqmq-metabat-bins.zip" ) && outputs+=( "high quality and medium quality bin fasta output" )
         [ -e maetabat-bins.zip ] && outputs+=( "metabat-bins.zip" ) && outputs+=( "initial metabat bining result fasta output" )
 
-        /scripts/generate_objects.py --type "MAGs" --id ${activity_id} \
+        /scripts/generate_objects.py --type "MAGs" --id ${informed_by} \
+             --name "MAGs Analysis Activity for ${proj}" --part ${proj} \
              --start ${start} --end $end \
              --extra ${json_stats} \
-             --resource '${resource}' --url ${url_base} --giturl ${git_url} \
+             --resource '${resource}' --url ${url_base}${proj}/MAGs/ --giturl ${git_url} \
              --inputs ${fasta} ${bam} ${functional_gff} \
              --outputs ${dollar}{outputs[@]} \
              ${short} "tooShort (< 3kb) filtered contigs fasta file by metaBat2" \
