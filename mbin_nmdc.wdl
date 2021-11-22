@@ -53,7 +53,8 @@ workflow nmdc_mags {
         File short = mbin_nmdc.short
         File low = mbin_nmdc.low
         File unbinned = mbin_nmdc.unbinned
-        File checkm = mbin_nmdc.checkm
+        File? checkm = mbin_nmdc.checkm
+        File stats_json = mbin_nmdc.stats_json
 	Array[File] hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files
 	Array[File] bin_fasta_files = mbin_nmdc.bin_fasta_files
     }
@@ -99,7 +100,6 @@ task mbin_nmdc {
         String container
 	String filename_outlog="stdout.log"
 	String filename_errlog="stderr.log"
-	String filename_stat="checkm_qa.out"
 	runtime {
                 docker: container
 		mem: "120 GiB"
@@ -115,17 +115,18 @@ task mbin_nmdc {
 	export GTDBTK_DATA_PATH=${database}
 	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
 	mbin_stats.py $PWD
+        touch checkm_qa.out
 
      }
      output {
 	File runScript = "script"
-	File? stat = filename_stat
         File short = "bins.tooShort.fa"
         File low = "bins.lowDepth.fa"
         File unbinned = "bins.unbinned.fa"
-        File checkm = "checkm_qa.out"
+        File? checkm = "checkm_qa.out"
         File? bacsum = "gtdbtk.bac120.summary.tsv"
         File? arcsum = "gtdbtk.ar122.summary.tsv"
+        File stats_json = "MAGs_stats.json"
 	Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
 	Array[File] bin_fasta_files = glob("metabat-bins/*fa")
      }
@@ -137,7 +138,7 @@ task make_output{
         File unbinned
         Array[File] hqmq_bin_fasta_files
         Array[File] bin_fasta_files
-	File checkm
+	File? checkm
 	File? gtdbtk_bac_summary
 	File? gtdbtk_ar_summary
  	String? outdir
