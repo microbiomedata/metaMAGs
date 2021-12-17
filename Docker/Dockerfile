@@ -12,7 +12,7 @@ ENV container docker
 ADD *.py /opt/conda/bin/
 ADD metabat2_bin/* /opt/conda/bin/
 ADD init.sh /
-RUN apt update && apt install -y vim procps gzip time libgomp1 && \
+RUN apt update && apt install -y vim procps gzip zip time libgomp1 && \
     conda config --add channels defaults && \ 
     conda config --add channels conda-forge && \
     conda config --add channels bioconda && \

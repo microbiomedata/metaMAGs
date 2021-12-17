@@ -19,13 +19,16 @@ def count_fasta(fname):
 def mag_meta(dbname):
  conn = sqlite3.connect(dbname)
  c = conn.cursor()
- qsql="select bin_name, count(scaffold_id) from bin_scaffolds group by bin_name;"
+ #qsql="select bin_name, count(scaffold_id) from bin_scaffolds group by bin_name;"
+ qsql="select bin_name, scaffold_id from bin_scaffolds;"
  rvals = c.execute(qsql)
- d = collections.OrderedDict()
+ d = collections.defaultdict()
+ d_list = collections.defaultdict(list)
  total_bin_contig = 0
  for row in rvals:
-  d[row[0]]=row[1]
-  total_bin_contig += row[1]
+  d_list[row[0]].append(row[1])  
+  d[row[0]] = d[row[0]] + 1 if row[0] in d else 1
+  total_bin_contig += 1
 
  qsql="select * from bin order by case when bin_quality = 'HQ' then 1 when bin_quality = 'MQ' then 2 when bin_quality = 'LQ' then 3 end,completeness DESC;"
  rvals = c.execute(qsql)
@@ -49,6 +52,7 @@ def mag_meta(dbname):
   tmp_d["gtdbtk_family"] = row[21]
   tmp_d["gtdbtk_genus"] = row[22]
   tmp_d["gtdbtk_species"] = row[23]
+  tmp_d["members_id"] = d_list[row[0]] 
   out_list.append(tmp_d) 
  conn.close()
  return(out_list, total_bin_contig)
