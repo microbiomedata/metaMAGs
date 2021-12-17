@@ -4,7 +4,7 @@ workflow nmdc_mags {
     File contig_file
     File sam_file
     File gff_file
-    String container = "microbiomedata/nmdc_mbin:0.1.3"
+    String container = "microbiomedata/nmdc_mbin:0.1.4"
     File? map_file
     File? domain_file
     String? scratch_dir
@@ -14,7 +14,7 @@ workflow nmdc_mags {
     String? informed_by = "${proj}"  # "nmdc:xxxxxxxxxxxxxxx"
     String resource = "NERSC - Cori"
     String url_root = "https://data.microbiomedata.org/data/"
-    String git_url = "https://github.com/microbiomedata/metaMAGs/releases/tag/1.0.2"
+    String git_url = "https://github.com/microbiomedata/metaMAGs/releases/tag/1.0.4"
     
     String gtdbtk_database="/refdata/GTDBTK_DB"
 
@@ -116,7 +116,7 @@ workflow nmdc_mags {
     meta {
         author: "Chienchi Lo, B10, LANL"
         email: "chienchi@lanl.gov"
-        version: "1.0.2"
+        version: "1.0.4"
     }
 
 }
