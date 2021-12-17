@@ -71,6 +71,8 @@ workflow nmdc_mags {
         }
     }
     output {
+        Array[File] hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files
+        Array[File] bin_fasta_files = mbin_nmdc.bin_fasta_files
         File? final_hqmq_bins = make_output.hqmq_bin_fa_zip
         File? metabat_bins = make_output.metabat_bin_fa_zip
         File  activityjson=generate_objects.activity_json
