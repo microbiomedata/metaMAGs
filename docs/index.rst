@@ -30,8 +30,8 @@ Requirements for Execution
 Hardware Requirements
 ---------------------
 
-- Disk space: > 27 GB for the CheckM and GTDB-Tk databases 
-- Memory: ~120GB memory for GTDB-tk.
+- Disk space: > 33 GB for the CheckM and GTDB-Tk databases 
+- Memory: ~150GB memory for GTDB-tk.
 
 Workflow Dependencies
 ---------------------
@@ -46,7 +46,7 @@ Third party software (These are included in the Docker image.)
 - `samtools > v1.9 <https://github.com/samtools/samtools>`_ (License: `MIT License <https://github.com/samtools/samtools/blob/develop/LICENSE>`_)
 - `Metabat2 v2.15 <https://pubmed.ncbi.nlm.nih.gov/31388474/>`_ (License: `BSD-3-Clause <https://bitbucket.org/berkeleylab/metabat/src/master/license.txt>`_)
 - `CheckM v1.1.2 <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/>`_ (License: `GPLv3 <https://github.com/Ecogenomics/CheckM/blob/master/LICENSE>`_)
-- `GTDB-TK v1.2.0 <https://doi.org/10.1093/bioinformatics/btz848>`_ (License: `GPLv3 <https://github.com/Ecogenomics/GTDBTk/blob/master/LICENSE>`_)
+- `GTDB-TK v1.3.0 <https://doi.org/10.1093/bioinformatics/btz848>`_ (License: `GPLv3 <https://github.com/Ecogenomics/GTDBTk/blob/master/LICENSE>`_)
 - `FastANI v1.3 <https://github.com/ParBLiSS/FastANI>`_ (License: `Apache 2.0 <https://github.com/ParBLiSS/FastANI/blob/master/LICENSE>`_)
 - `FastTree v2.1.10 <http://www.microbesonline.org/fasttree/>`_ (License: `GPLv2 <http://www.microbesonline.org/fasttree/FastTree.c>`_)
 
@@ -58,10 +58,10 @@ The GTDB-Tk database must be downloaded and installed. The CheckM database inclu
 
 - The following commands will download and unarchive the GTDB-Tk database::
 
-    wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
-    tar -xvzf gtdbtk_r89_data.tar.gz
-    mv release89 GTDBTK_DB
-    rm gtdbtk_r89_data.tar.gz
+    wget https://data.gtdb.ecogenomic.org/releases/release95/95.0/auxillary_files/gtdbtk_r95_data.tar.gz
+    tar -xvzf gtdbtk_r95_data.tar.gz
+    mv release95 GTDBTK_DB
+    rm gtdbtk_r95_data.tar.gz
 
 Sample dataset(s)
 -----------------
