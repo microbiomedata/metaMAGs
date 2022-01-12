@@ -1,4 +1,4 @@
-Metagenome Assembled Genomes Workflow (v1.0.2)
+Metagenome Assembled Genomes Workflow (v1.0.4)
 =============================================
 
 .. image:: MAG_workflow.png
@@ -203,7 +203,7 @@ complete.mbin                                       the dummy file to indicate t
 Version History
 ---------------
 
-- 1.0.2 (release date **02/24/2021**; previous versions: 1.0.1)
+- 1.0.4 (release date **01/12/2022**; previous versions: b1.0.3)
 
 Point of contact
 ----------------
