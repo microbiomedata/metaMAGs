@@ -4,7 +4,7 @@ workflow nmdc_mags {
     File contig_file
     File sam_file
     File gff_file
-    String container = "microbiomedata/nmdc_mbin:0.1.5"
+    String container = "microbiomedata/nmdc_mbin:0.1.6"
     File? map_file
     File? domain_file
     String? scratch_dir
@@ -47,6 +47,7 @@ workflow nmdc_mags {
                 short = mbin_nmdc.short,
                 checkm = mbin_nmdc.checkm,
                 json_stats = mbin_nmdc.json_stats,
+                tsv_stats = mbin_nmdc.tsv_stats,
                 bac_summary = mbin_nmdc.bacsum,
                 ar_summary = mbin_nmdc.arcsum,
                 metabat_bin_fasta_files = mbin_nmdc.bin_fasta_files,
@@ -61,6 +62,7 @@ workflow nmdc_mags {
                    low=mbin_nmdc.low,
                    unbinned=mbin_nmdc.unbinned,
                    json_stats=mbin_nmdc.json_stats,
+                   tsv_stats=mbin_nmdc.tsv_stats,
                    hqmq_bin_fasta_zip=generate_objects.hqmq_bin_fasta_zip,
                    bin_fasta_zip=generate_objects.metabat_bin_fasta_zip,
                    checkm=mbin_nmdc.checkm,
@@ -84,6 +86,7 @@ workflow nmdc_mags {
         File? final_lowDepth_fa = make_output.lowDepth_fa
         File? final_unbinned_fa = make_output.unbinned_fa
         File? final_stats = make_output.stats
+        File? final_stats_tsv = make_output.tsvstats
         File short = mbin_nmdc.short
         File low = mbin_nmdc.low
         File unbinned = mbin_nmdc.unbinned
@@ -110,6 +113,7 @@ workflow nmdc_mags {
         final_lowDepth_fa: "lowDepth (mean cov <1 )  filtered contigs fasta file by metabat2"
         final_unbinned_fa: "unbinned fasta file from metabat2"
         final_stats: "statistics summary in json format"
+        final_stats_tsv: "statistics summary in tsv format"
         activityjson: "nmdc activity json file"
         objectjson: "nmdc data object json file"
     }
@@ -165,6 +169,7 @@ task mbin_nmdc {
         File unbinned = "bins.unbinned.fa"
         File? checkm = "checkm_qa.out"
         File json_stats= "MAGs_stats.json"
+        File tsv_stats= "MAGs_stats.tsv"
         File? bacsum = "gtdbtk_output/gtdbtk.bac120.summary.tsv"
         File? arcsum = "gtdbtk_output/gtdbtk.ar122.summary.tsv"
         Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
@@ -188,6 +193,7 @@ task generate_objects{
     File lowdepth
     File unbinned
     File json_stats
+    File tsv_stats
     
     File? bac_summary
     File? ar_summary
@@ -243,6 +249,7 @@ task make_output{
     File? bin_fasta_zip
     File? checkm
     File json_stats
+    File tsv_stats
     File? gtdbtk_bac_summary
     File? gtdbtk_ar_summary
     String container
@@ -253,7 +260,7 @@ task make_output{
         mkdir -p ${outdir}
         cp ${short} ${low} ${unbinned} ${json_stats} ${checkm} \
                    ${gtdbtk_bac_summary} ${gtdbtk_ar_summary} \
-                   ${activity_json} ${object_json} \
+                   ${activity_json} ${object_json} ${tsv_stats} \
                    ${outdir}
         # These may not exist
         ${"cp " + hqmq_bin_fasta_zip + " " + outdir} 
@@ -270,6 +277,7 @@ task make_output{
         File tooShort_fa = "${outdir}/bins.tooShort.fa"
         File lowDepth_fa = "${outdir}/bins.lowDepth.fa"
         File stats = "${outdir}/MAGs_stats.json"
+        File tsvstats = "${outdir}/MAGs_stats.tsv"
         File outactivity = "${outdir}/activity.json"
         File outobject = "${outdir}/data_objects.json"
     }

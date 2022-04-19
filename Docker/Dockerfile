@@ -2,7 +2,7 @@ FROM continuumio/miniconda3:4.9.2
 ## python 3.8.5
 MAINTAINER chienchi@lanl.gov
 
-LABEL version="0.1.5"
+LABEL version="0.1.6"
 LABEL software="NMDC_MAG_Pipeline"
 LABEL tags="bioinformatics"
 
