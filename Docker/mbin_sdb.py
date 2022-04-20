@@ -66,7 +66,7 @@ def writebins(dbname, bins_dir):
    c.execute(isql)
 
    for record in SeqIO.parse(epath, 'fasta'):
-    rsql = 'insert into bin_scaffolds(bin_name,scaffold_id) values (\'' + str(binname) + '\',\'' + str(record.id) + '\')'
+    rsql = 'insert into bin_scaffolds(bin_name,scaffold_id,scaffold_length) values (\'' + str(binname) + '\',\'' + str(record.id) +  '\',\'' + len(record.seq) + '\'  )'
     #print rsql
     c.execute(rsql)
 
