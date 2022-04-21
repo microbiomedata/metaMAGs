@@ -33,7 +33,7 @@ workflow nmdc_mags {
     }
     call generate_objects {
          input: container="microbiomedata/workflowmeta:1.0.5.1",
-                proj=proj,
+                proj=proj_name,
                 start = mbin_nmdc.start,
                 informed_by = "${informed_by}",
                 resource = "${resource}",
