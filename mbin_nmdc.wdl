@@ -159,6 +159,7 @@ task mbin_nmdc {
         export GTDBTK_DATA_PATH=/databases
         mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
         mbin_stats.py $PWD
+        touch MAGs_stats.tsv
      }
      output {
         File runScript = "script"
