@@ -4,7 +4,7 @@ workflow nmdc_mags {
     File contig_file
     File sam_file
     File gff_file
-    String container = "microbiomedata/nmdc_mbin:0.1.2"
+    String container = "microbiomedata/nmdc_mbin:0.1.6"
     File? map_file
     File? domain_file
     String? scratch_dir
@@ -37,6 +37,8 @@ workflow nmdc_mags {
         	       checkm=mbin_nmdc.checkm,
         	       gtdbtk_bac_summary=mbin_nmdc.bacsum,
         	       gtdbtk_ar_summary=mbin_nmdc.arcsum,
+                   json_stats=mbin_nmdc.stats_json,
+                   tsv_stats=mbin_nmdc.stats_tsv,
                    outdir=outdir
         }
     }
@@ -55,6 +57,7 @@ workflow nmdc_mags {
         File unbinned = mbin_nmdc.unbinned
         File? checkm = mbin_nmdc.checkm
         File stats_json = mbin_nmdc.stats_json
+	File stats_tsv = mbin_nmdc.stats_tsv
 	Array[File] hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files
 	Array[File] bin_fasta_files = mbin_nmdc.bin_fasta_files
     }
@@ -77,6 +80,8 @@ workflow nmdc_mags {
 	final_tooShort_fa: "tooShort (< 3kb) filtered contigs fasta file by metaBat2"
 	final_lowDepth_fa: "lowDepth (mean cov <1 )  filtered contigs fasta file by metabat2"
 	final_unbinned_fa: "unbinned fasta file from metabat2"
+        stats_json: "statistics summary in json format"
+        stats_tsv: "statistics summary in tsv format"
     }
     meta {
         author: "Chienchi Lo, B10, LANL"
@@ -100,6 +105,7 @@ task mbin_nmdc {
         String container
 	String filename_outlog="stdout.log"
 	String filename_errlog="stderr.log"
+	String filename_stat="checkm_qa.out"
 	runtime {
                 docker: container
 		mem: "120 GiB"
@@ -115,11 +121,11 @@ task mbin_nmdc {
 	export GTDBTK_DATA_PATH=${database}
 	mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
 	mbin_stats.py $PWD
-        touch checkm_qa.out
-
+        touch MAGs_stats.tsv
      }
      output {
 	File runScript = "script"
+	File? stat = filename_stat
         File short = "bins.tooShort.fa"
         File low = "bins.lowDepth.fa"
         File unbinned = "bins.unbinned.fa"
@@ -127,6 +133,7 @@ task mbin_nmdc {
         File? bacsum = "gtdbtk.bac120.summary.tsv"
         File? arcsum = "gtdbtk.ar122.summary.tsv"
         File stats_json = "MAGs_stats.json"
+        File stats_tsv = "MAGs_stats.tsv"
 	Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
 	Array[File] bin_fasta_files = glob("metabat-bins/*fa")
      }
@@ -141,6 +148,8 @@ task make_output{
 	File? checkm
 	File? gtdbtk_bac_summary
 	File? gtdbtk_ar_summary
+	File json_stats
+	File tsv_stats
  	String? outdir
         String container="scanon/nmdc-meta:v0.0.2"
  
@@ -149,7 +158,7 @@ task make_output{
                 zip metabat-bins.zip ${sep=" " bin_fasta_files}
                 if [ ! -z ${outdir} ] ; then
                     mkdir -p ${outdir}
-                    cp ${short} ${low} ${unbinned} \
+                    cp ${short} ${low} ${unbinned} ${json_stats} ${tsv_stats}\
                        ${gtdbtk_bac_summary} ${gtdbtk_ar_summary} \
                        ${outdir}
                     # These may not exist
@@ -169,6 +178,8 @@ task make_output{
 		String metabat_bin_fasta_zip = "${outdir}/metabat-bins.zip"
 		File? hqmq_bin_zip = "hqmq-metabat-bins.zip"
 		File? metabat_bin_zip = "metabat-bins.zip"
+                File stats = "${outdir}/MAGs_stats.json"
+                File tsvstats = "${outdir}/MAGs_stats.tsv"
 	}
 	runtime {
             docker: container
