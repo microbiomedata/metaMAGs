@@ -1,4 +1,4 @@
-Metagenome Assembled Genomes Workflow (v1.0.2)
+Metagenome Assembled Genomes Workflow (v1.0.4)
 =============================================
 
 .. image:: MAG_workflow.png
@@ -30,8 +30,8 @@ Requirements for Execution
 Hardware Requirements
 ---------------------
 
-- Disk space: > 27 GB for the CheckM and GTDB-Tk databases 
-- Memory: ~120GB memory for GTDB-tk.
+- Disk space: > 33 GB for the CheckM and GTDB-Tk databases 
+- Memory: ~150GB memory for GTDB-tk.
 
 Workflow Dependencies
 ---------------------
@@ -46,7 +46,7 @@ Third party software (These are included in the Docker image.)
 - `samtools > v1.9 <https://github.com/samtools/samtools>`_ (License: `MIT License <https://github.com/samtools/samtools/blob/develop/LICENSE>`_)
 - `Metabat2 v2.15 <https://pubmed.ncbi.nlm.nih.gov/31388474/>`_ (License: `BSD-3-Clause <https://bitbucket.org/berkeleylab/metabat/src/master/license.txt>`_)
 - `CheckM v1.1.2 <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/>`_ (License: `GPLv3 <https://github.com/Ecogenomics/CheckM/blob/master/LICENSE>`_)
-- `GTDB-TK v1.2.0 <https://doi.org/10.1093/bioinformatics/btz848>`_ (License: `GPLv3 <https://github.com/Ecogenomics/GTDBTk/blob/master/LICENSE>`_)
+- `GTDB-TK v1.3.0 <https://doi.org/10.1093/bioinformatics/btz848>`_ (License: `GPLv3 <https://github.com/Ecogenomics/GTDBTk/blob/master/LICENSE>`_)
 - `FastANI v1.3 <https://github.com/ParBLiSS/FastANI>`_ (License: `Apache 2.0 <https://github.com/ParBLiSS/FastANI/blob/master/LICENSE>`_)
 - `FastTree v2.1.10 <http://www.microbesonline.org/fasttree/>`_ (License: `GPLv2 <http://www.microbesonline.org/fasttree/FastTree.c>`_)
 
@@ -58,15 +58,21 @@ The GTDB-Tk database must be downloaded and installed. The CheckM database inclu
 
 - The following commands will download and unarchive the GTDB-Tk database::
 
-    wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
-    tar -xvzf gtdbtk_r89_data.tar.gz
-    mv release89 GTDBTK_DB
-    rm gtdbtk_r89_data.tar.gz
+    wget https://data.gtdb.ecogenomic.org/releases/release95/95.0/auxillary_files/gtdbtk_r95_data.tar.gz
+    tar -xvzf gtdbtk_r95_data.tar.gz
+    mv release95 GTDBTK_DB
+    rm gtdbtk_r95_data.tar.gz
 
 Sample dataset(s)
 -----------------
 
-The following test dataset include an assembled contigs file, a BAM file, and a functional annotation file: `metaMAGs_test_dataset.tgz <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_test_dataset.tgz>`_
+
+The following test datasets include an assembled contigs file, a BAM file, and a functional annotation file:
+
+- small dataset: `LQ only (3.1G) <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_small_test_data.tgz>`_ . You can find input/output in the downloaded tar gz file.
+
+- large dataset: `with HQ and MQ bins (12G) <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_large_test_data.tgz>`_ . You can find input/output in the downloaded tar gz file.
+
 
 
 Input
@@ -81,7 +87,7 @@ A JSON file containing the following:
 5. the path to the Metagenome Assembled Contig fasta file (FNA)
 6. the path to the Sam/Bam file from read mapping back to contigs (SAM.gz or BAM)
 7. the path to contigs functional annotation result (GFF)
-8. the path to the text file which contains mapping of headers between SAM or BAM and GFF (ID in SAM/FNA<tab>ID in GFF)
+8. the path to the text file which contains mapping of headers between SAM or BAM and GFF (ID in SAM/FNA<tab>ID in GFF). A two column tab-delimited file. When the annotation and assembly are performed using different identifiers for contigs. The map file is to link the gff file content and mapping result bam file content to the assembled contigs ID.
 9. the path to the database directory which includes *checkM_DB* and *GTDBTK_DB* subdirectories.
 10. (optional) scratch_dir: use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime
 
@@ -197,7 +203,7 @@ complete.mbin                                       the dummy file to indicate t
 Version History
 ---------------
 
-- 1.0.2 (release date **02/24/2021**; previous versions: 1.0.1)
+- 1.0.4 (release date **01/12/2022**; previous versions: b1.0.3)
 
 Point of contact
 ----------------

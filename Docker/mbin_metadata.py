@@ -91,15 +91,15 @@ def query_bin_metadata(osdb, taxon_oid):
   mvals = oc.execute(msql)
   for mval in mvals:
    slen, sgenecount, s16s, s5s, s23s, strna = mval
-   #total_bases += slen
+   total_bases += slen
    gene_count += sgenecount
    bin_num_16s += s16s
    bin_num_5s += s5s
    bin_num_23s += s23s
    bin_num_trna += strna
 
-  #sql = "update bin set num_16s = " + str(bin_num_16s) + ",num_5s = " + str(bin_num_5s) + ",num_23s = " + str(bin_num_23s) + ",num_tRNA = " + str(bin_num_trna) + ",total_bases = " + str(total_bases) + ",gene_count=" + str(gene_count) + " where bin_name = \"" + str(ebin) + "\""
-  sql = "update bin set num_16s = " + str(bin_num_16s) + ",num_5s = " + str(bin_num_5s) + ",num_23s = " + str(bin_num_23s) + ",num_tRNA = " + str(bin_num_trna) + ",gene_count=" + str(gene_count) + " where bin_name = \"" + str(ebin) + "\""
+  sql = "update bin set num_16s = " + str(bin_num_16s) + ",num_5s = " + str(bin_num_5s) + ",num_23s = " + str(bin_num_23s) + ",num_tRNA = " + str(bin_num_trna) + ",total_bases = " + str(total_bases) + ",gene_count=" + str(gene_count) + " where bin_name = \"" + str(ebin) + "\""
+  #sql = "update bin set num_16s = " + str(bin_num_16s) + ",num_5s = " + str(bin_num_5s) + ",num_23s = " + str(bin_num_23s) + ",num_tRNA = " + str(bin_num_trna) + ",gene_count=" + str(gene_count) + " where bin_name = \"" + str(ebin) + "\""
   #print sql
   isqls.append(sql)
 

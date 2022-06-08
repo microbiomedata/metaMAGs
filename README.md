@@ -2,25 +2,25 @@
 
 ## Summary
 
-The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation.
+The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation. It takes assembled contigs, reads mapping result bam file and contigs annotations result to to associate groups of contigs as deriving from a seemingly coherent microbial species (binning) and evaluted by checkM and gtdb-tk. 
 
 ## Required Database
 
 * [CheckM](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/)<sup>2</sup> database is 275MB contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory, included in the image) 
     * https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
 
-* [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~27G of external data that need to be downloaded and unarchived. (requires ~100GB of memory)
-    * https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
+* [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~33G of external data that need to be downloaded and unarchived. (requires ~150GB of memory)
+    * https://data.gtdb.ecogenomic.org/releases/release95/95.0/auxillary_files/gtdbtk_r95_data.tar.gz
 
 * Prepare the GTDB-Tk Database
 
 ```bash
     
-    wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release89/89.0/gtdbtk_r89_data.tar.gz
-    tar -xvzf gtdbtk_r89_data.tar.gz
-    mv release89 refdata/GTDBTK_DB
+    wget https://data.gtdb.ecogenomic.org/releases/release95/95.0/auxillary_files/gtdbtk_r95_data.tar.gz
+    tar -xvzf gtdbtk_r95_data.tar.gz
+    mv release95 refdata/GTDBTK_DB
     
-    rm gtdbtk_r89_data.tar.gz
+    rm gtdbtk_r95_data.tar.gz
 ```
 
 ## Running Workflow in Cromwell
@@ -46,7 +46,7 @@ A json files with following entries:
 5. Metagenome Assembled Contig fasta file
 6. Sam/Bam file from reads mapping back to contigs.
 7. Contigs functional annotation result in gff format
-8. Text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF)
+8. Optioal: Tab-delimited text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF). A two column tab-delimited file. When the annotation and assembly are performed using different identifiers for contigs. The map file is to link the gff file content and mapping result bam file content to the assembled contigs ID.
 9. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
 10. (optional) scratch_dir: use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime
 

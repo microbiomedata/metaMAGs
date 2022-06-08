@@ -1,0 +1,28 @@
+{
+    "input_contig_num": 78376,
+    "too_short_contig_num": 75364,
+    "lowDepth_contig_num": 0,
+    "unbinned_contig_num": 2792,
+    "binned_contig_num": 220,
+    "mags_list": [
+        {
+            "bin_name": "bins.1",
+            "number_of_contig": 220,
+            "completeness": 45.41,
+            "contamination": 0.72,
+            "gene_count": 1182,
+            "bin_quality": "LQ",
+            "num_16s": 0,
+            "num_5s": 0,
+            "num_23s": 0,
+            "num_tRNA": 16,
+            "gtdbtk_domain": null,
+            "gtdbtk_phylum": null,
+            "gtdbtk_class": null,
+            "gtdbtk_order": null,
+            "gtdbtk_family": null,
+            "gtdbtk_genus": null,
+            "gtdbtk_species": null
+        }
+    ]
+}

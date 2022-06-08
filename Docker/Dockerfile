@@ -1,7 +1,8 @@
-FROM continuumio/miniconda3:latest
+FROM continuumio/miniconda3:4.9.2
+## python 3.8.5
 MAINTAINER chienchi@lanl.gov
 
-LABEL version="0.1.2"
+LABEL version="0.1.6"
 LABEL software="NMDC_MAG_Pipeline"
 LABEL tags="bioinformatics"
 
@@ -12,7 +13,7 @@ ENV container docker
 ADD *.py /opt/conda/bin/
 ADD metabat2_bin/* /opt/conda/bin/
 ADD init.sh /
-RUN apt update && apt install -y vim procps gzip time libgomp1 && \
+RUN apt update --allow-releaseinfo-change -y | true && apt install --no-install-recommends -y vim procps gzip zip time libgomp1 samtools && \
     conda config --add channels defaults && \ 
     conda config --add channels conda-forge && \
     conda config --add channels bioconda && \
@@ -22,7 +23,7 @@ RUN apt update && apt install -y vim procps gzip time libgomp1 && \
     wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz && \
     tar xvzf checkm_data_2015_01_16.tar.gz && \
     rm checkm_data_2015_01_16.tar.gz && \
-    conda install -c bioconda -y samtools biopython fastani fasttree sqlite  pymysql requests checkm-genome gtdbtk=1.2.0 && \
+    conda install -c bioconda -y biopython fastani fasttree sqlite  pymysql requests checkm-genome gtdbtk=1.3.0 && \
     checkm data setRoot /checkM_DB  2>/dev/null && \
     apt autoremove -y && apt clean && \
     conda clean -y -a && \

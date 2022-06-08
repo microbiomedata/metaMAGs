@@ -16,26 +16,32 @@ def count_fasta(fname):
         n += 1
   return n
 
-def mag_meta(dbname):
+def mag_meta(dbname, output):
  conn = sqlite3.connect(dbname)
  c = conn.cursor()
- qsql="select bin_name, count(scaffold_id) from bin_scaffolds group by bin_name;"
+ #qsql="select bin_name, count(scaffold_id) from bin_scaffolds group by bin_name;"
+ qsql="select bin_name, scaffold_id from bin_scaffolds;"
  rvals = c.execute(qsql)
- d = collections.OrderedDict()
+ d = collections.defaultdict()
+ d_list = collections.defaultdict(list)
  total_bin_contig = 0
  for row in rvals:
-  d[row[0]]=row[1]
-  total_bin_contig += row[1]
+  d_list[row[0]].append(row[1])  
+  d[row[0]] = d[row[0]] + 1 if row[0] in d else 1
+  total_bin_contig += 1
 
- qsql="select * from bin order by bin_name ASC;"
+ qsql="select * from bin order by case when bin_quality = 'HQ' then 1 when bin_quality = 'MQ' then 2 when bin_quality = 'LQ' then 3 end,completeness DESC;"
  rvals = c.execute(qsql)
  out_list=[]
+ f = open(output,'w')
+ f.write('\t'.join(['Bin ID','Bin Quality','GTDB-TK lineage','Bin Completeness','Bin Contamintation','Total Number of Bases','Number of genes','Num of 5s rRNA','Num of 16s rRNA','Num of 23s rRNA','Num of tRNA','scaffold IDs of members'])+ "\n")
  for row in rvals:
   tmp_d = collections.OrderedDict()
   tmp_d["bin_name"] = row[0]
   tmp_d["number_of_contig"] = d[row[0]]
   tmp_d["completeness"] = row[8]
   tmp_d["contamination"] = row[9]
+  tmp_d["total_bases"] = row[10]
   tmp_d["gene_count"] = row[11]
   tmp_d["bin_quality"] = row[12]
   tmp_d["num_16s"] = row[13]
@@ -49,7 +55,10 @@ def mag_meta(dbname):
   tmp_d["gtdbtk_family"] = row[21]
   tmp_d["gtdbtk_genus"] = row[22]
   tmp_d["gtdbtk_species"] = row[23]
-  out_list.append(tmp_d) 
+  tmp_d["members_id"] = d_list[row[0]] 
+  out_list.append(tmp_d)
+  f.write('\t'.join([row[0],str(row[12]),';'.join(str(item) for item in row[17:24]),str(row[8]),str(row[9]), str(row[10]), str(row[11]), str(row[14]),str(row[13]),str(row[15]),str(row[16]),','.join(tmp_d["members_id"])] ) + "\n")
+  
  conn.close()
  return(out_list, total_bin_contig)
 
@@ -58,6 +67,7 @@ if __name__ == "__main__":
        
 	outdir= os.getcwd() if len(sys.argv) < 2 else sys.argv[1]
 	outfile= outdir + "/MAGs_stats.json"
+	outtsvfile= outdir + "/MAGs_stats.tsv"
 
 	#input contigs #
 	#tooShort (<3000) contigs #
@@ -84,7 +94,7 @@ if __name__ == "__main__":
 	unbinned_contig_num = 0 if not os.path.isfile(unbinned_file) else count_fasta(unbinned_file)
 	sql_files = glob.glob(outdir + "/*.sqlite")
 	if len(sql_files) > 0:
-		mag_list, total_bin_contig_num = mag_meta(sql_files[0])
+		mag_list, total_bin_contig_num = mag_meta(sql_files[0],outtsvfile)
 		sqlfile_time=datetime.fromtimestamp(os.path.getmtime(sql_files[0])).strftime("%Y-%m-%d")
 
 	metadata['input_contig_num'] = input_contig_num
