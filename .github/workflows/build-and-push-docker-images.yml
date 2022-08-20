@@ -1,8 +1,8 @@
 name: build-and-push-docker-images
 on:
+  push:
     tags:
       - 'iv*'
-
 
 jobs:
   docker:
