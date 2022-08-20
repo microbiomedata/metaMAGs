@@ -17,7 +17,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           tags: |
-            type=semver,pattern=iv{{version}}
+            type=match,pattern=iv(.*),group=1
           images: microbiomedata/nmdc_mbin_test
       -
         name: Login to DockerHub
