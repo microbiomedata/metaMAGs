@@ -27,5 +27,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_paths: '["bundle.zip"]'
+          asset_paths: '["bundle.zip", "mbin_nmdc.wdl"]'
 
