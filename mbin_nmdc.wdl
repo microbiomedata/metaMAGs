@@ -24,7 +24,7 @@ workflow nmdc_mags {
     String? scratch_dir
     Int cpu=32
     Int pplacer_cpu=1
-    String gtdbtk_database="/global/cfs/cdirs/m3408/aim2/database/GTDBTK_DB"
+    String gtdbtk_database="/refdata/GTDBTK_DB"
 
     call stage {
         input:
