@@ -77,7 +77,10 @@ workflow nmdc_mags {
     
     call finish_mags {
         input:
-        container="microbiomedata/workflowmeta:1.1.0",
+        container="microbiomedata/workflowmeta:1.1.1",
+        contigs=stage.contig,
+        anno_gff=stage.gff,
+        sorted_bam=stage.sam,
         proj=proj_name,
         start=stage.start,
         resource=resource,
@@ -318,6 +321,9 @@ task package{
 
 task finish_mags {
     String container
+    File contigs
+    File anno_gff
+    File sorted_bam 
     String proj
     String prefix=sub(proj, ":", "_")
     String start
@@ -362,25 +368,26 @@ task finish_mags {
         fi
         
         /scripts/generate_object_json.py \
-                --type "nmdc:MagsAnalysisActivity" \
-                --set mags_activity_set \
-                --part ${proj} \
-                -p "name=MAGS Activity for ${proj}" \
+                 --type "nmdc:MagsAnalysisActivity" \
+                 --set mags_activity_set \
+                 --part ${proj} \
+                 -p "name=MAGS Activity for ${proj}" \
                     was_informed_by=${informed_by} \
                     started_at_time=${start} \
                     ended_at_time=$end \
                     execution_resource=${resource} \
                     git_url=${git_url} \
-                --url ${url_root}${proj}/mags/ \
-                --extra ${stats_json} \
-                --inputs ${prefix}_contigs.fna \
-                        ${prefix}_pairedMapped_sorted.bam \
-                        ${prefix}_functional_annotation.gff \
-                --outputs \
-                ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" \
-                ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" \
-                ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" \ 
-                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archael Summary"
+                    version="v1.0.0-beta" \
+                 --url ${url_root}${proj}/mags/ \
+                 --extra ${stats_json} \
+                 --inputs ${contigs} \
+                        ${anno_gff} \
+                        ${sorted_bam} \
+                 --outputs \
+                ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" "CheckM for ${proj}"\
+                ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" "Metagenome Bine for ${proj} \
+                ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" "Bacterial Summary for ${proj}"\ 
+                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archael Summary" "Archael Summary for ${proj}"
 
     }
 
