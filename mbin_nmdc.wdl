@@ -112,6 +112,7 @@ workflow nmdc_mags {
         File final_checkm = finish_mags.final_checkm
         File final_stats_json = finish_mags.final_stats_json
         File stats_tsv = mbin_nmdc.stats_tsv
+        File mags_objects = finish_mags.objects
         # Array[File] hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files
         # Array[File] bin_fasta_files = mbin_nmdc.bin_fasta_files
         # Array[File] hqmq_bin_tarfiles = package.hqmq_bin_tarfiles
@@ -258,7 +259,7 @@ task mbin_nmdc {
          database: database
      }
 
-     command {
+     command <<<
          export TIME="time result\ncmd:%C\nreal %es\nuser %Us \nsys  %Ss \nmemory:%MKB \ncpu %P"
          set -eo pipefail
          # set TMPDIR to avoid AF_UNIX path too long error
@@ -267,7 +268,21 @@ task mbin_nmdc {
          mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
          mbin_stats.py $PWD
          touch MAGs_stats.tsv
-     }
+
+
+        if [ -f  gtdbtk.bac120.summary.tsv ]; then
+            echo "bacterial summary exists."
+        else 
+            echo "No Results" > gtdbtk.bac120.summary.tsv
+        fi
+
+        if [ -f  gtdbtk.ar122.summary.tsv ]; then
+            echo "archeal summary exists."
+        else 
+            echo "No Results" > gtdbtk.ar122.summary.tsv
+        fi
+
+     >>>
      output {
          File runScript = "script"
          File? stat = filename_stat
@@ -275,8 +290,8 @@ task mbin_nmdc {
          File low = "bins.lowDepth.fa"
          File unbinned = "bins.unbinned.fa"
          File? checkm = "checkm_qa.out"
-         File? bacsum = "gtdbtk.bac120.summary.tsv"
-         File? arcsum = "gtdbtk.ar122.summary.tsv"
+         File bacsum = "gtdbtk.bac120.summary.tsv"
+         File arcsum = "gtdbtk.ar122.summary.tsv"
          File stats_json = "MAGs_stats.json"
          File stats_tsv = "MAGs_stats.tsv"
          Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
@@ -377,21 +392,22 @@ task finish_mags {
                     ended_at_time=$end \
                     execution_resource=${resource} \
                     git_url=${git_url} \
-                    version="v1.0.0-beta" \
+                    version="v1.0.4-beta" \
                  --url ${url_root}${proj}/mags/ \
                  --extra ${stats_json} \
                  --inputs ${contigs} \
                         ${anno_gff} \
                         ${sorted_bam} \
                  --outputs \
-                ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" "CheckM for ${proj}"\
-                ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" "Metagenome Bine for ${proj} \
-                ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" "Bacterial Summary for ${proj}"\ 
+                ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" "CheckM for ${proj}" \
+                ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" "Metagenome Bins for ${proj}" \
+                ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" "Bacterial Summary for ${proj}" \
                 ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archael Summary" "Archael Summary for ${proj}"
 
     }
 
     output {
+        File objects = "objects.json"
         File final_checkm = "${prefix}_checkm_qa.out"
         File final_hqmq_bins_zip = "${prefix}_hqmq_bin.zip"
         File final_stats_json = "${prefix}_mags_stats.json"
