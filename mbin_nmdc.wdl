@@ -74,7 +74,7 @@ workflow nmdc_mags {
                  supfam_file=stage.supfam,
                  product_names_file=stage.product_names
     }
-    
+
     call finish_mags {
         input:
         container="microbiomedata/workflowmeta:1.1.1",
@@ -101,7 +101,7 @@ workflow nmdc_mags {
         hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
 
     }
-        
+
     output {
         File? final_hqmq_bins_zip = finish_mags.final_hqmq_bins_zip
         File? final_gtdbtk_bac_summary = finish_mags.final_gtdbtk_bac_summary
@@ -272,13 +272,13 @@ task mbin_nmdc {
 
         if [ -f  gtdbtk.bac120.summary.tsv ]; then
             echo "bacterial summary exists."
-        else 
+        else
             echo "No Results" > gtdbtk.bac120.summary.tsv
         fi
 
         if [ -f  gtdbtk.ar122.summary.tsv ]; then
             echo "archeal summary exists."
-        else 
+        else
             echo "No Results" > gtdbtk.ar122.summary.tsv
         fi
 
@@ -338,7 +338,7 @@ task finish_mags {
     String container
     File contigs
     File anno_gff
-    File sorted_bam 
+    File sorted_bam
     String proj
     String prefix=sub(proj, ":", "_")
     String start
@@ -361,7 +361,7 @@ task finish_mags {
     Int n_bin=length(bin_fasta_files)
 
     command {
-        set -e 
+        set -e
         end=`date --iso-8601=seconds`
 
         ln ${low} ${prefix}_bins.lowDepth.fa
@@ -372,7 +372,7 @@ task finish_mags {
         ln ${bacsum} ${prefix}_gtdbtk.bac122.summary.tsv
         ln ${arcsum} ${prefix}_gtdbtk.ar122.summary.tsv
 
-        # cp all tarfiles, zip them under prefix, if empty touch no_mags.txt 
+        # cp all tarfiles, zip them under prefix, if empty touch no_mags.txt
         mkdir -p hqmq
         if [ ${n_hqmq} -gt 0 ] ; then
             (cd hqmq && cp ${sep=" " hqmq_bin_tarfiles} .)
@@ -381,7 +381,11 @@ task finish_mags {
             (cd hqmq && touch no_hqmq_mags.txt)
             (cd hqmq && zip ../${prefix}_hqmq_bin.zip *.txt)
         fi
-        
+
+        # Fix up attribute name
+        cat ${stats_json} | \
+           sed 's/lowDepth_/low_depth_/' > stats.json
+
         /scripts/generate_object_json.py \
                  --type "nmdc:MagsAnalysisActivity" \
                  --set mags_activity_set \
@@ -394,7 +398,7 @@ task finish_mags {
                     git_url=${git_url} \
                     version="v1.0.4-beta" \
                  --url ${url_root}${proj}/mags/ \
-                 --extra ${stats_json} \
+                 --extra ./stats_json \
                  --inputs ${contigs} \
                         ${anno_gff} \
                         ${sorted_bam} \
@@ -402,7 +406,7 @@ task finish_mags {
                 ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" "CheckM for ${proj}" \
                 ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" "Metagenome Bins for ${proj}" \
                 ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" "Bacterial Summary for ${proj}" \
-                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archael Summary" "Archael Summary for ${proj}"
+                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archaeal Summary" "Archael Summary for ${proj}"
 
     }
 
