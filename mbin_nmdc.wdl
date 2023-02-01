@@ -398,7 +398,7 @@ task finish_mags {
                     git_url=${git_url} \
                     version="v1.0.4-beta" \
                  --url ${url_root}${proj}/mags/ \
-                 --extra ./stats_json \
+                 --extra ./stats.json \
                  --inputs ${contigs} \
                         ${anno_gff} \
                         ${sorted_bam} \
