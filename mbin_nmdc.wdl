@@ -384,6 +384,7 @@ task finish_mags {
 
         # Fix up attribute name
         cat ${stats_json} | \
+           sed 's/: null/: "null"/g' | \
            sed 's/lowDepth_/low_depth_/' > stats.json
 
         /scripts/generate_object_json.py \
