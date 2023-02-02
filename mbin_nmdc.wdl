@@ -3,7 +3,7 @@ workflow nmdc_mags {
     String resource
     String url_root
     String git_url
-    String  proj_name
+    String proj_name
     String contig_file
     String sam_file
     String gff_file
@@ -273,13 +273,13 @@ task mbin_nmdc {
         if [ -f  gtdbtk.bac120.summary.tsv ]; then
             echo "bacterial summary exists."
         else
-            echo "No Results" > gtdbtk.bac120.summary.tsv
+            echo "No Bacterial Results for ${name}" > gtdbtk.bac120.summary.tsv
         fi
 
         if [ -f  gtdbtk.ar122.summary.tsv ]; then
-            echo "archeal summary exists."
+            echo "archaeal summary exists."
         else
-            echo "No Results" > gtdbtk.ar122.summary.tsv
+            echo "No Archaeal Results for ${name}" > gtdbtk.ar122.summary.tsv
         fi
 
      >>>
