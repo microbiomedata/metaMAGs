@@ -1,8 +1,4 @@
 workflow nmdc_mags {
-    String informed_by
-    String resource
-    String url_root
-    String git_url
     String proj_name
     String contig_file
     String sam_file
@@ -82,11 +78,6 @@ workflow nmdc_mags {
         anno_gff=stage.gff,
         sorted_bam=stage.sam,
         proj=proj_name,
-        start=stage.start,
-        resource=resource,
-        url_root=url_root,
-        git_url=git_url,
-        informed_by=informed_by,
         checkm = mbin_nmdc.checkm,
         bacsum= mbin_nmdc.bacsum,
         arcsum = mbin_nmdc.arcsum,
@@ -112,7 +103,7 @@ workflow nmdc_mags {
         File final_checkm = finish_mags.final_checkm
         File final_stats_json = finish_mags.final_stats_json
         File stats_tsv = mbin_nmdc.stats_tsv
-        File mags_objects = finish_mags.objects
+        Object stats = finish_mags.stats
         # Array[File] hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files
         # Array[File] bin_fasta_files = mbin_nmdc.bin_fasta_files
         # Array[File] hqmq_bin_tarfiles = package.hqmq_bin_tarfiles
@@ -208,8 +199,6 @@ task stage {
         stage ${product_names_file} ${products_out}
         stage ${gene_phylogeny_file} ${gene_phylogeny_out}
 
-       date --iso-8601=seconds > start.txt
-
     >>>
 
    output{
@@ -227,7 +216,6 @@ task stage {
         File supfam = "supfam.gff"
         File product_names = "products.tsv"
         File gene_phylogeny = "gene_phylogeny.tsv"
-        String start = read_string("start.txt")
    }
    runtime {
      memory: "1 GiB"
@@ -341,11 +329,6 @@ task finish_mags {
     File sorted_bam
     String proj
     String prefix=sub(proj, ":", "_")
-    String start
-    String informed_by
-    String resource
-    String url_root
-    String git_url
     File bacsum
     File arcsum
     File? short
@@ -362,7 +345,6 @@ task finish_mags {
 
     command {
         set -e
-        end=`date --iso-8601=seconds`
 
         ln ${low} ${prefix}_bins.lowDepth.fa
         ln ${short} ${prefix}_bins.tooShort.fa
@@ -387,32 +369,10 @@ task finish_mags {
            sed 's/: null/: "null"/g' | \
            sed 's/lowDepth_/low_depth_/' > stats.json
 
-        /scripts/generate_object_json.py \
-                 --type "nmdc:MagsAnalysisActivity" \
-                 --set mags_activity_set \
-                 --part ${proj} \
-                 -p "name=MAGS Activity for ${proj}" \
-                    was_informed_by=${informed_by} \
-                    started_at_time=${start} \
-                    ended_at_time=$end \
-                    execution_resource=${resource} \
-                    git_url=${git_url} \
-                    version="v1.0.4-beta" \
-                 --url ${url_root}${proj}/mags/ \
-                 --extra ./stats.json \
-                 --inputs ${contigs} \
-                        ${anno_gff} \
-                        ${sorted_bam} \
-                 --outputs \
-                ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" "CheckM for ${proj}" \
-                ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" "Metagenome Bins for ${proj}" \
-                ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" "Bacterial Summary for ${proj}" \
-                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archaeal Summary" "Archaeal Summary for ${proj}"
-
     }
 
     output {
-        File objects = "objects.json"
+        Object stats = read_json("${prefix}_mags_stats.json")
         File final_checkm = "${prefix}_checkm_qa.out"
         File final_hqmq_bins_zip = "${prefix}_hqmq_bin.zip"
         File final_stats_json = "${prefix}_mags_stats.json"
