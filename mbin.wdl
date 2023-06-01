@@ -6,7 +6,7 @@ workflow mbin{
     String git_url
     String proj_name
     String contig_file
-    String aln_file
+    String sam_file
     String gff_file
     String proteins_file
     String cog_file
@@ -49,10 +49,12 @@ workflow mbin{
     }
 
     call mbin_nmdc {
-        input:  fna = stage.contigs_file,
-                aln = stage.aln_file,
-                gff = stage.gff_file,
-                map = stage.map_file,
+        input:  
+                name=proj_name,
+                fna = stage.contig,
+                aln = stage.sam,
+                gff = stage.gff,
+                # map = stage.map_file,
                 threads =  threads,
                 pthreads = pthreads,
                 gtdbtk_env = gtdbtk_db,
@@ -119,7 +121,7 @@ task mbin_nmdc {
     File fna
     File aln
     File gff
-    File map
+    String name
     Int? threads
     Int? pthreads
     String gtdbtk_env
@@ -130,7 +132,7 @@ task mbin_nmdc {
     command<<<
         export GTDBTK_DATA_PATH=${gtdbtk_env}
         export CHECKM_DATA_PATH=${checkm_env}
-        mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln} --map ${map}
+        mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln}
         mbin_stats.py $PWD
         touch MAGs_stats.tsv
     
@@ -160,6 +162,8 @@ task mbin_nmdc {
         File low = "bins.lowDepth.fa"
         File unbinned = "bins.unbinned.fa"
         File checkm = "checkm-qa.out"
+        File stats_json = "MAGs_stats.json"
+        File stats_tsv = "MAGs_stats.tsv"
         File bacsum = "gtdbtk-output/gtdbtk.bac120.summary.tsv"
         File arcsum = "gtdbtk-output/gtdbtk.ar122.summary.tsv"
         Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
