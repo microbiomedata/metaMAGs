@@ -25,8 +25,8 @@ workflow mbin{
     Int cpu=32
     Int threads=64
     Int pthreads=1
-    String gtdbtk_db="/refdata/GTDBTK_DB"
-    String checkm_db="/refdata/CheckM_DB"
+    String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
+    String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
     String container = "microbiomedata/nmdc_mbin@sha256:7587e3b777fa6a37c7355e56300a689776235e86494be0ab454e0cb789594765"
 
     call stage {
