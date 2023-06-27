@@ -54,7 +54,7 @@ workflow mbin{
                 fna = stage.contig,
                 aln = stage.sam,
                 gff = stage.gff,
-                # map = stage.map_file,
+                #map = stage.map_file,
                 threads =  threads,
                 pthreads = pthreads,
                 gtdbtk_env = gtdbtk_db,
@@ -112,7 +112,7 @@ workflow mbin{
         File final_unbinned_fa  = finish_mags.final_unbinned_fa
         File final_checkm = finish_mags.final_checkm
         File mags_objects = finish_mags.objects
-        File mags_version = mbin_nmdc.mags_version
+        File mags_version = finish_mags.final_version
     }
 
 
@@ -304,6 +304,7 @@ task finish_mags {
     File contigs
     File anno_gff
     File sorted_bam
+    File mbin_version
     String proj
     String prefix=sub(proj, ":", "_")
     String start
@@ -334,6 +335,7 @@ task finish_mags {
         ln ${unbinned} ${prefix}_bins.unbinned.fa
         ln ${checkm} ${prefix}_checkm_qa.out
         ln ${stats_json} ${prefix}_mags_stats.json
+        ln ${mbin_version} ${prefix}_bin.info
         ln ${bacsum} ${prefix}_gtdbtk.bac122.summary.tsv
         ln ${arcsum} ${prefix}_gtdbtk.ar122.summary.tsv
 
@@ -372,7 +374,8 @@ task finish_mags {
                 ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" "CheckM for ${proj}" \
                 ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" "Metagenome Bins for ${proj}" \
                 ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" "Bacterial Summary for ${proj}" \
-                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archaeal Summary" "Archaeal Summary for ${proj}"
+                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archaeal Summary" "Archaeal Summary for ${proj}" \
+                ${prefix}_bin.info "File containing version information on the binning workflow" "Metagenome Bins Info File" "Metagenome Bins Info File for ${proj}"
 
     }
 
@@ -386,6 +389,7 @@ task finish_mags {
         File final_lowDepth_fa = "${prefix}_bins.lowDepth.fa"
         File final_unbinned_fa = "${prefix}_bins.unbinned.fa"
         File final_short = "${prefix}_bins.tooShort.fa"
+        File final_version = "${prefix}_bin.info"
     }
 
     runtime {
