@@ -17,6 +17,7 @@ jobs:
         id: latest_release
         run: |
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | jq -r .tag_name)
+          echo "Latest release: $LATEST_RELEASE"
           echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,38 +29,13 @@ jobs:
           IFS='.' read -ra VERSION_PARTS <<< "$LATEST_VERSION"
           PATCH_BUMP=$(( ${VERSION_PARTS[2]} + 1 ))
           NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH_BUMP"
+          echo "New version: $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create bundle zip
         run: zip -r bundle.zip *.wdl
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ steps.bump_version.outputs.NEW_VERSION }}
-          release_name: Release ${{ steps.bump_version.outputs.NEW_VERSION }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Bundle
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bundle.zip
-          asset_name: bundle.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Mags WDL
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./mbin_nmdc.wdl
-          asset_name: mbin_nmdc.wdl
-          asset_content_type: text/plain
+        run: gh release create ${{ steps.bump_version.outputs.NEW_VERSION }} mbin_nmdc.wdl bundle.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
