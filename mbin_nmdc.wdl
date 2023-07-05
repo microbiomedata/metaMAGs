@@ -19,6 +19,7 @@ workflow mbin{
     String supfam_file
     String product_names_file
     String gene_phylogeny_file
+    String lineage_file
     File? map_file
     File? domain_file
     String? scratch_dir
@@ -45,7 +46,8 @@ workflow mbin{
             smart_file=smart_file,
             supfam_file=supfam_file,
             product_names_file=product_names_file,
-            gene_phylogeny_file=gene_phylogeny_file
+            gene_phylogeny_file=gene_phylogeny_file,
+            lineage_file=lineage_file
     }
 
     call mbin_nmdc {
@@ -54,7 +56,7 @@ workflow mbin{
                 fna = stage.contig,
                 aln = stage.sam,
                 gff = stage.gff,
-                #map = stage.map_file,
+                lineage=stage.lineage_sdb,
                 threads =  threads,
                 pthreads = pthreads,
                 gtdbtk_env = gtdbtk_db,
@@ -123,6 +125,7 @@ task mbin_nmdc {
     File fna
     File aln
     File gff
+    File lineage
     String name
     Int? threads
     Int? pthreads
@@ -134,7 +137,7 @@ task mbin_nmdc {
     command<<<
         export GTDBTK_DATA_PATH=${gtdbtk_env}
         export CHECKM_DATA_PATH=${checkm_env}
-        mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln}
+        mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln} --lin ${lineage}
         mbin_stats.py $PWD
         mbin_versions.py > mbin_nmdc_versions.log
         touch MAGs_stats.tsv
@@ -191,6 +194,7 @@ task stage {
     String supfam_file
     String product_names_file
     String gene_phylogeny_file
+    String lineage_file
     String contigs_out="contigs.fasta"
     String bam_out="pairedMapped_sorted.bam"
     String gff_out="functional_annotation.gff"
@@ -205,6 +209,7 @@ task stage {
     String supfam_out="supfam.gff"
     String products_out="products.tsv"
     String gene_phylogeny_out="gene_phylogeny.tsv"
+    String lineage_out="lineage.sdb"
 
    command<<<
 
@@ -234,6 +239,7 @@ task stage {
         stage ${supfam_file} ${supfam_out}
         stage ${product_names_file} ${products_out}
         stage ${gene_phylogeny_file} ${gene_phylogeny_out}
+        stage ${lineage_file} ${lineage_out}
 
        date --iso-8601=seconds > start.txt
 
@@ -254,6 +260,7 @@ task stage {
         File supfam = "supfam.gff"
         File product_names = "products.tsv"
         File gene_phylogeny = "gene_phylogeny.tsv"
+        File lineage_sdb = "lineage.sdb"
         String start = read_string("start.txt")
    }
    runtime {
