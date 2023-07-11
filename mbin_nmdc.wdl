@@ -90,6 +90,7 @@ workflow mbin{
         low = mbin_nmdc.low,
         unbinned = mbin_nmdc.unbinned,
         checkm = mbin_nmdc.checkm,
+        mbin_sdb = mbin_nmdc.mbin_sdb,
         hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files,
         bin_fasta_files = mbin_nmdc.bin_fasta_files,
         hqmq_bin_tarfiles = package.hqmq_bin_tarfiles
@@ -159,6 +160,7 @@ task mbin_nmdc {
         File checkm = "checkm-qa.out"
         File stats_json = "MAGs_stats.json"
         File stats_tsv = "MAGs_stats.tsv"
+        File mbin_sdb = "mbin.sdb"
         File mbin_version = "mbin_nmdc_version.log"
         File bacsum = "gtdbtk-output/gtdbtk.bac120.summary.tsv"
         File arcsum = "gtdbtk-output/gtdbtk.ar122.summary.tsv"
@@ -301,6 +303,7 @@ task finish_mags {
     File contigs
     File anno_gff
     File sorted_bam
+    File mbin_sdb
     File mbin_version
     String proj
     String prefix=sub(proj, ":", "_")
@@ -336,10 +339,12 @@ task finish_mags {
         mkdir -p hqmq
         if [ ${n_hqmq} -gt 0 ] ; then
             (cd hqmq && cp ${sep=" " hqmq_bin_tarfiles} .)
-            (zip ../${prefix}_hqmq_bin.zip *tar.gz)
+            (cd hqmq && cp ${mbin_sdb} .)
+            (zip ../${prefix}_hqmq_bin.zip *tar.gz mbin.sdb)
         else
             (cd hqmq && touch no_hqmq_mags.txt)
-            (cd hqmq && zip ../${prefix}_hqmq_bin.zip *.txt)
+            (cd hqmq && cp ${mbin_sdb} .)
+            (cd hqmq && zip ../${prefix}_hqmq_bin.zip *.txt mbin.sdb)
         fi
 
         # Fix up attribute name
