@@ -51,7 +51,7 @@ workflow mbin{
                 fna = stage.contig,
                 aln = stage.sam,
                 gff = stage.gff,
-                lineage=stage.lineage_sdb,
+                lineage=stage.lineage_tsv,
                 threads =  threads,
                 pthreads = pthreads,
                 gtdbtk_env = gtdbtk_db,
@@ -201,7 +201,7 @@ task stage {
     String supfam_out="supfam.gff"
     String products_out="products.tsv"
     String gene_phylogeny_out="gene_phylogeny.tsv"
-    String lineage_out="lineage.sdb"
+    String lineage_out="lineage.tsv"
 
    command<<<
 
@@ -252,7 +252,7 @@ task stage {
         File supfam = "supfam.gff"
         File product_names = "products.tsv"
         File gene_phylogeny = "gene_phylogeny.tsv"
-        File lineage_sdb = "lineage.sdb"
+        File lineage_tsv = "lineage.tsv"
         String start = read_string("start.txt")
    }
    runtime {
