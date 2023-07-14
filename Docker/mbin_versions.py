@@ -3,7 +3,7 @@
 
 def run():
     versions = {
-        "mbin.py" : "0.4",
+        "mbin.py" : "0.5",
         "metabat2" : "2.15",
         "checkm-genome" : "1.2.1",
         "gtdb-tk" : "2.1.1",

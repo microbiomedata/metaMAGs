@@ -2,9 +2,9 @@
 import sys,sqlite3
 import mbin_sdb
 
+#if lineage is provided as lineage SDB (post loading IMG process)
 def query_slineage(osdb, lineage_sdb, log):
  soids = set()
- bins = dict()
  isqls = []
 
  log.info('query sdb to get bin to scaffold connections.')
@@ -16,8 +16,6 @@ def query_slineage(osdb, lineage_sdb, log):
  for result in oc: 
   bname, soid = result
   soids.add(soid)
-  if bname not in bins: bins[bname] = set()
-  bins[bname].add(soid)
  oconn.close()
 
  #connect to IMG lineage sdb
@@ -44,7 +42,7 @@ def query_slineage(osdb, lineage_sdb, log):
 
  lconn.close()
 
- log.info('write per bin lineage to sdb.')
+ log.info('write per scaffold lineage to sdb.')
  #write metadata to sqlite database
  mbin_sdb.write_sdb(osdb, isqls)
 
@@ -132,5 +130,48 @@ def query_bin_metadata(osdb):
   isqls.append(sql)
 
  oconn.close()
+ #write metadata to sqlite database
+ mbin_sdb.write_sdb(osdb, isqls)
+
+#if lineage is provided as TSV : pre-loading IMG process
+def query_slineage_tsv(osdb, lineage_tsv, log):
+ soids = set()
+ isqls = []
+
+ log.info('query sdb to get bin to scaffold connections.')
+ #connect to current sdb
+ oconn = sqlite3.connect(osdb)
+ oc = oconn.cursor()
+ osql = "select bin_name,scaffold_id from bin_scaffolds"
+ oc.execute(osql)
+ for result in oc: 
+  bname, soid = result
+  soids.add(str(soid))
+ oconn.close()
+
+ #connect to IMG lineage sdb
+ log.info('parse IMG lineage tsv to get per scaffold lineage.')
+ with open(lineage_tsv) as rh:
+  for line in rh:
+   linevals = line.rstrip().split('\t')
+   escaff = str(linevals[0])
+   if escaff not in soids : continue
+   lineage_arr = linevals[1].split(";")
+
+   cmd = None
+   if len(lineage_arr)>0 : cmd = "scaf_domain = \"" + lineage_arr[0] + "\""
+   if len(lineage_arr)>1 : cmd+= ",scaf_phylum = \"" + lineage_arr[1] + "\""
+   if len(lineage_arr)>2: cmd+= ",scaf_class = \"" + lineage_arr[2] + "\""
+   if len(lineage_arr)>3: cmd+= ",scaf_order = \"" + lineage_arr[3] + "\""
+   if len(lineage_arr)>4: cmd+= ",scaf_family = \"" + lineage_arr[4] + "\""
+   if len(lineage_arr)>5: cmd+= ",scaf_genus = \"" + lineage_arr[5] + "\""
+   if len(lineage_arr)>6: cmd+= ",scaf_species = \"" + lineage_arr[6] + "\""
+  
+   if cmd: 
+    sql = "update bin_scaffolds set " + cmd + " where scaffold_id = \"" + str(escaff) + "\""  
+    isqls.append(sql)
+
+
+ log.info('write per scaffold lineage to sdb.')
  #write metadata to sqlite database
  mbin_sdb.write_sdb(osdb, isqls)

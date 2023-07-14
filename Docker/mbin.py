@@ -36,6 +36,7 @@ def move_bins(bins_dir):
    #write to their own bin
     numbins += 1
     new_fn = bins_dir + '/bins.' + str(numbins) + '.fa'
+    log.info('New bin:' + new_fn + '\n')
     sys.stderr.write('New bin:' + new_fn + '\n')
     wh = open(new_fn,'w')
     wh.write('>' + str(record.id) + '\n' + str(record.seq) + '\n')
@@ -43,11 +44,12 @@ def move_bins(bins_dir):
 
  return(numbins)
 
-def run(contigs, bam, mapfn, gff, lineage_sdb, numcores, pplacer_cores, combined, sortfna, sortaln):
+def run(contigs, bam, mapfn, gff, lineage_sdb, lineage_tsv, numcores, pplacer_cores, combined, sortfna, sortaln):
 
  #check for required files
  checkfiles = [contigs, gff]
  if lineage_sdb: checkfiles.append(lineage_sdb)
+ if lineage_tsv: checkfiles.append(lineage_tsv)
  if mapfn : checkfiles.append(mapfn)
  #check if directory provided
  if combined == "yes": 
@@ -98,10 +100,11 @@ def run(contigs, bam, mapfn, gff, lineage_sdb, numcores, pplacer_cores, combined
  mbin_sdb.writebins(sdb_name,bins_dir)
 
  #optional for NMDC 
- if lineage_sdb and os.path.isfile(lineage_sdb):
+ if (lineage_sdb or lineage_tsv):
   #query scaffold lineage
   log.info('..query per scaffold lineage')
-  mbin_metadata.query_slineage(sdb_name, lineage_sdb, log)
+  if lineage_sdb: mbin_metadata.query_slineage(sdb_name, lineage_sdb, log)
+  elif lineage_tsv: mbin_metadata.query_slineage_tsv(sdb_name, lineage_tsv, log)
 
   #filter bins to remove any scaffolds that match another domain
   log.info('..filter bins based on domain information')
@@ -132,10 +135,11 @@ def run(contigs, bam, mapfn, gff, lineage_sdb, numcores, pplacer_cores, combined
  if num_hqmq >=1 :
 
   #optional for NMDC
-  if lineage_sdb and os.path.isfile(lineage_sdb):
+  if(lineage_sdb or lineage_tsv):
    #img phylodist
    log.info('..run img phylodist on hq,mq bins')
-   mbin_lineage.phylodist(lineage_sdb, hqmq_bins_dir, sdb_name, log)
+   if lineage_sdb : mbin_lineage.phylodist(lineage_sdb, hqmq_bins_dir, sdb_name, log)
+   elif lineage_tsv : mbin_lineage.phylodist_tsv(lineage_tsv, hqmq_bins_dir, sdb_name, log)
   
   #gtdb-tk lineage
   log.info('..run gtdb-tk on hq,mq bins')
@@ -171,8 +175,9 @@ if __name__ == '__main__':
  parser.add_argument("--sortfna", type=str, default="no", help = "(yes/no) Sort provided contigs file (default: no, always no for combined)")
  parser.add_argument("--sortaln", type=str, default="no", help = "(yes/no) Sort provided alignment file using samtools (default: no, always no for combined)")
  #optional for NMDC
- parser.add_argument("-m", "--map", type=str, help= "MAP file containing mapping of contig headers between SAM and FNA (will skip contig name mapping if absent)")
- parser.add_argument("-l", "--lin", type=str, help = "IMG lineage SQLITE DB for taxon (will skip domain based filtering and IMG lineage prediction of bins if absent)")
+ parser.add_argument("--map", type=str, help= "MAP file containing mapping of contig headers between SAM and FNA (will skip contig name mapping if absent)")
+ parser.add_argument("--lin", type=str, help = "IMG lineage SQLITE DB for taxon (if tsv OR sdb are not provided, filtering and bin lineage prediction will be skipped)")
+ parser.add_argument("--lintsv", type=str, help = "IMG lineage TSV file taxon (if tsv OR sdb are not provided, filtering and bin lineage prediction will be skipped)")
 
  requiredNamed = parser.add_argument_group('Required named arguments')
  requiredNamed.add_argument("-f", "--fna", type=str, help= "Contigs fasta file", required=True)
@@ -181,4 +186,4 @@ if __name__ == '__main__':
  
  args = parser.parse_args()
  log = logfile.startlog('mbin-docker')
- run(args.fna, args.aln, args.map, args.gff, args.lin, args.threads, args.pthreads, args.combined, args.sortfna, args.sortaln)
+ run(args.fna, args.aln, args.map, args.gff, args.lin, args.lintsv, args.threads, args.pthreads, args.combined, args.sortfna, args.sortaln)
