@@ -23,7 +23,7 @@ workflow mbin{
     Int pthreads=1
     String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
     String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
-    String container = "microbiomedata/nmdc_mbin@sha256:7587e3b777fa6a37c7355e56300a689776235e86494be0ab454e0cb789594765"
+    String container = "microbiomedata/nmdc_mbin@sha256:bb1dd3bad177f7a49fa79713f16181d6143dab904b462c7429b3085bb84410f9"
 
     call stage {
         input:
@@ -128,7 +128,7 @@ task mbin_nmdc {
     command<<<
         export GTDBTK_DATA_PATH=${gtdbtk_env}
         export CHECKM_DATA_PATH=${checkm_env}
-        mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln} --lin ${lineage}
+        mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln} --lintsv ${lineage}
         mbin_stats.py $PWD
         mbin_versions.py > mbin_nmdc_versions.log
         touch MAGs_stats.tsv
