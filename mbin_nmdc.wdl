@@ -1,8 +1,4 @@
-workflow nmdc_mags {
-    String informed_by
-    String resource
-    String url_root
-    String git_url
+workflow mbin{
     String proj_name
     String contig_file
     String sam_file
@@ -18,13 +14,16 @@ workflow nmdc_mags {
     String supfam_file
     String product_names_file
     String gene_phylogeny_file
-    String container = "microbiomedata/nmdc_mbin:0.1.6"
+    String lineage_file
     File? map_file
     File? domain_file
     String? scratch_dir
     Int cpu=32
-    Int pplacer_cpu=1
-    String gtdbtk_database="/refdata/GTDBTK_DB"
+    Int threads=64
+    Int pthreads=1
+    String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
+    String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
+    String container = "microbiomedata/nmdc_mbin@sha256:bb1dd3bad177f7a49fa79713f16181d6143dab904b462c7429b3085bb84410f9"
 
     call stage {
         input:
@@ -42,23 +41,23 @@ workflow nmdc_mags {
             smart_file=smart_file,
             supfam_file=supfam_file,
             product_names_file=product_names_file,
-            gene_phylogeny_file=gene_phylogeny_file
+            gene_phylogeny_file=gene_phylogeny_file,
+            lineage_file=lineage_file
     }
 
-    call mbin_nmdc{
-         input:  name=proj_name,
-                 fasta=stage.contig,
-                 sam=stage.sam,
-                 gff=stage.gff,
-                 #map=stage.map_file,
-                 #domain=stage.domain_file,
-                 cpu=cpu,
-                 pplacer_cpu=pplacer_cpu,
-                 scratch_dir=scratch_dir,
-                 database=gtdbtk_database,
-                 container=container
+    call mbin_nmdc {
+        input:  
+                name=proj_name,
+                fna = stage.contig,
+                aln = stage.sam,
+                gff = stage.gff,
+                lineage=stage.lineage_tsv,
+                threads =  threads,
+                pthreads = pthreads,
+                gtdbtk_env = gtdbtk_db,
+                checkm_env = checkm_db,
+                mbin_container = container
     }
-
     call package {
          input:  bins=mbin_nmdc.hqmq_bin_fasta_files,
                  json_stats=mbin_nmdc.stats_json,
@@ -72,7 +71,8 @@ workflow nmdc_mags {
                  cath_funfam_file=stage.cath_funfam,
                  smart_file=stage.smart,
                  supfam_file=stage.supfam,
-                 product_names_file=stage.product_names
+                 product_names_file=stage.product_names,
+                 container=container
     }
 
     call finish_mags {
@@ -83,10 +83,6 @@ workflow nmdc_mags {
         sorted_bam=stage.sam,
         proj=proj_name,
         start=stage.start,
-        resource=resource,
-        url_root=url_root,
-        git_url=git_url,
-        informed_by=informed_by,
         checkm = mbin_nmdc.checkm,
         bacsum= mbin_nmdc.bacsum,
         arcsum = mbin_nmdc.arcsum,
@@ -94,59 +90,85 @@ workflow nmdc_mags {
         low = mbin_nmdc.low,
         unbinned = mbin_nmdc.unbinned,
         checkm = mbin_nmdc.checkm,
-        stats_json = mbin_nmdc.stats_json,
-        stats_tsv = mbin_nmdc.stats_tsv,
+        mbin_sdb = mbin_nmdc.mbin_sdb,
         hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files,
         bin_fasta_files = mbin_nmdc.bin_fasta_files,
-        hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
+        hqmq_bin_tarfiles = package.hqmq_bin_tarfiles
 
     }
 
     output {
-        File? final_hqmq_bins_zip = finish_mags.final_hqmq_bins_zip
-        File? final_gtdbtk_bac_summary = finish_mags.final_gtdbtk_bac_summary
-        File? final_gtdbtk_ar_summary = finish_mags.final_gtdbtk_ar_summary
+        File final_hqmq_bins_zip = finish_mags.final_hqmq_bins_zip
+        File final_gtdbtk_bac_summary = finish_mags.final_gtdbtk_bac_summary
+        File final_gtdbtk_ar_summary = finish_mags.final_gtdbtk_ar_summary
         File short = finish_mags.final_short
         File low = finish_mags.final_lowDepth_fa
         File final_unbinned_fa  = finish_mags.final_unbinned_fa
         File final_checkm = finish_mags.final_checkm
-        File final_stats_json = finish_mags.final_stats_json
-        File stats_tsv = mbin_nmdc.stats_tsv
-        File mags_objects = finish_mags.objects
-        # Array[File] hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files
-        # Array[File] bin_fasta_files = mbin_nmdc.bin_fasta_files
-        # Array[File] hqmq_bin_tarfiles = package.hqmq_bin_tarfiles
+        File mags_version = finish_mags.final_version
     }
 
-    parameter_meta {
-        cpu: "number of CPUs"
-        pplacer_cpu: "number of threads used by pplacer"
-        outdir: "the final output directory path"
-        scratch_dir: "use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime"
-        proj_name: "project name"
-        contig_file: "input assembled contig fasta file"
-        sam_file: "Sam/Bam file from reads mapping back to contigs. [sam.gz or bam]"
-        gff_file: "contigs functional annotation result in gff format"
-        map_file: "text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA ID in GFF)"
-        database: "GTDBTK_DB database directory path"
-        final_hqmq_bins: "high quality and medium quality bin fasta output"
-        metabat_bins: "initial metabat bining result fasta output"
-        final_checkm: "metabat bin checkm result"
-        final_gtdbtk_bac_summary: "gtdbtk bacterial assignment result summary table"
-        final_gtdbtk_ar_summary: "gtdbtk archaea assignment result summary table"
-        final_tooShort_fa: "tooShort (< 3kb) filtered contigs fasta file by metaBat2"
-        final_lowDepth_fa: "lowDepth (mean cov <1 )  filtered contigs fasta file by metabat2"
-        final_unbinned_fa: "unbinned fasta file from metabat2"
-        stats_json: "statistics summary in json format"
-        stats_tsv: "statistics summary in tsv format"
-    }
-    meta {
-        author: "Chienchi Lo, B10, LANL"
-        email: "chienchi@lanl.gov"
-        version: "1.0.1"
-    }
 
 }
+
+task mbin_nmdc {
+    
+    File fna
+    File aln
+    File gff
+    File lineage
+    String name
+    Int? threads
+    Int? pthreads
+    String gtdbtk_env
+    String checkm_env
+    String mbin_container
+    
+
+    command<<<
+        export GTDBTK_DATA_PATH=${gtdbtk_env}
+        export CHECKM_DATA_PATH=${checkm_env}
+        mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln} --lintsv ${lineage}
+        mbin_stats.py $PWD
+        mbin_versions.py > mbin_nmdc_versions.log
+        touch MAGs_stats.tsv
+    
+        if [ -f  gtdbtk-output/gtdbtk.bac120.summary.tsv ]; then
+            echo "bacterial summary exists."
+        else
+            echo "No Bacterial Results for ${name}" > gtdbtk_output/gtdbtk.bac120.summary.tsv
+        fi
+
+        if [ -f  gtdbtk-output/gtdbtk.ar122.summary.tsv ]; then
+            echo "archaeal summary exists."
+        else
+            echo "No Archaeal Results for ${name}" > gtdbtk_output/gtdbtk.ar122.summary.tsv
+        fi
+    >>>
+
+    runtime{
+        docker : mbin_container
+        memory : "60 G"
+	    time : "2:00:00"
+        cpu : threads
+    }
+
+    output{
+        File short = "bins.tooShort.fa"
+        File low = "bins.lowDepth.fa"
+        File unbinned = "bins.unbinned.fa"
+        File checkm = "checkm-qa.out"
+        File stats_json = "MAGs_stats.json"
+        File stats_tsv = "MAGs_stats.tsv"
+        File mbin_sdb = "mbin.sdb"
+        File mbin_version = "mbin_nmdc_version.log"
+        File bacsum = "gtdbtk-output/gtdbtk.bac120.summary.tsv"
+        File arcsum = "gtdbtk-output/gtdbtk.ar122.summary.tsv"
+        Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
+        Array[File] bin_fasta_files = glob("metabat-bins/*fa")
+    }    
+}
+
 
 task stage {
     String container
@@ -164,6 +186,7 @@ task stage {
     String supfam_file
     String product_names_file
     String gene_phylogeny_file
+    String lineage_file
     String contigs_out="contigs.fasta"
     String bam_out="pairedMapped_sorted.bam"
     String gff_out="functional_annotation.gff"
@@ -178,6 +201,7 @@ task stage {
     String supfam_out="supfam.gff"
     String products_out="products.tsv"
     String gene_phylogeny_out="gene_phylogeny.tsv"
+    String lineage_out="lineage.tsv"
 
    command<<<
 
@@ -207,6 +231,7 @@ task stage {
         stage ${supfam_file} ${supfam_out}
         stage ${product_names_file} ${products_out}
         stage ${gene_phylogeny_file} ${gene_phylogeny_out}
+        stage ${lineage_file} ${lineage_out}
 
        date --iso-8601=seconds > start.txt
 
@@ -227,6 +252,7 @@ task stage {
         File supfam = "supfam.gff"
         File product_names = "products.tsv"
         File gene_phylogeny = "gene_phylogeny.tsv"
+        File lineage_tsv = "lineage.tsv"
         String start = read_string("start.txt")
    }
    runtime {
@@ -237,67 +263,6 @@ task stage {
    }
 }
 
-task mbin_nmdc {
-     String name
-     File fasta
-     File sam
-     File gff
-     File? map
-     File? domain
-     String database
-     Int cpu
-     Int pplacer_cpu
-     String? scratch_dir
-     String container
-     String filename_outlog="stdout.log"
-     String filename_errlog="stderr.log"
-     String filename_stat="checkm_qa.out"
-     runtime {
-         docker: container
-         memory: "120 GiB"
-         cpu:  cpu
-         database: database
-     }
-
-     command <<<
-         export TIME="time result\ncmd:%C\nreal %es\nuser %Us \nsys  %Ss \nmemory:%MKB \ncpu %P"
-         set -eo pipefail
-         # set TMPDIR to avoid AF_UNIX path too long error
-         export TMPDIR=/tmp
-         export GTDBTK_DATA_PATH=${database}
-         mbin_nmdc.py ${"--map " + map} ${"--domain " + domain} ${"--scratch_dir " + scratch_dir} --pplacer_cpu ${pplacer_cpu} --cpu ${cpu} ${name} ${fasta} ${sam} ${gff}
-         mbin_stats.py $PWD
-         touch MAGs_stats.tsv
-
-
-        if [ -f  gtdbtk.bac120.summary.tsv ]; then
-            echo "bacterial summary exists."
-        else
-            echo "No Bacterial Results for ${name}" > gtdbtk.bac120.summary.tsv
-        fi
-
-        if [ -f  gtdbtk.ar122.summary.tsv ]; then
-            echo "archaeal summary exists."
-        else
-            echo "No Archaeal Results for ${name}" > gtdbtk.ar122.summary.tsv
-        fi
-
-     >>>
-     output {
-         File runScript = "script"
-         File? stat = filename_stat
-         File short = "bins.tooShort.fa"
-         File low = "bins.lowDepth.fa"
-         File unbinned = "bins.unbinned.fa"
-         File? checkm = "checkm_qa.out"
-         File bacsum = "gtdbtk.bac120.summary.tsv"
-         File arcsum = "gtdbtk.ar122.summary.tsv"
-         File stats_json = "MAGs_stats.json"
-         File stats_tsv = "MAGs_stats.tsv"
-         Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
-         Array[File] bin_fasta_files = glob("metabat-bins/*fa")
-     }
-}
 
 task package{
      Array[File] bins
@@ -313,7 +278,7 @@ task package{
      File smart_file
      File supfam_file
      File product_names_file
-     String container="microbiomedata/nmdc_mbin_test:0.0.0"
+     String container 
 
      command {
              python3 /opt/conda/bin/create_tarfiles.py \
@@ -333,19 +298,16 @@ task package{
      }
 }
 
-
 task finish_mags {
     String container
     File contigs
     File anno_gff
     File sorted_bam
+    File mbin_sdb
+    File mbin_version
     String proj
     String prefix=sub(proj, ":", "_")
     String start
-    String informed_by
-    String resource
-    String url_root
-    String git_url
     File bacsum
     File arcsum
     File? short
@@ -369,6 +331,7 @@ task finish_mags {
         ln ${unbinned} ${prefix}_bins.unbinned.fa
         ln ${checkm} ${prefix}_checkm_qa.out
         ln ${stats_json} ${prefix}_mags_stats.json
+        ln ${mbin_version} ${prefix}_bin.info
         ln ${bacsum} ${prefix}_gtdbtk.bac122.summary.tsv
         ln ${arcsum} ${prefix}_gtdbtk.ar122.summary.tsv
 
@@ -376,10 +339,12 @@ task finish_mags {
         mkdir -p hqmq
         if [ ${n_hqmq} -gt 0 ] ; then
             (cd hqmq && cp ${sep=" " hqmq_bin_tarfiles} .)
-            (zip ../${prefix}_hqmq_bin.zip *tar.gz)
+            (cd hqmq && cp ${mbin_sdb} .)
+            (zip ../${prefix}_hqmq_bin.zip *tar.gz mbin.sdb)
         else
             (cd hqmq && touch no_hqmq_mags.txt)
-            (cd hqmq && zip ../${prefix}_hqmq_bin.zip *.txt)
+            (cd hqmq && cp ${mbin_sdb} .)
+            (cd hqmq && zip ../${prefix}_hqmq_bin.zip *.txt mbin.sdb)
         fi
 
         # Fix up attribute name
@@ -387,32 +352,9 @@ task finish_mags {
            sed 's/: null/: "null"/g' | \
            sed 's/lowDepth_/low_depth_/' > stats.json
 
-        /scripts/generate_object_json.py \
-                 --type "nmdc:MagsAnalysisActivity" \
-                 --set mags_activity_set \
-                 --part ${proj} \
-                 -p "name=MAGS Activity for ${proj}" \
-                    was_informed_by=${informed_by} \
-                    started_at_time=${start} \
-                    ended_at_time=$end \
-                    execution_resource=${resource} \
-                    git_url=${git_url} \
-                    version="v1.0.4-beta" \
-                 --url ${url_root}${proj}/mags/ \
-                 --extra ./stats.json \
-                 --inputs ${contigs} \
-                        ${anno_gff} \
-                        ${sorted_bam} \
-                 --outputs \
-                ${prefix}_checkm_qa.out "CheckM statistics report" "CheckM Statistics" "CheckM for ${proj}" \
-                ${prefix}_hqmq_bin.zip "Metagenome bin tarfiles archive" "Metagenome Bins" "Metagenome Bins for ${proj}" \
-                ${prefix}_gtdbtk.bac122.summary.tsv "GTDBTK bacterial summary" "GTDBTK Bacterial Summary" "Bacterial Summary for ${proj}" \
-                ${prefix}_gtdbtk.ar122.summary.tsv "GTDBTK archaeal summary" "GTDBTK Archaeal Summary" "Archaeal Summary for ${proj}"
-
     }
 
     output {
-        File objects = "objects.json"
         File final_checkm = "${prefix}_checkm_qa.out"
         File final_hqmq_bins_zip = "${prefix}_hqmq_bin.zip"
         File final_stats_json = "${prefix}_mags_stats.json"
@@ -421,6 +363,7 @@ task finish_mags {
         File final_lowDepth_fa = "${prefix}_bins.lowDepth.fa"
         File final_unbinned_fa = "${prefix}_bins.unbinned.fa"
         File final_short = "${prefix}_bins.tooShort.fa"
+        File final_version = "${prefix}_bin.info"
     }
 
     runtime {

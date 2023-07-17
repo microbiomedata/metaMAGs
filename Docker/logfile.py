@@ -1,8 +1,6 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 from time import gmtime, strftime
 import logging
-#simple logging module
-#njvarghese 2020
 
 def startlog(name):
  # create a file handler

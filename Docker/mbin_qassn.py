@@ -1,12 +1,12 @@
-#! /usr/bin/env python
-import os,sys, re
-import sqlite3, subprocess
+#! /usr/bin/env python3
+#njvarghese
+import os, re, sqlite3, subprocess
 import collections
 from collections import defaultdict
-#njvarghese 2020
 
-def run(checkm_qa_out, bins_dir, hqmq_bins_dir, sdb_name):
+def run(checkm_qa_out, bins_dir, hqmq_bins_dir, sdb_name, log):
 
+ num_hqmq = 0
  conn = sqlite3.connect(sdb_name)
  c = conn.cursor()
  bmetadata = collections.defaultdict()
@@ -15,6 +15,7 @@ def run(checkm_qa_out, bins_dir, hqmq_bins_dir, sdb_name):
   for line in rh:
    if line.startswith('-'): continue
    if re.search(r'#',line): continue
+   #print line.rstrip()
    evals = re.split('\s{2,}',line.rstrip())
    binid = evals[1]
    comp = float(evals[12])
@@ -26,7 +27,6 @@ def run(checkm_qa_out, bins_dir, hqmq_bins_dir, sdb_name):
 
    if comp > 90 and cont < 5 :
     qsql = 'select num_16s, num_5s, num_23s, num_tRNA from bin where bin_name = "' + binid + '"'
-    sys.stderr.write(qsql + '\n')
     c.execute(qsql)
     for result in c:
      num_16s, num_5s, num_23s, num_tRNA = result
@@ -36,8 +36,6 @@ def run(checkm_qa_out, bins_dir, hqmq_bins_dir, sdb_name):
    else : bmetadata[binid]['quality'] = 'LQ'
 
  i = conn.cursor() #insert cursor
- if not os.path.isdir(hqmq_bins_dir): subprocess.check_call(['mkdir',hqmq_bins_dir])
-
  for binid in bmetadata:
   #update sqlite table
   usql = 'update bin set completeness = ' + str(bmetadata[binid]['completeness']) + ', contamination = ' + str(bmetadata[binid]['contamination']) + ', bin_quality = "' + str(bmetadata[binid]['quality']) + '" where bin_name = "' + str(binid) + '"'
@@ -47,8 +45,10 @@ def run(checkm_qa_out, bins_dir, hqmq_bins_dir, sdb_name):
   #move to separate directory
   if bmetadata[binid]['quality'] == 'HQ' or bmetadata[binid]['quality'] == 'MQ':
    fpath = bins_dir+'/'+binid+'.fa'
-   #sys.stderr.write(fpath + '\n')
+   log.info("moving " + fpath + " to hqmq.")
+   num_hqmq += 1
    subprocess.check_call(['mv', fpath, hqmq_bins_dir])
 
  conn.commit()
  conn.close()
+ return(num_hqmq)
