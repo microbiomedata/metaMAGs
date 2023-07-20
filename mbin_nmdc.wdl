@@ -139,13 +139,15 @@ task mbin_nmdc {
         if [ -f  gtdbtk-output/gtdbtk.bac120.summary.tsv ]; then
             echo "bacterial summary exists."
         else
-            echo "No Bacterial Results for ${name}" > gtdbtk_output/gtdbtk.bac120.summary.tsv
+            mkdir -p gtdbtk-output
+            echo "No Bacterial Results for ${name}" > gtdbtk-output/gtdbtk.bac120.summary.tsv
         fi
 
         if [ -f  gtdbtk-output/gtdbtk.ar122.summary.tsv ]; then
             echo "archaeal summary exists."
         else
-            echo "No Archaeal Results for ${name}" > gtdbtk_output/gtdbtk.ar122.summary.tsv
+            mkdir -p gtdbtk-output
+            echo "No Archaeal Results for ${name}" > gtdbtk-output/gtdbtk.ar122.summary.tsv
         fi
     >>>
 
