@@ -149,12 +149,19 @@ task mbin_nmdc {
             mkdir -p gtdbtk-output
             echo "No Archaeal Results for ${name}" > gtdbtk-output/gtdbtk.ar122.summary.tsv
         fi
-        
+
         if [ -f checkm-qa.out ]; then
             echo "checkm summary exists."
         else
             mkdir -p gtdbtk-output
             echo "No Checkm Results for ${name}" > checkm-qa.out
+        fi
+
+        if [ -f mbin.sdb ]; then
+            echo "mbin.sdb exists."
+        else
+            mkdir -p gtdbtk-output
+            echo "Mbin Sdb Could not be created for ${name}" > mbin.sdb
         fi
     >>>
 
