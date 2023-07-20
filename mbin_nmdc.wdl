@@ -1,4 +1,4 @@
-workflow mbin{
+workflow nmdc_mags {
     String proj_name
     String contig_file
     String sam_file
@@ -91,6 +91,9 @@ workflow mbin{
         unbinned = mbin_nmdc.unbinned,
         checkm = mbin_nmdc.checkm,
         mbin_sdb = mbin_nmdc.mbin_sdb,
+        mbin_version = mbin_nmdc.mbin_version,
+        stats_json = mbin_nmdc.stats_json,
+        stats_tsv = mbin_nmdc.stats_tsv,
         hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files,
         bin_fasta_files = mbin_nmdc.bin_fasta_files,
         hqmq_bin_tarfiles = package.hqmq_bin_tarfiles
