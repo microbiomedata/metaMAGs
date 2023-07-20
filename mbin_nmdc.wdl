@@ -180,7 +180,7 @@ task mbin_nmdc {
         File stats_json = "MAGs_stats.json"
         File stats_tsv = "MAGs_stats.tsv"
         File mbin_sdb = "mbin.sdb"
-        File mbin_version = "mbin_nmdc_version.log"
+        File mbin_version = "mbin_nmdc_versions.log"
         File bacsum = "gtdbtk-output/gtdbtk.bac120.summary.tsv"
         File arcsum = "gtdbtk-output/gtdbtk.ar122.summary.tsv"
         Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
