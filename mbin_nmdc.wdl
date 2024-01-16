@@ -21,13 +21,15 @@ workflow nmdc_mags {
     Int cpu=32
     Int threads=64
     Int pthreads=1
+    Boolean gcloud_env=false
     String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
     String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
     String container = "microbiomedata/nmdc_mbin@sha256:bb1dd3bad177f7a49fa79713f16181d6143dab904b462c7429b3085bb84410f9"
+    String  stage_container="mbabinski17/gcputils:0.1"
 
     call stage {
         input:
-            container=container,
+            container=stage_container,
             contig_file=contig_file,
             sam_file=sam_file,
             gff_file=gff_file,
@@ -54,6 +56,7 @@ workflow nmdc_mags {
                 lineage=stage.lineage_tsv,
                 threads =  threads,
                 pthreads = pthreads,
+                gcloud_env=gcloud_env,
                 gtdbtk_env = gtdbtk_db,
                 checkm_env = checkm_db,
                 mbin_container = container
@@ -123,14 +126,31 @@ task mbin_nmdc {
     String name
     Int? threads
     Int? pthreads
+    Boolean gcloud_env
     String gtdbtk_env
     String checkm_env
     String mbin_container
     
 
     command<<<
-        export GTDBTK_DATA_PATH=${gtdbtk_env}
-        export CHECKM_DATA_PATH=${checkm_env}
+        if ${gcloud_env}; then
+            checkm_dbdir=$(find /mnt -type d -name checkm_data_2015_01_16)
+            if [ -n $checkm_dbdir ]; then
+                export CHECKM_DATA_PATH=${checkm_dbdir}
+            else
+                echo "Cannot find gcloud checkdb" 1>&2
+            fi
+            gtdbtk_db_dir=$(find /mnt -type d -name gtdbtk_release214)
+            if [ -n $gtdbtk_db_dir ]; then
+                export GTDBTK_DATA_PATH=${gtdbtk_db_dir}
+            else
+                echo "Cannot find gcloud GTDBTK_DATA" 1>&2
+            fi
+        else
+            export GTDBTK_DATA_PATH=${gtdbtk_env}
+            export CHECKM_DATA_PATH=${checkm_env}
+        fi
+       
         mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln} --lintsv ${lineage}
         mbin_stats.py $PWD
         mbin_versions.py > mbin_nmdc_versions.log
@@ -231,6 +251,8 @@ task stage {
             out=$2
             if [ $( echo $in |egrep -c "https*:") -gt 0 ] ; then
                 wget $in -O $out
+            elif [ $(echo $in | egrep -c "^gs://") -gt 0 ] ; then
+                gsutil cp $in $out
             else
                 ln $in $out || cp $in $out
             fi
