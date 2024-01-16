@@ -137,13 +137,13 @@ task mbin_nmdc {
         if ${gcloud_env}; then
             checkm_dbdir=$(find /mnt -type d -name checkm_data_2015_01_16)
             if [ -n $checkm_dbdir ]; then
-                export CHECKM_DATA_PATH=${checkm_dbdir}
+                export CHECKM_DATA_PATH=$checkm_dbdir
             else
                 echo "Cannot find gcloud checkdb" 1>&2
             fi
             gtdbtk_db_dir=$(find /mnt -type d -name gtdbtk_release214)
             if [ -n $gtdbtk_db_dir ]; then
-                export GTDBTK_DATA_PATH=${gtdbtk_db_dir}
+                export GTDBTK_DATA_PATH=$gtdbtk_db_dir
             else
                 echo "Cannot find gcloud GTDBTK_DATA" 1>&2
             fi
