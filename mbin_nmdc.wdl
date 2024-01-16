@@ -129,6 +129,7 @@ task mbin_nmdc {
     Boolean gcloud_env
     String gtdbtk_env
     String checkm_env
+    Array[File]? gcloud_db= if (gcloud_env) then [checkm_env] else []
     String mbin_container
     
 
