@@ -67,7 +67,6 @@ A json files with following entries:
 
 ```
 {
-  {   
     "nmdc_mags.proj_name": "nmdc_wfmgan-xx-xxxxxxxx",
     "nmdc_mags.contig_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_contigs.fna",
     "nmdc_mags.sam_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_pairedMapped_sorted.bam",
@@ -85,9 +84,7 @@ A json files with following entries:
     "nmdc_mags.gene_phylogeny_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_gene_phylogeny.tsv",
     "nmdc_mags.lineage_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_scaffold_lineage.tsv",
     "nmdc_mags.gtdbtk_db": "refdata/GTDBTK_DB",
-    "nmdc_mags.checkm_db": "refdata/CheckM_DB "
-}
-
+    "nmdc_mags.checkm_db": "refdata/CheckM_DB"
 }
 ```
 
