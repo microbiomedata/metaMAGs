@@ -2,25 +2,30 @@
 
 ## Summary
 
-The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation. It takes assembled contigs, reads mapping result bam file and contigs annotations result to to associate groups of contigs as deriving from a seemingly coherent microbial species (binning) and evaluted by checkM and gtdb-tk. 
+The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation. It takes assembled contigs, bam file from reads mapping to contigs and [contigs annotations](https://github.com/microbiomedata/mg_annotation) result to to associate groups of contigs as deriving from a seemingly coherent microbial species (binning) and evaluted by checkM and gtdb-tk. 
 
 ## Required Database
 
 * [CheckM](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/)<sup>2</sup> database is 275MB contains the databases used for the Metagenome Binned contig quality assessment. (requires 40GB+ of memory, included in the image) 
     * https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
 
-* [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~33G of external data that need to be downloaded and unarchived. (requires ~150GB of memory)
-    * https://data.gtdb.ecogenomic.org/releases/release95/95.0/auxillary_files/gtdbtk_r95_data.tar.gz
+* [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~78G of external data that need to be downloaded and unarchived. (requires ~150GB of memory)
+    * https://data.gtdb.ecogenomic.org/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
 
-* Prepare the GTDB-Tk Database
+* Prepare the Database
 
 ```bash
-    
-    wget https://data.gtdb.ecogenomic.org/releases/release95/95.0/auxillary_files/gtdbtk_r95_data.tar.gz
-    tar -xvzf gtdbtk_r95_data.tar.gz
-    mv release95 refdata/GTDBTK_DB
-    
-    rm gtdbtk_r95_data.tar.gz
+    wget https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
+    tar -xvzf checkm_data_2015_01_16.tar.gz
+    mkdir -p refdata/CheckM_DB && tar -xvzf checkm_data_2015_01_16.tar.gz -C refdata/CheckM_DB
+    rm checkm_data_2015_01_16.tar.gz
+```
+
+```bash
+    wget https://data.gtdb.ecogenomic.org/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
+    mkdir -p refdata/GTDBTK_DB && tar -xvzf gtdbtk_r214_data.tar.gz 
+    mv release214 refdata/GTDBTK_DB
+    rm gtdbtk_r214_data.tar.gz
 ```
 
 ## Running Workflow in Cromwell
@@ -39,28 +44,50 @@ Description of the files:
 
 A json files with following entries:
 
-1. Number of CPUs,
-2. The number of threads used by pplacer (Use lower number to reduce the memory usage)
-3. Output directory
-4. Project name
-5. Metagenome Assembled Contig fasta file
-6. Sam/Bam file from reads mapping back to contigs.
-7. Contigs functional annotation result in gff format
-8. Optioal: Tab-delimited text file which containing mapping of headers between SAM and FNA (ID in SAM/FNA<tab>ID in GFF). A two column tab-delimited file. When the annotation and assembly are performed using different identifiers for contigs. The map file is to link the gff file content and mapping result bam file content to the assembled contigs ID.
-9. The database directory path which includes `checkM_DB` and `GTDBTK_DB` subdirectories. 
-10. (optional) scratch_dir: use --scratch_dir for gtdbtk disk swap to reduce memory usage but longer runtime
+1. Project Name
+2. Metagenome Assembled Contig fasta file
+3. Sam/Bam file from reads mapping back to contigs.
+4. Contigs functional annotation result in gff format
+5. Contigs functional annotated protein FASTA file
+6. Tab delimited file for [COG](http://reusabledata.org/cogs) annotation.
+7. Tab delimited file for [EC](https://reusabledata.org/kegg-ftp) annotation.
+8. Tab delimited file for [KO](https://reusabledata.org/kegg-ftp) annotation.
+9. Tab delimited file for [PFAM](http://reusabledata.org/pfam) annotation.
+10. Tab delimited file for [TIGRFAM](http://reusabledata.org/tigrfams) annotation.
+11. Tab delimited file for [CATH FUNFAM](http://reusabledata.org/cath) annotation.
+12. Tab delimited file for [SMART](https://reusabledata.org/smart) annotation.
+13. Tab delimited file for [SUPER FAMILY](https://reusabledata.org/supfam) annotation.
+14. Tab delimited file for Gene Product name assignment.
+15. Tab delimited file for Gene Phylogeny assignment.
+16. Tab delimited file for Contig/Scaffold lineage.
+17. GTDBTK Database
+18. CheckM Database
+19. (optional) nmdc_mags.threads: The number of threads used by metabat/samtools/checkm/gtdbtk. default: 64
+20. (optional) nmdc_mags.pthreads: The number of threads used by pplacer (Use lower number to reduce the memory usage) default: 1
 
 ```
 {
-  "nmdc_mags.cpu":32,
-  "nmdc_mags.pplacer_cpu":1,
-  "nmdc_mags.outdir":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/output",
-  "nmdc_mags.proj_name":"3300037552",
-  "nmdc_mags.contig_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.fna",
-  "nmdc_mags.sam_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.bam.sorted.bam",
-  "nmdc_mags.gff_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.gff",
-  "nmdc_mags.map_file":"/global/cfs/cdirs/m3408/aim2/metagenome/MAGs/mbin-nmdc-test-dataset/3300037552.a.map.txt",
-  "nmdc_mags.gtdbtk_database":"/path/to/GTDBTK_DB"
+  {   
+    "nmdc_mags.proj_name": "nmdc_wfmgan-xx-xxxxxxxx",
+    "nmdc_mags.contig_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_contigs.fna",
+    "nmdc_mags.sam_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_pairedMapped_sorted.bam",
+    "nmdc_mags.gff_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_functional_annotation.gff",
+    "nmdc_mags.proteins_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_proteins.faa",
+    "nmdc_mags.cog_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_cog.gff",
+    "nmdc_mags.ec_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_ec.tsv",
+    "nmdc_mags.ko_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_ko.tsv",
+    "nmdc_mags.pfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_pfam.gff",
+    "nmdc_mags.tigrfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxxtigrfam.gff",
+    "nmdc_mags.cath_funfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_cath_funfam.gff",
+    "nmdc_mags.smart_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_smart.gff",
+    "nmdc_mags.supfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx.gff",
+    "nmdc_mags.product_names_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_product_names.tsv",
+    "nmdc_mags.gene_phylogeny_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_gene_phylogeny.tsv",
+    "nmdc_mags.lineage_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_scaffold_lineage.tsv",
+    "nmdc_mags.gtdbtk_db": "refdata/GTDBTK_DB",
+    "nmdc_mags.checkm_db": "refdata/CheckM_DB "
+}
+
 }
 ```
 
@@ -68,43 +95,18 @@ A json files with following entries:
 
 The output will have a bunch of output directories, files, including statistical numbers, status log and a shell script to reproduce the steps etc. 
 
-The final [MiMAG](https://www.nature.com/articles/nbt.3893#Tab1) output is in `hqmq-metabat-bins` directory and its corresponding lineage result in `gtdbtk_output` directory.
+The final [MiMAG](https://www.nature.com/articles/nbt.3893#Tab1) output includes following files.
 
 ```
-|-- MAGs_stats.json
-|-- 3300037552.bam.sorted
-|-- 3300037552.depth
-|-- 3300037552.depth.mapped
-|-- bins.lowDepth.fa
-|-- bins.tooShort.fa
-|-- bins.unbinned.fa
-|-- checkm-out
-|   |-- bins/
-|   |-- checkm.log
-|   |-- lineage.ms
-|   `-- storage
-|-- checkm_qa.out
-|-- gtdbtk_output
-|   |-- align/
-|   |-- classify/
-|   |-- identify/
-|   |-- gtdbtk.ar122.classify.tree -> classify/gtdbtk.ar122.classify.tree
-|   |-- gtdbtk.ar122.markers_summary.tsv -> identify/gtdbtk.ar122.markers_summary.tsv
-|   |-- gtdbtk.ar122.summary.tsv -> classify/gtdbtk.ar122.summary.tsv
-|   |-- gtdbtk.bac120.classify.tree -> classify/gtdbtk.bac120.classify.tree
-|   |-- gtdbtk.bac120.markers_summary.tsv -> identify/gtdbtk.bac120.markers_summary.tsv
-|   |-- gtdbtk.bac120.summary.tsv -> classify/gtdbtk.bac120.summary.tsv
-|   `-- ..etc 
-|-- hqmq-metabat-bins
-|   |-- bins.11.fa
-|   |-- bins.13.fa
-|   `-- ... etc 
-|-- mbin-2020-05-24.sqlite
-|-- mbin-nmdc.20200524.log
-|-- metabat-bins
-|   |-- bins.1.fa
-|   |-- bins.10.fa
-|   `-- ... etc 
+|-- project_name_mags_stats.json
+|-- project_name_hqmq_bin.zip
+|-- project_name_bin.info
+|-- project_name_bins.lowDepth.fa
+|-- project_name_bins.tooShort.fa
+|-- project_name_bins.unbinned.fa
+|-- project_name_checkm_qa.out
+|-- project_name_gtdbtk.ar122.summary.tsv
+|-- project_name_gtdbtk.bac122.summary.tsv
 ```
 
 ### Citation
