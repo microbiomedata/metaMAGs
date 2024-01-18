@@ -23,7 +23,7 @@ workflow nmdc_mags {
     Int pthreads=1
     String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
     String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
-    String container = "microbiomedata/nmdc_mbin@sha256:bb1dd3bad177f7a49fa79713f16181d6143dab904b462c7429b3085bb84410f9"
+    String container = "microbiomedata/nmdc_mbin@sha256:c8df293e80698627ce66df7cd07f6b10e9112184e3bf1379e615d10123f7bc64"
 
     call stage {
         input:
@@ -109,6 +109,7 @@ workflow nmdc_mags {
         File final_unbinned_fa  = finish_mags.final_unbinned_fa
         File final_checkm = finish_mags.final_checkm
         File mags_version = finish_mags.final_version
+        File final_stats_json = finish_mags.final_stats_json
     }
 
 
