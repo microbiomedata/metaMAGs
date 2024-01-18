@@ -1,0 +1,21 @@
+{   
+    "nmdc_mags.proj_name": "nmdc_wfmgan-11-vqksj720",
+    "nmdc_mags.contig_file": "gs://workflows_test_inputs/Assembly/nmdc_wfmgas-11-vxk6qr34.1_contigs.fna",
+    "nmdc_mags.sam_file": "gs://workflows_test_inputs/Assembly/nmdc_wfmgas-11-vxk6qr34.1_pairedMapped_sorted.bam",
+    "nmdc_mags.gff_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_functional_annotation.gff",
+    "nmdc_mags.proteins_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_proteins.faa",
+    "nmdc_mags.cog_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_cog.gff",
+    "nmdc_mags.ec_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_ec.tsv",
+    "nmdc_mags.ko_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_ko.tsv",
+    "nmdc_mags.pfam_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_pfam.gff",
+    "nmdc_mags.tigrfam_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_tigrfam.gff",
+    "nmdc_mags.cath_funfam_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_cath_funfam.gff",
+    "nmdc_mags.smart_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_smart.gff",
+    "nmdc_mags.supfam_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_supfam.gff",
+    "nmdc_mags.product_names_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_product_names.tsv",
+    "nmdc_mags.gene_phylogeny_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_gene_phylogeny.tsv",
+    "nmdc_mags.lineage_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_scaffold_lineage.tsv",
+    "nmdc_mags.gcloud_env": true,
+    "nmdc_mags.gtdbtk_db": "gs://workflows_refdata/refdata/gtdbtk_release214/masks/gtdb_r214_bac120.mask",
+    "nmdc_mags.checkm_db": "gs://workflows_refdata/refdata/checkm_data_2015_01_16/taxon_marker_sets.tsv"
+}
