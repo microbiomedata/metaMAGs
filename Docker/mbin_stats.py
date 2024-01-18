@@ -92,7 +92,7 @@ if __name__ == "__main__":
 	lowDepth_contig_num = 0 if not os.path.isfile(lowDepth_file) else count_fasta(lowDepth_file)
 	unbinned_file = outdir + "/bins.unbinned.fa"
 	unbinned_contig_num = 0 if not os.path.isfile(unbinned_file) else count_fasta(unbinned_file)
-	sql_files = glob.glob(outdir + "/*.sqlite")
+	sql_files = glob.glob(outdir + "/*.sdb")
 	if len(sql_files) > 0:
 		mag_list, total_bin_contig_num = mag_meta(sql_files[0],outtsvfile)
 		sqlfile_time=datetime.fromtimestamp(os.path.getmtime(sql_files[0])).strftime("%Y-%m-%d")
