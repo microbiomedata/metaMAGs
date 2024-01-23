@@ -16,6 +16,7 @@
     "nmdc_mags.gene_phylogeny_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_gene_phylogeny.tsv",
     "nmdc_mags.lineage_file": "gs://workflows_test_inputs/Annotation/nmdc_wfmgan-11-vqksj720.1_scaffold_lineage.tsv",
     "nmdc_mags.gcloud_env": true,
-    "nmdc_mags.gtdbtk_db": "gs://workflows_refdata/refdata/gtdbtk_release214",
-    "nmdc_mags.checkm_db": "gs://workflows_refdata/refdata/checkm_data_2015_01_16"
+    "nmdc_mags.gcloud_bucket":"workflows_refdata",
+    "nmdc_mags.gtdbtk_db": "/refdata/gtdbtk_release214",
+    "nmdc_mags.checkm_db": "/refdata/checkm_data_2015_01_16"
 }

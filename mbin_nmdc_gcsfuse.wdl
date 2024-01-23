@@ -22,6 +22,7 @@ workflow nmdc_mags {
     Int threads=64
     Int pthreads=1
     Boolean gcloud_env=false
+    String gcloud_bucket
     String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
     String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
     String container = "microbiomedata/nmdc_mbin:0.5.1_google"
@@ -57,6 +58,7 @@ workflow nmdc_mags {
                 threads =  threads,
                 pthreads = pthreads,
                 gcloud_env=gcloud_env,
+		gcloud_bucket=gcloud_bucket,
                 gtdbtk_env = gtdbtk_db,
                 checkm_env = checkm_db,
                 mbin_container = container
@@ -128,25 +130,24 @@ task mbin_nmdc {
     Int? threads
     Int? pthreads
     Boolean gcloud_env
+    String gcloud_bucket
     String gtdbtk_env
     String checkm_env
     String mount_root = "/mounted_workflows_refdata"
-    Array[File]? gcloud_db= if (gcloud_env) then [checkm_env] else []
     String mbin_container
     
 
     command<<<
         if ${gcloud_env}; then
             mkdir -p ${mount_root}
-            checkm_dbdir=${mount_root}/checkm_data_2015_01_16
-            gcsfuse --implicit-dirs ${checkm_env} ${mount_root}
+	    gcsfuse --implicit-dirs ${gcloud_bucket} ${mount_root}
+            checkm_dbdir=${mount_root}${checkm_env}
             if [ -n $checkm_dbdir ]; then
                 export CHECKM_DATA_PATH=$checkm_dbdir
             else
                 echo "Cannot find gcloud checkdb" 1>&2
             fi
-            gtdbtk_db_dir=${mount_root}/gtdbtk_release214
-            gcsfuse --implicit-dirs ${gtdbtk_env} ${mount_root}
+	    gtdbtk_db_dir=${mount_root}${gtdbtk_env}
             if [ -n $gtdbtk_db_dir ]; then
                 export GTDBTK_DATA_PATH=$gtdbtk_db_dir
             else
