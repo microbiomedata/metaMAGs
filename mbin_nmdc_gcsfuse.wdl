@@ -24,7 +24,7 @@ workflow nmdc_mags {
     Boolean gcloud_env=false
     String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
     String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
-    String container = "microbiomedata/nmdc_mbin@sha256:c8df293e80698627ce66df7cd07f6b10e9112184e3bf1379e615d10123f7bc64"
+    String container = "microbiomedata/nmdc_mbin:0.5.1_google"
     String  stage_container="mbabinski17/gcputils:0.1"
 
     call stage {
