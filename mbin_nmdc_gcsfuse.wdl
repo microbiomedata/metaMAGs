@@ -329,7 +329,7 @@ task package{
      String container 
 
      command {
-             python3 /opt/conda/bin/create_tarfiles.py \
+             create_tarfiles.py \
                      ${json_stats} ${gff_file} ${proteins_file} ${cog_file} \
                      ${ec_file} ${ko_file} ${pfam_file} ${tigrfam_file} \
                      ${cath_funfam_file} ${smart_file} ${supfam_file} \
