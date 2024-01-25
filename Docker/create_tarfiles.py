@@ -78,7 +78,8 @@ def create_new_zip(prefix, bin_id, bin_file, inputs, contig_ids):
         if not extension:
             sys.stderr.write(f"Unknown type: {input_file}\n")
             continue
-        
+
+        output_filename = f"{prefix}_{bin_id}{extension}"
         output_file = f"{output_dir}/{output_filename}"
         output_files.append(output_filename)
         if extension.endswith(".faa"):
@@ -100,7 +101,8 @@ if __name__ == "__main__":
     data = None
     input_files = []
     bin_files_dict = {}
-    for file in sys.argv[1:]:
+    prefix = sys.argv[1]
+    for file in sys.argv[2:]:
         file_name = os.path.basename(file)
         if file_name.endswith(".json"):
             data = json.load(open(file))
@@ -109,7 +111,6 @@ if __name__ == "__main__":
             bin_files_dict[bin_id] = file
         else:
             input_files.append(file)
-    prefix = input_files[0].split('/')[-1].replace('_proteins.faa','')
     for bin_data in data['mags_list']:
         if bin_data['bin_quality'] in ['MQ', 'HQ']:
             print(f"Processing {bin_data['bin_name']}")

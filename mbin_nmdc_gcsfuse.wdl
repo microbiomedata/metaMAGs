@@ -64,7 +64,8 @@ workflow nmdc_mags {
                 mbin_container = container
     }
     call package {
-         input:  bins=mbin_nmdc.hqmq_bin_fasta_files,
+         input:  proj = proj_name.
+                 bins=mbin_nmdc.hqmq_bin_fasta_files,
                  json_stats=mbin_nmdc.stats_json,
                  gff_file=stage.gff,
                  proteins_file=stage.proteins,
@@ -313,6 +314,8 @@ task stage {
 
 
 task package{
+     String proj
+     String prefix==sub(proj, ":", "_")
      Array[File] bins
      File json_stats
      File gff_file
@@ -329,7 +332,7 @@ task package{
      String container 
 
      command {
-             create_tarfiles.py \
+             create_tarfiles.py ${prefix} \
                      ${json_stats} ${gff_file} ${proteins_file} ${cog_file} \
                      ${ec_file} ${ko_file} ${pfam_file} ${tigrfam_file} \
                      ${cath_funfam_file} ${smart_file} ${supfam_file} \
