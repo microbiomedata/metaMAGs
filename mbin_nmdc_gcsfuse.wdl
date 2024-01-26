@@ -64,7 +64,7 @@ workflow nmdc_mags {
                 mbin_container = container
     }
     call package {
-         input:  proj = proj_name.
+         input:  proj = proj_name,
                  bins=mbin_nmdc.hqmq_bin_fasta_files,
                  json_stats=mbin_nmdc.stats_json,
                  gff_file=stage.gff,
