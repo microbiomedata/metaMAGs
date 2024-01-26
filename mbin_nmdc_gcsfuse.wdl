@@ -315,7 +315,7 @@ task stage {
 
 task package{
      String proj
-     String prefix==sub(proj, ":", "_")
+     String prefix=sub(proj, ":", "_")
      Array[File] bins
      File json_stats
      File gff_file
