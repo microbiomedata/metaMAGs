@@ -26,6 +26,7 @@ workflow nmdc_mags {
     String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
     String checkm_db="/refdata/CheckM_DB/checkm_data_2015_01_16"
     String container = "microbiomedata/nmdc_mbin:0.5.1_google"
+    String package_container = "microbiomedata/nmdc_mbin_vis:0.1"
     String  stage_container="mbabinski17/gcputils:0.1"
 
     call stage {
@@ -78,7 +79,7 @@ workflow nmdc_mags {
                  smart_file=stage.smart,
                  supfam_file=stage.supfam,
                  product_names_file=stage.product_names,
-                 container=container
+                 container=package_container
     }
 
     call finish_mags {
@@ -102,8 +103,11 @@ workflow nmdc_mags {
         stats_tsv = mbin_nmdc.stats_tsv,
         hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files,
         bin_fasta_files = mbin_nmdc.bin_fasta_files,
-        hqmq_bin_tarfiles = package.hqmq_bin_tarfiles
-
+        hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
+	barplot = package.barplot,
+        heatmap = package.heatmap,
+        kronaplot = package.kronaplot,
+        ko_matrix = package.ko_matrix
     }
 
     output {
@@ -381,17 +385,20 @@ task finish_mags {
         ln ${short} ${prefix}_bins.tooShort.fa
         ln ${unbinned} ${prefix}_bins.unbinned.fa
         ln ${checkm} ${prefix}_checkm_qa.out
-        ln ${stats_json} ${prefix}_mags_stats.json
         ln ${mbin_version} ${prefix}_bin.info
         ln ${bacsum} ${prefix}_gtdbtk.bac122.summary.tsv
         ln ${arcsum} ${prefix}_gtdbtk.ar122.summary.tsv
+	ln ${barplot} ${prefix}_barplot.pdf
+        ln ${heatmap} ${prefix}_heatmap.pdf
+        ln ${kronaplot} ${prefix}_kronaplot.html
+        ln ${ko_matrix} ${prefix}_ko_matrix.txt
 
         # cp all tarfiles, zip them under prefix, if empty touch no_mags.txt
         mkdir -p hqmq
         if [ ${n_hqmq} -gt 0 ] ; then
             (cd hqmq && cp ${sep=" " hqmq_bin_tarfiles} .)
             (cd hqmq && cp ${mbin_sdb} .)
-            (zip ../${prefix}_hqmq_bin.zip *tar.gz mbin.sdb)
+            (cd hqmq && zip -j ../${prefix}_hqmq_bin.zip *tar.gz mbin.sdb ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
         else
             (cd hqmq && touch no_hqmq_mags.txt)
             (cd hqmq && cp ${mbin_sdb} .)
@@ -401,7 +408,7 @@ task finish_mags {
         # Fix up attribute name
         cat ${stats_json} | \
            sed 's/: null/: "null"/g' | \
-           sed 's/lowDepth_/low_depth_/' > stats.json
+           sed 's/lowDepth_/low_depth_/' > ${prefix}_mags_stats.json
 
     }
 
