@@ -59,7 +59,6 @@ def filter_inp(input_file, output_file, contig_ids):
 def filter_txt(input_file, output_file, contig_ids):
     temp_out = "tmp.gff"
     filter_inp(input_file, temp_out, contig_ids)
-    print(input_file,temp_out,output_file)
     parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files(temp_out, output_file, "bogus", "bogus")
     os.unlink(temp_out)
 
