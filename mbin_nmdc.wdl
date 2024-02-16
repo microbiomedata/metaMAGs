@@ -317,6 +317,15 @@ task package{
                      ${cath_funfam_file} ${smart_file} ${supfam_file} \
                      ${product_names_file} \
                      ${sep=" " bins}
+
+        if [ -f ${prefix}_heatmap.pdf ]; then
+            echo "KO analysis plot exists."
+        else
+            echo "No KO analysis result for ${proj}" > ${prefix}_heatmap.pdf
+            echo "No KO analysis result for ${proj}" > ${prefix}_barplot.pdf
+            echo "No KO analysis result for ${proj}" > ${prefix}_ko_krona.html
+            echo "No KO analysis result for ${proj}" > ${prefix}_module_completeness.tab
+        fi
      }
      output {
          Array[File] hqmq_bin_tarfiles = glob("*tar.gz")
