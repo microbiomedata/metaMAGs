@@ -104,6 +104,9 @@ The final [MiMAG](https://www.nature.com/articles/nbt.3893#Tab1) output includes
 |-- project_name_checkm_qa.out
 |-- project_name_gtdbtk.ar122.summary.tsv
 |-- project_name_gtdbtk.bac122.summary.tsv
+|-- project_name_heatmap.pdf
+|-- project_name_barplot.pdf
+|-- project_name_kronaplot.html
 ```
 
 ### Citation
