@@ -63,7 +63,7 @@ workflow nmdc_mags {
     }
     call package {
          input:  proj = proj_name,
-                 bins=flatten([mbin_nmdc.hqmq_bin_fasta_files,mbin_nmdc.bin_fasta_files]),
+                 bins=flatten([mbin_nmdc.hqmq_bin_fasta_files,mbin_nmdc.lq_bin_fasta_files]),
                  json_stats=mbin_nmdc.stats_json,
                  gff_file=stage.gff,
                  proteins_file=stage.proteins,
@@ -99,7 +99,7 @@ workflow nmdc_mags {
         stats_json = mbin_nmdc.stats_json,
         stats_tsv = mbin_nmdc.stats_tsv,
         hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files,
-        bin_fasta_files = mbin_nmdc.bin_fasta_files,
+        bin_fasta_files = mbin_nmdc.lq_bin_fasta_files,
         hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
         lq_bin_tarfiles = package.lq_bin_tarfiles,
         barplot = package.barplot,
@@ -198,7 +198,7 @@ task mbin_nmdc {
         File bacsum = "gtdbtk-output/gtdbtk.bac120.summary.tsv"
         File arcsum = "gtdbtk-output/gtdbtk.ar122.summary.tsv"
         Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
-        Array[File] bin_fasta_files = glob("metabat-bins/*fa")
+        Array[File] lq_bin_fasta_files = glob("filtered-metabat-bins/*fa")
     }    
 }
 
