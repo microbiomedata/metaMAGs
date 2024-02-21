@@ -140,6 +140,7 @@ task mbin_nmdc {
     
 
     command<<<
+        set -euo pipefail
         export GTDBTK_DATA_PATH=${gtdbtk_env}
         export CHECKM_DATA_PATH=${checkm_env}
         mbin.py ${"--threads " + threads} ${"--pthreads " + pthreads} --fna ${fna} --gff ${gff} --aln ${aln} --lintsv ${lineage}
@@ -313,6 +314,7 @@ task package{
      String container 
 
      command {
+         set -e
          create_tarfiles.py ${prefix} \
                      ${json_stats} ${gff_file} ${proteins_file} ${cog_file} \
                      ${ec_file} ${ko_file} ${pfam_file} ${tigrfam_file} \
