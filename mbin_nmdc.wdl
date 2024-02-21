@@ -61,7 +61,7 @@ workflow nmdc_mags {
     }
     call package {
          input:  proj = proj_name,
-                 bins=mbin_nmdc.hqmq_bin_fasta_files,
+                 bins=flatten([mbin_nmdc.hqmq_bin_fasta_files,mbin_nmdc.bin_fasta_files]),
                  json_stats=mbin_nmdc.stats_json,
                  gff_file=stage.gff,
                  proteins_file=stage.proteins,
@@ -99,6 +99,7 @@ workflow nmdc_mags {
         hqmq_bin_fasta_files = mbin_nmdc.hqmq_bin_fasta_files,
         bin_fasta_files = mbin_nmdc.bin_fasta_files,
         hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
+        lq_bin_tarfiles = package.lq_bin_tarfiles,
         barplot = package.barplot,
         heatmap = package.heatmap,
         kronaplot = package.kronaplot,
@@ -107,6 +108,7 @@ workflow nmdc_mags {
 
     output {
         File final_hqmq_bins_zip = finish_mags.final_hqmq_bins_zip
+        File final_lq_bins_zip = finish_mags.final_lq_bins_zip
         File final_gtdbtk_bac_summary = finish_mags.final_gtdbtk_bac_summary
         File final_gtdbtk_ar_summary = finish_mags.final_gtdbtk_ar_summary
         File short = finish_mags.final_short
@@ -328,7 +330,8 @@ task package{
         fi
      }
      output {
-         Array[File] hqmq_bin_tarfiles = glob("*tar.gz")
+         Array[File] hqmq_bin_tarfiles = glob("*_HQ.tar.gz") + glob("*_MQ.tar.gz")
+         Array[File] lq_bin_tarfiles = glob("*_LQ.tar.gz") 
          File barplot = prefix + "_barplot.pdf"
          File heatmap = prefix + "_heatmap.pdf"
          File kronaplot = prefix + "_ko_krona.html"
@@ -360,6 +363,7 @@ task finish_mags {
     Array[File] hqmq_bin_fasta_files
     Array[File] bin_fasta_files
     Array[File] hqmq_bin_tarfiles
+    Array[File] lq_bin_tarfiles
     File stats_json
     File stats_tsv
     Int n_hqmq=length(hqmq_bin_tarfiles)
@@ -397,6 +401,17 @@ task finish_mags {
             (cd hqmq && zip ../${prefix}_hqmq_bin.zip *.txt mbin.sdb)
         fi
 
+        mkdir -p lq
+        if [ ${n_bin} -gt 0 ] ; then
+            (cd lq && cp ${sep=" " lq_bin_tarfiles} .)
+            (cd lq && cp ${mbin_sdb} .)
+            (cd lq && zip -j ../${prefix}_lq_bin.zip *tar.gz mbin.sdb ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
+        else
+            (cd lq && touch no_lq_mags.txt)
+            (cd lq && cp ${mbin_sdb} .)
+            (cd lq && zip ../${prefix}_lq_bin.zip *.txt mbin.sdb)
+        fi
+
         # Fix up attribute name
         cat ${stats_json} | \
            sed 's/: null/: "null"/g' | \
@@ -407,6 +422,7 @@ task finish_mags {
     output {
         File final_checkm = "${prefix}_checkm_qa.out"
         File final_hqmq_bins_zip = "${prefix}_hqmq_bin.zip"
+        File final_lq_bins_zip = "${prefix}_lq_bin.zip"
         File final_stats_json = "${prefix}_mags_stats.json"
         File final_gtdbtk_bac_summary = "${prefix}_gtdbtk.bac122.summary.tsv"
         File final_gtdbtk_ar_summary = "${prefix}_gtdbtk.ar122.summary.tsv"
