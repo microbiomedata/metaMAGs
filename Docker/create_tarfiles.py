@@ -163,6 +163,8 @@ if __name__ == "__main__":
     for bin_data in data['mags_list']:
         if bin_data['bin_quality'] in ['MQ', 'HQ', 'LQ']:
             print(f"Processing {bin_data['bin_name']}")
+            bin_id = bin_data['bin_name']
+            contig_ids = bin_data['members_id']
             bin_file = bin_files_dict[bin_id]
             output_dir = f"{prefix}_{bin_id}_{bin_data['bin_quality']}"
             bin_dirs.append(output_dir)
