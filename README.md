@@ -97,6 +97,7 @@ The final [MiMAG](https://www.nature.com/articles/nbt.3893#Tab1) output includes
 ```
 |-- project_name_mags_stats.json
 |-- project_name_hqmq_bin.zip
+|-- project_name_lq_bin.zip
 |-- project_name_bin.info
 |-- project_name_bins.lowDepth.fa
 |-- project_name_bins.tooShort.fa
