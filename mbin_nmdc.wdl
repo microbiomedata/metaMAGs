@@ -329,10 +329,10 @@ task package{
         if [ -f ~{prefix}_heatmap.pdf ]; then
             echo "KO analysis plot exists."
         else
-            echo "No KO analysis result for ~{proj}" > ${prefix}_heatmap.pdf
-            echo "No KO analysis result for ~{proj}" > ${prefix}_barplot.pdf
-            echo "No KO analysis result for ~{proj}" > ${prefix}_ko_krona.html
-            echo "No KO analysis result for ~{proj}" > ${prefix}_module_completeness.tab
+            echo "No KO analysis result for ~{proj}" > ~{prefix}_heatmap.pdf
+            echo "No KO analysis result for ~{proj}" > ~{prefix}_barplot.pdf
+            echo "No KO analysis result for ~{proj}" > ~{prefix}_ko_krona.html
+            echo "No KO analysis result for ~{proj}" > ~{prefix}_module_completeness.tab
         fi
      >>>
      output {
