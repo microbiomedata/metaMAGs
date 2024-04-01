@@ -118,8 +118,8 @@ def ko_analysis(prefix):
         if proc.returncode == 0:
             return f"{prefix}_module_completeness.tab"
         else:
-            print(errs.decode().rstrip())
-            return
+            print(errs.decode().rstrip(),file=sys.stderr)
+            sys.exit()
     
 def krona_plot(ko_result,prefix):
     ko_list = glob.glob("*.ko")
@@ -135,7 +135,7 @@ def krona_plot(ko_result,prefix):
         if proc.returncode == 0:
             return f"{prefix}_ko_krona.html"
         else:
-            print(errs.decode().rstrip())
+            print(errs.decode().rstrip(), file=sys.stderr)
             return
     
 def create_new_zip(bin_dirs):

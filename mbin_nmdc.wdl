@@ -25,8 +25,8 @@ workflow nmdc_mags {
         Int pthreads=1
         String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
         String checkm_db="/refdata/checkM_DB/checkm_data_2015_01_16"
-        String package_container = "microbiomedata/nmdc_mbin_vis:0.1"
-        String container = "microbiomedata/nmdc_mbin@sha256:c8df293e80698627ce66df7cd07f6b10e9112184e3bf1379e615d10123f7bc64"
+        String package_container = "microbiomedata/nmdc_mbin_vis:0.2"
+        String container = "microbiomedata/nmdc_mbin@sha256:63f2b48a8a24a07a03b5a9ddb87922a7b1eec78de57bf5da05e1c6a581b0586f"
     }
     call stage {
         input:
