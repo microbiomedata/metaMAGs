@@ -64,6 +64,7 @@ A json files with following entries:
 18. CheckM Database
 19. (optional) nmdc_mags.threads: The number of threads used by metabat/samtools/checkm/gtdbtk. default: 64
 20. (optional) nmdc_mags.pthreads: The number of threads used by pplacer (Use lower number to reduce the memory usage) default: 1
+21. (optional) nmdc_mags.map_file: MAP file containing mapping of contig headers to annotation IDs 
 
 ```
 {
