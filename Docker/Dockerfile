@@ -1,4 +1,4 @@
-FROM njvarghese/mbin:v1.0
+FROM doejgi/mbin:v1.0
 ## python 3.9.12
 MAINTAINER chienchi@lanl.gov
 
@@ -14,6 +14,7 @@ ADD * /opt/conda/bin/
 
 ENV GTDBTK_DATA_PATH /databases/GTDBTK_DB
 ENV CHECKM_DATA_PATH /databases/CheckM_DB
+ENV EUKCC2_DB /databases/EUKCC2_DB
 
 WORKDIR /data
 
