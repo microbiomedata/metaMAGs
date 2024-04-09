@@ -18,7 +18,6 @@ workflow nmdc_mags {
         String gene_phylogeny_file
         String lineage_file
         File? map_file
-        File? domain_file
         String? scratch_dir
         Int cpu=32
         Int threads=64
@@ -59,6 +58,7 @@ workflow nmdc_mags {
                 pthreads = pthreads,
                 gtdbtk_env = gtdbtk_db,
                 checkm_env = checkm_db,
+                map_file = map_file,
                 mbin_container = container
     }
     call package {
@@ -134,6 +134,7 @@ task mbin_nmdc {
         File gff
         File lineage
         String name
+        File? map_file
         Int? threads
         Int? pthreads
         String gtdbtk_env
@@ -145,7 +146,7 @@ task mbin_nmdc {
         set -euo pipefail
         export GTDBTK_DATA_PATH=~{gtdbtk_env}
         export CHECKM_DATA_PATH=~{checkm_env}
-        mbin.py ~{"--threads " + threads} ~{"--pthreads " + pthreads} --fna ~{fna} --gff ~{gff} --aln ~{aln} --lintsv ~{lineage}
+        mbin.py ~{"--threads " + threads} ~{"--pthreads " + pthreads} ~{"--map " + map_file} --fna ~{fna} --gff ~{gff} --aln ~{aln} --lintsv ~{lineage}
         mbin_stats.py $PWD
         mbin_versions.py > mbin_nmdc_versions.log
         touch MAGs_stats.tsv
