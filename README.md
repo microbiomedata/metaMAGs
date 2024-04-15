@@ -12,7 +12,7 @@ The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/ar
 * [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~78G of external data that need to be downloaded and unarchived. (requires ~150GB of memory)
     * https://data.gtdb.ecogenomic.org/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
 
-* [EuKCC](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02155-4) requires ~12G of external data that need to be downloaded and unarchived.
+* [EuKCC](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02155-4)<sup>4</sup> requires ~12G of external data that need to be downloaded and unarchived.
     * http://ftp.ebi.ac.uk/pub/databases/metagenomics/eukcc/eukcc2_db_ver_1.2.tar.gz
 
 
