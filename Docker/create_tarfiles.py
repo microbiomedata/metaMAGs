@@ -11,6 +11,8 @@ import pandas as pd
 from zipfile import ZipFile
 from gff2txt import parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files
 
+__version__="0.2.0"
+
 # File extension mapping
 EXTENSION_MAPPING = {
     "cog.gff": ".cog.txt",
