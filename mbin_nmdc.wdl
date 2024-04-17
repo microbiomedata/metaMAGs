@@ -24,8 +24,9 @@ workflow nmdc_mags {
         Int pthreads=1
         String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
         String checkm_db="/refdata/checkM_DB/checkm_data_2015_01_16"
-        String package_container = "microbiomedata/nmdc_mbin_vis:0.2"
-        String container = "microbiomedata/nmdc_mbin@sha256:63f2b48a8a24a07a03b5a9ddb87922a7b1eec78de57bf5da05e1c6a581b0586f"
+        String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
+        String package_container = "microbiomedata/nmdc_mbin_vis:0.2.0"
+        String container = "microbiomedata/nmdc_mbin@sha256:6f554ab22ff7e23dc97cdab1efa99de8f5d17172d57ce8d7923ca289c567ac9d"
     }
     call stage {
         input:
@@ -58,6 +59,7 @@ workflow nmdc_mags {
                 pthreads = pthreads,
                 gtdbtk_env = gtdbtk_db,
                 checkm_env = checkm_db,
+                eukcc2_env = eukcc2_db,
                 map_file = map_file,
                 mbin_container = container
     }
@@ -105,6 +107,7 @@ workflow nmdc_mags {
         barplot = package.barplot,
         heatmap = package.heatmap,
         kronaplot = package.kronaplot,
+        eukcc_file=mbin_nmdc.eukcc_csv,
         ko_matrix = package.ko_matrix
     }
 
@@ -139,6 +142,7 @@ task mbin_nmdc {
         Int? pthreads
         String gtdbtk_env
         String checkm_env
+	    String? eukcc2_env
         String mbin_container
     }
 
@@ -146,7 +150,7 @@ task mbin_nmdc {
         set -euo pipefail
         export GTDBTK_DATA_PATH=~{gtdbtk_env}
         export CHECKM_DATA_PATH=~{checkm_env}
-        mbin.py ~{"--threads " + threads} ~{"--pthreads " + pthreads} ~{"--map " + map_file} --fna ~{fna} --gff ~{gff} --aln ~{aln} --lintsv ~{lineage}
+        mbin.py ~{"--threads " + threads} ~{"--pthreads " + pthreads} ~{"--map " + map_file} ~{"--eukccdb " + eukcc2_env} --fna ~{fna} --gff ~{gff} --aln ~{aln} --lintsv ~{lineage}
         mbin_stats.py $PWD
         mbin_versions.py > mbin_nmdc_versions.log
         touch MAGs_stats.tsv
@@ -178,6 +182,13 @@ task mbin_nmdc {
             mkdir -p gtdbtk-output
             echo "Mbin Sdb Could not be created for ~{name}" > mbin.sdb
         fi
+
+        if [ -f eukcc_output/eukcc.csv.final ]; then
+            echo "eukcc.csv.final exists."
+        else
+            mkdir -p eukcc_output
+            echo "No EUKCC2 result for ~{name}" > eukcc_output/eukcc.csv.final
+        fi
     >>>
 
     runtime{
@@ -198,6 +209,7 @@ task mbin_nmdc {
         File mbin_version = "mbin_nmdc_versions.log"
         File bacsum = "gtdbtk-output/gtdbtk.bac120.summary.tsv"
         File arcsum = "gtdbtk-output/gtdbtk.ar122.summary.tsv"
+	    File eukcc_csv = "eukcc_output/eukcc.csv.final"
         Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
         Array[File] lq_bin_fasta_files = glob("filtered-metabat-bins/*fa")
     }    
@@ -380,6 +392,7 @@ task finish_mags {
         File heatmap
         File kronaplot
         File ko_matrix
+        File eukcc_file
     }
     command<<<
         set -e
@@ -413,11 +426,11 @@ task finish_mags {
         if [ ~{n_bin} -gt 0 ] ; then
             (cd lq && cp ~{sep=" " lq_bin_tarfiles} .)
             (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip -j ../~{prefix}_lq_bin.zip *tar.gz mbin.sdb ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
+            (cd lq && zip -j ../~{prefix}_lq_bin.zip *tar.gz mbin.sdb ~{eukcc_file} ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
         else
             (cd lq && touch no_lq_mags.txt)
             (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip ../~{prefix}_lq_bin.zip *.txt mbin.sdb)
+            (cd lq && zip ../~{prefix}_lq_bin.zip *.txt mbin.sdb ~{eukcc_file} )
         fi
 
         # Fix up attribute name

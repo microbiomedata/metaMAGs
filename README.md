@@ -2,7 +2,7 @@
 
 ## Summary
 
-The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation. It takes assembled contigs, bam file from reads mapping to contigs and [contigs annotations](https://github.com/microbiomedata/mg_annotation) result to to associate groups of contigs as deriving from a seemingly coherent microbial species (binning) and evaluted by checkM and gtdb-tk. 
+The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)<sup>1</sup> for metagenome assembled genomes generation. It takes assembled contigs, bam file from reads mapping to contigs and [contigs annotations](https://github.com/microbiomedata/mg_annotation) result to associate groups of contigs as deriving from a seemingly coherent microbial species (binning) and evaluted by checkM, gtdb-tk and eukcc. 
 
 ## Required Database
 
@@ -11,6 +11,10 @@ The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/ar
 
 * [GTDB-Tk](https://doi.org/10.1093/bioinformatics/btz848)<sup>3</sup> requires ~78G of external data that need to be downloaded and unarchived. (requires ~150GB of memory)
     * https://data.gtdb.ecogenomic.org/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
+
+* [EuKCC](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02155-4)<sup>4</sup> requires ~12G of external data that need to be downloaded and unarchived.
+    * http://ftp.ebi.ac.uk/pub/databases/metagenomics/eukcc/eukcc2_db_ver_1.2.tar.gz
+
 
 * Prepare the Database
 
@@ -28,6 +32,13 @@ The workflow is based on [IMG MAGs pipeline](https://www.ncbi.nlm.nih.gov/pmc/ar
     rm gtdbtk_r214_data.tar.gz
 ```
 
+```bash
+    wget http://ftp.ebi.ac.uk/pub/databases/metagenomics/eukcc/eukcc2_db_ver_1.2.tar.gz
+    tar -xvzf eukcc2_db_ver_1.2.tar.gz
+    mv eukcc2_db_ver_1.2 EUKCC2_DB
+    rm eukcc2_db_ver_1.2.tar.gz
+```
+
 ## Running Workflow in Cromwell
 
 Description of the files:
@@ -36,9 +47,10 @@ Description of the files:
  - `.conf` file: the conf file for running Cromwell.
  - `.sh` file: the shell script for running the example workflow (sbatch)
 
-## The Docker image 
+## The Docker images
 
 [microbiomedata/nmdc_mbin](https://hub.docker.com/r/microbiomedata/nmdc_mbin)
+[microbiomedata/nmdc_mbin_vis](https://hub.docker.com/r/microbiomedata/nmdc_mbin_vis)
 
 ## Input files
 
@@ -114,4 +126,5 @@ The final [MiMAG](https://www.nature.com/articles/nbt.3893#Tab1) output includes
 ### Citation
 1. Chen IA, Chu K, Palaniappan K, et al. IMG/M v.5.0: an integrated data management and comparative analysis system for microbial genomes and microbiomes. Nucleic Acids Res. 2019;47(D1):D666‐D677. [doi:10.1093/nar/gky901](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323987/)
 2. Parks DH, Imelfort M, Skennerton CT, Hugenholtz P, Tyson GW. CheckM: assessing the quality of microbial genomes recovered from isolates, single cells, and metagenomes. Genome Res. 2015;25(7):1043‐1055. [doi:10.1101/gr.186072.114](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4484387/)
-3. Pierre-Alain Chaumeil, Aaron J Mussig, Philip Hugenholtz, Donovan H Parks, GTDB-Tk: a toolkit to classify genomes with the Genome Taxonomy Database, Bioinformatics, Volume 36, Issue 6, 15 March 2020, Pages 1925–1927, [https://doi.org/10.1093/bioinformatics/btz848](https://doi.org/10.1093/bioinformatics/btz848)
+3. Pierre-Alain Chaumeil, Aaron J Mussig, Philip Hugenholtz, Donovan H Parks, GTDB-Tk: a toolkit to classify genomes with the Genome Taxonomy Database, Bioinformatics, Volume 36, Issue 6, 15 March 2020, Pages 1925–1927, [doi.org/10.1093/bioinformatics/btz848](https://doi.org/10.1093/bioinformatics/btz848)
+4. Saary, Paul, Alex L. Mitchell, and Robert D. Finn. "Estimating the quality of eukaryotic genomes recovered from metagenomic analysis with EukCC." Genome biology 21.1 (2020): 1-21. [doi.org/10.1186/s13059-020-02155-4](https://doi.org/10.1186/s13059-020-02155-4)
