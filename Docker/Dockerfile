@@ -12,6 +12,8 @@ ENV container docker
 
 ADD * /opt/conda/bin/
 
+CMD mv /opt/conda/bin/treehandler.py /opt/conda/lib/python3.9/site-packages/eukcc/treehandler.py
+
 ENV GTDBTK_DATA_PATH /databases/GTDBTK_DB
 ENV CHECKM_DATA_PATH /databases/CheckM_DB
 ENV EUKCC2_DB /databases/EUKCC2_DB
