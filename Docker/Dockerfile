@@ -1,8 +1,8 @@
-FROM doejgi/mbin:v1.0
+FROM doejgi/mbin:v1.0.1
 ## python 3.9.12
 MAINTAINER chienchi@lanl.gov
 
-LABEL version="1.0"
+LABEL version="1.0.1"
 LABEL software="NMDC_MAG_Pipeline"
 LABEL tags="bioinformatics"
 
