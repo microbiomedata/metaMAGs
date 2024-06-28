@@ -8,6 +8,8 @@ import glob
 import subprocess
 import shlex
 import pandas as pd
+from pathlib import Path
+import fitz
 from zipfile import ZipFile
 from gff2txt import parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files
 
@@ -118,11 +120,24 @@ def ko_analysis(prefix):
         proc = subprocess.Popen(shlex.split(" ".join(cmd)), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs, errs = proc.communicate()
         if proc.returncode == 0:
+            if os.path.exists(f"{prefix}_barplot.pdf"):
+                pdf_to_png(f"{prefix}_barplot.pdf")
+            if os.path.exists(f"{prefix}_heatmap.pdf"):
+                pdf_to_png(f"{prefix}_heatmap.pdf")
             return f"{prefix}_module_completeness.tab"
         else:
             print(errs.decode().rstrip(),file=sys.stderr)
             sys.exit()
-    
+
+def pdf_to_png(pdf):
+    prefix = Path(pdf).stem
+    doc = fitz.open(pdf)  # open document
+    mat = fitz.Matrix(2, 2)   # zoom factor 2 in each dimension
+    for page in doc:  # iterate through the pages
+        pix = page.get_pixmap(matrix=mat)  # render page to an image
+        pix.save(f"{prefix}.png")  # store image as a PNG
+    return True
+
 def krona_plot(ko_result,prefix):
     ko_list = glob.glob("*.ko")
     if ko_list:
