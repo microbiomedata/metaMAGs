@@ -340,7 +340,11 @@ task package{
                      ~{sep=" " bins}
 
         if [ -f ~{prefix}_heatmap.pdf ]; then
-            echo "KO analysis plot exists."
+            if [ -f ~{prefix}_barplot.pdf ]; then
+                echo "KO analysis plot exists."
+            else
+                echo "There are no modules above 80% completeness. No barplot will be generated." > ~{prefix}_barplot.pdf
+            fi
         else
             echo "No KO analysis result for ~{proj}" > ~{prefix}_heatmap.pdf
             echo "No KO analysis result for ~{proj}" > ~{prefix}_barplot.pdf
