@@ -1,4 +1,4 @@
-name: WDL linter CI
+name: WDL validation CI
 
 on:
   pull_request:
