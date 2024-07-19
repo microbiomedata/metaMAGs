@@ -1,4 +1,4 @@
-name: WDL validation CI
+name: WDL linter CI
 
 on:
   pull_request:
@@ -17,13 +17,12 @@ jobs:
       with:
         python-version: '3.8' # specify the Python version you need
 
-    - name: Install JAWS
+    - name: Install MiniWDL
       run: |
         python -m pip install --upgrade pip
-        pip install --target /global/cfs/cdirs/m3408/users/nmdcda  jaws-client --index-url https://code.jgi.doe.gov/api/v4/projects/312/packages/pypi/simple
+        pip install miniwdl
 
-    - name: Validate WDL
+    - name: Run MiniWDL
       run: |
         # Add the commands to run your MiniWDL workflow
-        jaws validate mbin_nmdc.wdl
-
+        miniwdl check --suppress UnknownRuntimeKey mbin_nmdc.wdl
