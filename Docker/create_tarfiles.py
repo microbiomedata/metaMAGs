@@ -48,6 +48,10 @@ def filter_faa(input_file, output_file, contig_ids):
                 if line.startswith(">"):
                     file_id = line[1:].rstrip().split()[0]
                     contig_id = "_".join(file_id.split("_")[0:-2])
+                    contig_prefix = "-".join(file_id.split("-")[0:2])
+                if len(contig_ids) > 0 and contig_prefix not in contig_ids[0]:
+                    print(f"{contig_prefix} not part of {contig_ids[0]}, Please check the mapping file.", file=sys.stderr)
+                    #sys.exit(1)
                 if contig_id in contig_ids:
                     out_file.write(line)
 
