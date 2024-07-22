@@ -180,7 +180,7 @@ task mbin_nmdc {
             echo "mbin.sdb exists."
         else
             mkdir -p gtdbtk-output
-            echo "Mbin Sdb Could not be created for ~{name}" > mbin.sdb
+            echo "Mbin Sdb Could not be created for ~{name}" && touch mbin.sdb
         fi
 
         if [ -f eukcc_output/eukcc.csv.final ]; then
@@ -343,11 +343,11 @@ task package{
             if [ -f ~{prefix}_barplot.pdf ]; then
                 echo "KO analysis plot exists."
             else
-                echo "There are no modules above 80% completeness. No barplot will be generated." > ~{prefix}_barplot.pdf
+                echo "There are no modules above 80% completeness. No barplot will be generated." && touch ~{prefix}_barplot.pdf
             fi
         else
-            echo "No KO analysis result for ~{proj}" > ~{prefix}_heatmap.pdf
-            echo "No KO analysis result for ~{proj}" > ~{prefix}_barplot.pdf
+            echo "No KO analysis result for ~{proj}" && touch ~{prefix}_heatmap.pdf
+            echo "No KO analysis result for ~{proj}" && touch ~{prefix}_barplot.pdf
             echo "No KO analysis result for ~{proj}" > ~{prefix}_ko_krona.html
             echo "No KO analysis result for ~{proj}" > ~{prefix}_module_completeness.tab
         fi
