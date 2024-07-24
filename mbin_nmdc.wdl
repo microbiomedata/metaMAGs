@@ -326,12 +326,12 @@ task check_id_map{
     python <<CODE
     import sys
     contigIDs=[]
-    with open(~{contig_file}) as c_file:
+    with open("~{contig_file}","r") as c_file:
         for line in c_file:
             if line.startswith(">"):
                 file_id = line[1:].rstrip().split()[0]
                 contigIDs.append("file_id")
-    with open(~{proteins_file}) as p_file:
+    with open("~{proteins_file}","r") as p_file:
         for line in p_file:
             if line.startswith(">"):
                 file_id = line[1:].rstrip().split()[0]
