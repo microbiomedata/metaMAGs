@@ -257,7 +257,7 @@ task stage {
     }
    command<<<
 
-       set -e
+       set -euo pipefail
 
         function stage() {
             in=$1
@@ -323,6 +323,8 @@ task check_id_map{
         String contig_file_name=basename(contig_file)
     }
     command<<<
+    set -euo pipefail 
+
     python <<CODE
     import sys
     contigIDs=[]
@@ -348,7 +350,6 @@ task check_id_map{
     runtime {
         memory: "1 GiB"
         cpu:  2
-        maxRetries: 1
         docker: container
    }
 }
@@ -373,7 +374,7 @@ task package{
         String container 
     }
      command<<<
-         set -e
+         set -euo pipefail
          create_tarfiles.py ~{prefix} \
                      ~{json_stats} ~{gff_file} ~{proteins_file} ~{cog_file} \
                      ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
@@ -437,7 +438,7 @@ task finish_mags {
         File eukcc_file
     }
     command<<<
-        set -e
+        set -euo pipefail
         end=`date --iso-8601=seconds`
 
         ln ~{low} ~{prefix}_bins.lowDepth.fa
