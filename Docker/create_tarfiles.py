@@ -13,7 +13,7 @@ import fitz
 from zipfile import ZipFile
 from gff2txt import parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files
 
-__version__="0.2.0"
+__version__="0.5.0"
 
 # File extension mapping
 EXTENSION_MAPPING = {
@@ -48,6 +48,10 @@ def filter_faa(input_file, output_file, contig_ids):
                 if line.startswith(">"):
                     file_id = line[1:].rstrip().split()[0]
                     contig_id = "_".join(file_id.split("_")[0:-2])
+                    contig_prefix = "-".join(file_id.split("-")[0:2])
+                if contig_prefix.startswith("nmdc:") and len(contig_ids) > 0 and contig_prefix not in contig_ids[0]:
+                    print(f"{contig_prefix} not part of {contig_ids[0]}, Please check the mapping file.", file=sys.stderr)
+                    sys.exit(1)
                 if contig_id in contig_ids:
                     out_file.write(line)
 
