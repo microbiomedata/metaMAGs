@@ -349,7 +349,7 @@ task check_id_map{
     }
     runtime {
         memory: "1 GiB"
-        cpu:  2
+        cpu:  1
         docker: container
    }
 }
