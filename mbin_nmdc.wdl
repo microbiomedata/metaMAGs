@@ -48,10 +48,17 @@ workflow nmdc_mags {
             lineage_file=lineage_file
     }
 
+    call check_id_map {
+        input:
+            container=container,
+            contig_file=stage.contig,
+            proteins_file=stage.proteins
+    }
+
     call mbin_nmdc {
         input:  
                 name=proj,
-                fna = stage.contig,
+                fna = check_id_map.contig,
                 aln = stage.sam,
                 gff = stage.gff,
                 lineage=stage.lineage_tsv,
@@ -308,6 +315,43 @@ task stage {
    }
 }
 
+task check_id_map{
+    input{
+        String container
+        File contig_file
+        File proteins_file
+        String contig_file_name=basename(contig_file)
+    }
+    command<<<
+    python <<CODE
+    import sys
+    contigIDs=[]
+    with open(~{contig_file}) as c_file:
+        for line in c_file:
+            if line.startswith(">"):
+                file_id = line[1:].rstrip().split()[0]
+                contigIDs.append("file_id")
+    with open(~{proteins_file}) as p_file:
+        for line in p_file:
+            if line.startswith(">"):
+                file_id = line[1:].rstrip().split()[0]
+                contig_id = "_".join(file_id.split("_")[0:-2])
+                if contig_id not in contigIDs:
+                    print(f"{contig_id} is not in ~{contig_file_name}.", file=sys.stderr)
+                    sys.exit(1)
+    CODE
+    >>>
+
+    output{
+        File contig = contig_file
+    }
+    runtime {
+        memory: "1 GiB"
+        cpu:  2
+        maxRetries: 1
+        docker: container
+   }
+}
 
 task package{
     input{
