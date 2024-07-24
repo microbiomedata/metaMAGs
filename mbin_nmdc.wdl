@@ -331,13 +331,13 @@ task check_id_map{
     with open("~{contig_file}","r") as c_file:
         for line in c_file:
             if line.startswith(">"):
-                file_id = line[1:].rstrip().split()[0] # nmdc:wfmgan-12-gbysvd76.1_0000001
-                contigIDs.append(file_id)
+                seq_id = line[1:].rstrip().split()[0] # nmdc:wfmgan-12-gbysvd76.1_0000001
+                contigIDs.append(seq_id)
     with open("~{proteins_file}","r") as p_file:
         for line in p_file:
             if line.startswith(">"):
-                file_id = line[1:].rstrip().split()[0]  # nmdc:wfmgan-12-gbysvd76.1_0000001_1_225
-                contig_id = "_".join(file_id.split("_")[0:-2]) # nmdc:wfmgan-12-gbysvd76.1_0000001
+                seq_id = line[1:].rstrip().split()[0]  # nmdc:wfmgan-12-gbysvd76.1_0000001_1_225
+                contig_id = "_".join(seq_id.split("_")[0:-2]) # nmdc:wfmgan-12-gbysvd76.1_0000001
                 if contig_id not in contigIDs:
                     print(f"{contig_id} is not in ~{contig_file_name}.", file=sys.stderr)
                     sys.exit(1)
