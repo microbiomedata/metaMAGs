@@ -25,7 +25,7 @@ workflow nmdc_mags {
         String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
         String checkm_db="/refdata/checkM_DB/checkm_data_2015_01_16"
         String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
-        String package_container = "microbiomedata/nmdc_mbin_vis:0.2.0"
+        String package_container = "microbiomedata/nmdc_mbin_vis:0.5.0"
         String container = "microbiomedata/nmdc_mbin@sha256:57930406fb5cc364bacfc904066519de6cdc2d0ceda9db0eebf2336df3ef5349"
     }
     call stage {
@@ -185,7 +185,7 @@ task mbin_nmdc {
             echo "mbin.sdb exists."
         else
             mkdir -p gtdbtk-output
-            echo "Mbin Sdb Could not be created for ~{name}" > mbin.sdb
+            echo "Mbin Sdb Could not be created for ~{name}" && touch mbin.sdb
         fi
 
         if [ -f eukcc_output/eukcc.csv.final ]; then
@@ -387,10 +387,14 @@ task package{
                      ~{sep=" " bins}
 
         if [ -f ~{prefix}_heatmap.pdf ]; then
-            echo "KO analysis plot exists."
+            if [ -f ~{prefix}_barplot.pdf ]; then
+                echo "KO analysis plot exists."
+            else
+                echo "There are no modules above 80% completeness. No barplot will be generated." && touch ~{prefix}_barplot.pdf
+            fi
         else
-            echo "No KO analysis result for ~{proj}" > ~{prefix}_heatmap.pdf
-            echo "No KO analysis result for ~{proj}" > ~{prefix}_barplot.pdf
+            echo "No KO analysis result for ~{proj}" && touch ~{prefix}_heatmap.pdf
+            echo "No KO analysis result for ~{proj}" && touch ~{prefix}_barplot.pdf
             echo "No KO analysis result for ~{proj}" > ~{prefix}_ko_krona.html
             echo "No KO analysis result for ~{proj}" > ~{prefix}_module_completeness.tab
         fi
