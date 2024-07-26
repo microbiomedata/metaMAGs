@@ -17,7 +17,7 @@ workflow nmdc_mags {
         String product_names_file
         String gene_phylogeny_file
         String lineage_file
-        File? map_file
+        String? map_file
         String? scratch_dir
         Int cpu=32
         Int threads=64
