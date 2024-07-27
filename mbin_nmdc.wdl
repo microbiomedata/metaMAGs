@@ -61,7 +61,7 @@ workflow nmdc_mags {
                 gtdbtk_env = gtdbtk_db,
                 checkm_env = checkm_db,
                 eukcc2_env = eukcc2_db,
-                map_file = stage.map_file,
+                map_file = stage.map_tsv,
                 mbin_container = container
     }
     call package {
@@ -303,7 +303,7 @@ task stage {
         File product_names = "products.tsv"
         File gene_phylogeny = "gene_phylogeny.tsv"
         File lineage_tsv = "lineage.tsv"
-        File? map_file = map_out
+        File? map_tsv = map_out
         String start = read_string("start.txt")
    }
    runtime {
