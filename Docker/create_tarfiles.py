@@ -112,7 +112,7 @@ def find_extension(input_file):
 def write_kos(output_files):
     for in_file in output_files:
         bin_id = in_file.split(".")[-3]
-        output_file = f"{bin_id}.ko"
+        output_file = f"bins.{bin_id}.ko"
         write_ko_list(in_file, output_file)
 
 
@@ -149,7 +149,7 @@ def rewrite_files(prefix, inputs, mags):
             filter_func = get_contig_tsv
         filter_one_pass(input_file, prefix, mags, extension, filter_func,
                         post=post)
-        print(f" - {input_file.split('/')[-1]}: {time()-start}")
+        print(f" - {input_file.split('/')[-1]}: {time()-start:.3f}s")
 
 
 def ko_analysis(prefix):
