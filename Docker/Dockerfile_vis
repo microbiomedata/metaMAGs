@@ -16,18 +16,22 @@ ENV conda_env="mags_vis"
 USER root
 
 RUN \
-    micromamba create -n $conda_env -c conda-forge -c bioconda -c dnachun -c defaults -y python=3.7 pip microbeannotator=2.0.5 pandas scipy matplotlib seaborn krona && \
-    eval "$(micromamba shell hook --shell bash)" && \ 
-    micromamba activate $conda_env && \
-    pip3 install hmmer==0.1.0 pymupdf==1.22.5 && \
-    chmod 775 /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/ko_mapper.py && \
-    ln -s /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/ko_mapper.py  /opt/conda/envs/$conda_env/bin/ && \
-    ln -s /opt/conda/envs/mags_vis/lib/python3.7/site-packages/microbeannotator/data /opt/conda/envs/mags_vis/data && \
-    micromamba clean -y -a && pip cache purge
-
-ADD *.py /opt/conda/envs/$conda_env/bin/
+    micromamba create -n $conda_env -c conda-forge -c bioconda -c dnachun -c defaults -y python=3.7 \
+         pip microbeannotator=2.0.5 pandas scipy matplotlib seaborn krona && \
+    chmod 775 /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/*.py && \
+    micromamba clean -y -a
 
 ENV PATH="${PATH}:/opt/conda/envs/$conda_env/bin"
+#    eval "$(micromamba shell hook --shell bash )" && \ 
+#    micromamba activate $conda_env && \
+RUN \
+    pip3 install hmmer==0.1.0 pymupdf==1.22.5 && \
+    chmod 775 /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/*.py && \
+    ln -s /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/ko_mapper.py  /opt/conda/envs/$conda_env/bin/ && \
+    ln -s /opt/conda/envs/mags_vis/lib/python3.7/site-packages/microbeannotator/data /opt/conda/envs/mags_vis/data && \
+    pip3 cache purge
+
+ADD *.py /opt/conda/envs/$conda_env/bin/
 
 WORKDIR /data
 
