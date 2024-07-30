@@ -333,8 +333,7 @@ task check_id_map{
 
     python <<CODE
     import sys
-    contigIDs=[]
-    checknum=0
+    contigIDs={}
     with open("~{contig_file}","r") as c_file:
         for line in c_file:
             if line.startswith(">"):
@@ -349,8 +348,6 @@ task check_id_map{
                 if contig_id not in contigIDs:
                     print(f"{contig_id} is not in ~{contig_file_name}.", file=sys.stderr)
                     sys.exit(1)
-                if checknum > 10000:
-                    break
     CODE
     >>>
 
