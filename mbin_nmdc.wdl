@@ -338,7 +338,7 @@ task check_id_map{
         for line in c_file:
             if line.startswith(">"):
                 seq_id = line[1:].rstrip().split()[0] # nmdc:wfmgan-12-gbysvd76.1_0000001
-                contigIDs.append(seq_id)
+                contigIDs[seq_id]=1
     with open("~{proteins_file}","r") as p_file:
         for line in p_file:
             if line.startswith(">"):
