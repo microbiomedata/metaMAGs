@@ -58,18 +58,21 @@ def get_contig_tsv(line, contig_id):
     return "_".join(file_id.split("_")[0:-2])
 
 
-def parse_gffs(output_files):
-    for temp_out in output_files:
-        output_file = temp_out.replace(".tmp", "")
-        parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files(temp_out,
-                                                               output_file,
-                                                               "bogus",
-                                                               "bogus")
-        os.unlink(temp_out)
-
-
 def filter_one_pass(input_file, prefix, mags_data, ext, filter_func,
                     post=None):
+    """
+    This function reads an input and splits it out into files for each
+    MAG.
+
+    Inputs:
+    input_file: input filename
+    prefix: prefix to use for each output file
+    mags_data: list of dictionary objects with data for each MAG
+    ext: extension to use
+    filter_func: Function that will be called on each line to extract
+                 the contig_id
+    post: optional function to call at the end given a list of output_files
+    """
     contig_fd_map = dict()
     fd_list = []
     output_files = []
@@ -89,15 +92,21 @@ def filter_one_pass(input_file, prefix, mags_data, ext, filter_func,
                 contig_fd_map[contig_id] = []
             contig_fd_map[contig_id].append(fd)
     contig_id = None
+    # Now we go through the input file and demultiplex
+    # the output.
     with open(input_file) as in_file:
         for line in in_file:
+            # Extract the contig_id using the provided
+            # function.
             contig_id = filter_func(line, contig_id)
             if contig_id in contig_fd_map:
                 for fd in contig_fd_map[contig_id]:
                     fd.write(line)
+    # Cleanup
     for fd in fd_list:
         fd.close()
 
+    # Call optional post function
     if post:
         post(output_files)
 
@@ -109,7 +118,23 @@ def find_extension(input_file):
     return None
 
 
+def parse_gffs(output_files):
+    """
+    post function to run on gff->txt outputs
+    """
+    for temp_out in output_files:
+        output_file = temp_out.replace(".tmp", "")
+        parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files(temp_out,
+                                                               output_file,
+                                                               "bogus",
+                                                               "bogus")
+        os.unlink(temp_out)
+
+
 def write_kos(output_files):
+    """
+    Post function to extract the list of KOs
+    """
     for in_file in output_files:
         bin_id = in_file.split(".")[-3]
         output_file = f"bins.{bin_id}.ko"
@@ -217,14 +242,9 @@ def create_tarfiles(bin_dirs):
     p = Pool(threads)
     for bin_dir in bin_dirs:
         p.apply_async(create_tar_file, args=(bin_dir, ),
-                      error_callback=error_cb)
+                      error_callback=raise)
     p.close()
     p.join()
-
-
-def error_cb(err):
-    print(err)
-    raise err
 
 
 if __name__ == "__main__":
