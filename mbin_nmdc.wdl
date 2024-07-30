@@ -17,7 +17,7 @@ workflow nmdc_mags {
         String product_names_file
         String gene_phylogeny_file
         String lineage_file
-        File? map_file
+        String? map_file
         String? scratch_dir
         Int cpu=32
         Int threads=64
@@ -45,7 +45,8 @@ workflow nmdc_mags {
             supfam_file=supfam_file,
             product_names_file=product_names_file,
             gene_phylogeny_file=gene_phylogeny_file,
-            lineage_file=lineage_file
+            lineage_file=lineage_file,
+            map_file=map_file
     }
 
     call check_id_map {
@@ -67,7 +68,7 @@ workflow nmdc_mags {
                 gtdbtk_env = gtdbtk_db,
                 checkm_env = checkm_db,
                 eukcc2_env = eukcc2_db,
-                map_file = map_file,
+                map_file = stage.map_tsv,
                 mbin_container = container
     }
     call package {
@@ -147,7 +148,7 @@ task mbin_nmdc {
         Int? pthreads
         String gtdbtk_env
         String checkm_env
-	    String? eukcc2_env
+        String? eukcc2_env
         String mbin_container
     }
 
@@ -199,7 +200,7 @@ task mbin_nmdc {
     runtime{
         docker : mbin_container
         memory : "120 G"
-	    time : "2:00:00"
+        time : "2:00:00"
         cpu : threads
     }
 
@@ -214,7 +215,7 @@ task mbin_nmdc {
         File mbin_version = "mbin_nmdc_versions.log"
         File bacsum = "gtdbtk-output/gtdbtk.bac120.summary.tsv"
         File arcsum = "gtdbtk-output/gtdbtk.ar122.summary.tsv"
-	    File eukcc_csv = "eukcc_output/eukcc.csv.final"
+        File eukcc_csv = "eukcc_output/eukcc.csv.final"
         Array[File] hqmq_bin_fasta_files = glob("hqmq-metabat-bins/*fa")
         Array[File] lq_bin_fasta_files = glob("filtered-metabat-bins/*fa")
     }    
@@ -239,6 +240,7 @@ task stage {
         String product_names_file
         String gene_phylogeny_file
         String lineage_file
+        String? map_file
         String contigs_out="contigs.fasta"
         String bam_out="pairedMapped_sorted.bam"
         String gff_out="functional_annotation.gff"
@@ -254,6 +256,7 @@ task stage {
         String products_out="products.tsv"
         String gene_phylogeny_out="gene_phylogeny.tsv"
         String lineage_out="lineage.tsv"
+        String map_out="map_file.tsv"
     }
    command<<<
 
@@ -269,23 +272,25 @@ task stage {
             fi
         }
 
-        stage ~{contig_file} ~{contigs_out}
-        stage ~{sam_file} ~{bam_out}
-        stage ~{gff_file} ~{gff_out}
-        stage ~{proteins_file} ~{proteins_out}
-        stage ~{cog_file} ~{cog_out}
-        stage ~{ec_file} ~{ec_out}
-        stage ~{ko_file} ~{ko_out}
-        stage ~{pfam_file} ~{pfam_out}
-        stage ~{tigrfam_file} ~{tigrfam_out}
-        stage ~{cath_funfam_file} ~{cath_funfam_out}
-        stage ~{smart_file} ~{smart_out}
-        stage ~{supfam_file} ~{supfam_out}
-        stage ~{product_names_file} ~{products_out}
-        stage ~{gene_phylogeny_file} ~{gene_phylogeny_out}
+        stage ~{contig_file} ~{contigs_out} &
+        stage ~{sam_file} ~{bam_out} &
+        stage ~{gff_file} ~{gff_out} &
+        stage ~{proteins_file} ~{proteins_out} &
+        stage ~{cog_file} ~{cog_out} &
+        stage ~{ec_file} ~{ec_out} &
+        stage ~{ko_file} ~{ko_out} &
+        stage ~{pfam_file} ~{pfam_out} &
+        stage ~{tigrfam_file} ~{tigrfam_out} &
+        stage ~{cath_funfam_file} ~{cath_funfam_out} &
+        stage ~{smart_file} ~{smart_out} &
+        stage ~{supfam_file} ~{supfam_out} &
+        stage ~{product_names_file} ~{products_out} &
+        stage ~{gene_phylogeny_file} ~{gene_phylogeny_out} &
         stage ~{lineage_file} ~{lineage_out}
+        ~{"stage " + map_file + " " + map_out}
+        wait
 
-       date --iso-8601=seconds > start.txt
+        date --iso-8601=seconds > start.txt
 
     >>>
 
@@ -305,6 +310,7 @@ task stage {
         File product_names = "products.tsv"
         File gene_phylogeny = "gene_phylogeny.tsv"
         File lineage_tsv = "lineage.tsv"
+        File? map_tsv = map_out
         String start = read_string("start.txt")
    }
    runtime {
