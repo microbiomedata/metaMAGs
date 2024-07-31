@@ -229,7 +229,7 @@ def create_tar_file(bin_dir):
             tar.add(f"{output_file_name}", arcname=output_file_name)
 
 
-def create_tarfiles(bin_dirs):
+def create_tarfiles(bin_dirs, threads):
     """
     This parallelize the creation of the tar files
     """
