@@ -40,12 +40,6 @@ def get_contig_faa(line, contig_id):
     if line.startswith(">"):
         file_id = line[1:].rstrip().split()[0]
         contig_id = "_".join(file_id.split("_")[0:-2])
-        contig_prefix = "-".join(file_id.split("-")[0:2])
-        if contig_prefix.startswith("nmdc:") and len(contig_ids) > 0 and \
-           contig_prefix not in contig_ids[0]:
-            print(f"{contig_prefix} not part of {contig_ids[0]}," +
-                  "Please check the mapping file.", file=sys.stderr)
-            sys.exit(1)
     return contig_id
 
 
@@ -239,10 +233,13 @@ def create_tarfiles(bin_dirs):
     """
     This parallelize the creation of the tar files
     """
+    def error_cb(e):
+        raise e
+
     p = Pool(threads)
     for bin_dir in bin_dirs:
         p.apply_async(create_tar_file, args=(bin_dir, ),
-                      error_callback=raise)
+                      error_callback=error_cb)
     p.close()
     p.join()
 
@@ -282,4 +279,4 @@ if __name__ == "__main__":
     print("Generating Krona Plot")
     krona_plot(ko_result, prefix)
     print("Generating zip")
-    create_tarfiles(bin_dirs)
+    create_tarfiles(bin_dirs, threads)

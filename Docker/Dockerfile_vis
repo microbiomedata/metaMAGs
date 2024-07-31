@@ -22,9 +22,8 @@ RUN \
     micromamba clean -y -a
 
 ENV PATH="${PATH}:/opt/conda/envs/$conda_env/bin"
-#    eval "$(micromamba shell hook --shell bash )" && \ 
-#    micromamba activate $conda_env && \
-RUN \
+
+\RUN \
     pip3 install hmmer==0.1.0 pymupdf==1.22.5 && \
     chmod 775 /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/*.py && \
     ln -s /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/ko_mapper.py  /opt/conda/envs/$conda_env/bin/ && \
