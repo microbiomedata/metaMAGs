@@ -25,7 +25,6 @@ ENV PATH="${PATH}:/opt/conda/envs/$conda_env/bin"
 
 RUN \
     pip3 install hmmer==0.1.0 pymupdf==1.22.5 && \
-    chmod 775 /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/*.py && \
     ln -s /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/ko_mapper.py  /opt/conda/envs/$conda_env/bin/ && \
     ln -s /opt/conda/envs/mags_vis/lib/python3.7/site-packages/microbeannotator/data /opt/conda/envs/mags_vis/data && \
     pip3 cache purge
