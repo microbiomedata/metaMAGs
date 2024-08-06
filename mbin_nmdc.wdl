@@ -49,10 +49,17 @@ workflow nmdc_mags {
             map_file=map_file
     }
 
+    call check_id_map {
+        input:
+            container=container,
+            contig_file=stage.contig,
+            proteins_file=stage.proteins
+    }
+
     call mbin_nmdc {
         input:  
                 name=proj,
-                fna = stage.contig,
+                fna = check_id_map.contig,
                 aln = stage.sam,
                 gff = stage.gff,
                 lineage=stage.lineage_tsv,
@@ -253,7 +260,7 @@ task stage {
     }
    command<<<
 
-       set -e
+       set -euo pipefail
 
         function stage() {
             in=$1
@@ -314,6 +321,45 @@ task stage {
    }
 }
 
+task check_id_map{
+    input{
+        String container
+        File contig_file
+        File proteins_file
+        String contig_file_name=basename(contig_file)
+    }
+    command<<<
+    set -euo pipefail 
+
+    python <<CODE
+    import sys
+    contigIDs={}
+    with open("~{contig_file}","r") as c_file:
+        for line in c_file:
+            if line.startswith(">"):
+                seq_id = line[1:].rstrip().split()[0] # nmdc:wfmgan-12-gbysvd76.1_0000001
+                contigIDs[seq_id]=1
+    with open("~{proteins_file}","r") as p_file:
+        for line in p_file:
+            if line.startswith(">"):
+                seq_id = line[1:].rstrip().split()[0]  # nmdc:wfmgan-12-gbysvd76.1_0000001_1_225
+                contig_id = "_".join(seq_id.split("_")[0:-2]) # nmdc:wfmgan-12-gbysvd76.1_0000001
+                checknum += 1
+                if contig_id not in contigIDs:
+                    print(f"{contig_id} is not in ~{contig_file_name}.", file=sys.stderr)
+                    sys.exit(1)
+    CODE
+    >>>
+
+    output{
+        File contig = contig_file
+    }
+    runtime {
+        memory: "1 GiB"
+        cpu:  1
+        docker: container
+   }
+}
 
 task package{
     input{
@@ -335,7 +381,7 @@ task package{
         String container 
     }
      command<<<
-         set -e
+         set -euo pipefail
          create_tarfiles.py ~{prefix} \
                      ~{json_stats} ~{gff_file} ~{proteins_file} ~{cog_file} \
                      ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
@@ -403,7 +449,7 @@ task finish_mags {
         File eukcc_file
     }
     command<<<
-        set -e
+        set -euo pipefail
         end=`date --iso-8601=seconds`
 
         ln ~{low} ~{prefix}_bins.lowDepth.fa
