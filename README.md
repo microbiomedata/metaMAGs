@@ -50,6 +50,7 @@ Description of the files:
 ## The Docker images
 
 [microbiomedata/nmdc_mbin](https://hub.docker.com/r/microbiomedata/nmdc_mbin)
+
 [microbiomedata/nmdc_mbin_vis](https://hub.docker.com/r/microbiomedata/nmdc_mbin_vis)
 
 ## Input files
@@ -118,9 +119,9 @@ The final [MiMAG](https://www.nature.com/articles/nbt.3893#Tab1) output includes
 |-- project_name_checkm_qa.out
 |-- project_name_gtdbtk.ar122.summary.tsv
 |-- project_name_gtdbtk.bac122.summary.tsv
-|-- project_name_heatmap.pdf
-|-- project_name_barplot.pdf
-|-- project_name_kronaplot.html
+|-- project_name_heatmap.pdf  (The Heatmap presents the pdf file containing the KO analysis results for metagenome bins)
+|-- project_name_barplot.pdf  (The Bar chart presents the pdf file containing the KO analysis results for metagenome bins
+|-- project_name_kronaplot.html  (The Krona plot presents the HTML file containing the KO analysis results for metagenome bins)
 ```
 
 ### Citation
