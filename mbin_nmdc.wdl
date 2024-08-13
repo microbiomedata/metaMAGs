@@ -481,11 +481,11 @@ task finish_mags {
         if [ ~{n_lq} -gt 0 ] ; then
             (cd lq && cp ~{sep=" " lq_bin_tarfiles} .)
             (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip -j ../~{prefix}_lq_bin.zip *tar.gz mbin.sdb ~{prefix}_eukcc.csv ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
+            (cd lq && zip -j ../~{prefix}_lq_bin.zip *tar.gz mbin.sdb ../~{prefix}_eukcc.csv ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
         else
             (cd lq && touch no_lq_mags.txt)
             (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip ../~{prefix}_lq_bin.zip *.txt mbin.sdb ~{prefix}_eukcc.csv )
+            (cd lq && zip ../~{prefix}_lq_bin.zip *.txt mbin.sdb ../~{prefix}_eukcc.csv )
         fi
 
         # Fix up attribute name
