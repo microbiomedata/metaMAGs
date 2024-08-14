@@ -162,6 +162,8 @@ def rewrite_files(prefix, inputs, mags):
             post = parse_gffs
         elif extension.endswith(".gff"):
             filter_func = get_contig_gff
+        elif input_file.endswith("crispr.tsv"):
+            filter_func = get_contig_gff
         elif input_file.endswith("ko.tsv"):
             filter_func = get_contig_tsv
             post = write_kos
