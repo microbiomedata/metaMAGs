@@ -67,17 +67,15 @@ A json files with following entries:
 8. Tab delimited file for [KO](https://reusabledata.org/kegg-ftp) annotation.
 9. Tab delimited file for [PFAM](http://reusabledata.org/pfam) annotation.
 10. Tab delimited file for [TIGRFAM](http://reusabledata.org/tigrfams) annotation.
-11. Tab delimited file for [CATH FUNFAM](http://reusabledata.org/cath) annotation.
-12. Tab delimited file for [SMART](https://reusabledata.org/smart) annotation.
-13. Tab delimited file for [SUPER FAMILY](https://reusabledata.org/supfam) annotation.
-14. Tab delimited file for Gene Product name assignment.
-15. Tab delimited file for Gene Phylogeny assignment.
-16. Tab delimited file for Contig/Scaffold lineage.
-17. GTDBTK Database
-18. CheckM Database
-19. (optional) nmdc_mags.threads: The number of threads used by metabat/samtools/checkm/gtdbtk. default: 64
-20. (optional) nmdc_mags.pthreads: The number of threads used by pplacer (Use lower number to reduce the memory usage) default: 1
-21. (optional) nmdc_mags.map_file: MAP file containing mapping of contig headers to annotation IDs 
+11. Tab delimited file for [CRISPR](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-209) annotation.
+12. Tab delimited file for Gene Product name assignment.
+13. Tab delimited file for Gene Phylogeny assignment.
+14. Tab delimited file for Contig/Scaffold lineage.
+15. GTDBTK Database
+16. CheckM Database
+17. (optional) nmdc_mags.threads: The number of threads used by metabat/samtools/checkm/gtdbtk. default: 64
+18. (optional) nmdc_mags.pthreads: The number of threads used by pplacer (Use lower number to reduce the memory usage) default: 1
+19. (optional) nmdc_mags.map_file: MAP file containing mapping of contig headers to annotation IDs 
 
 ```
 {
@@ -91,9 +89,7 @@ A json files with following entries:
     "nmdc_mags.ko_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_ko.tsv",
     "nmdc_mags.pfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_pfam.gff",
     "nmdc_mags.tigrfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxxtigrfam.gff",
-    "nmdc_mags.cath_funfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_cath_funfam.gff",
-    "nmdc_mags.smart_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_smart.gff",
-    "nmdc_mags.supfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx.gff",
+    "nmdc_mags.crispr_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_crt.crisprs,
     "nmdc_mags.product_names_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_product_names.tsv",
     "nmdc_mags.gene_phylogeny_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_gene_phylogeny.tsv",
     "nmdc_mags.lineage_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_scaffold_lineage.tsv",
