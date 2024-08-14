@@ -27,11 +27,9 @@ EXTENSION_MAPPING = {
     "ko.tsv": ".ko.txt",
     "gene_phylogeny.tsv": ".phylodist.txt",
     "ec.tsv": ".ec.txt",
-    "supfam.gff": ".supfam.txt",
+    "crt.crisprs": ".crisprs.txt",
     "pfam.gff": ".pfam.txt",
     "tigrfam.gff": ".tigr.txt",
-    "cath_funfam.gff": ".cathfunfam.txt",
-    "smart.gff": ".smart.txt",
     "functional_annotation.gff": ".gff"
 }
 
