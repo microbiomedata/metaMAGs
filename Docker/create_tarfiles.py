@@ -15,7 +15,7 @@ from multiprocessing import Pool
 from time import time
 
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 
 # File extension mapping
@@ -30,6 +30,9 @@ EXTENSION_MAPPING = {
     "crt.crisprs": ".crisprs.txt",
     "pfam.gff": ".pfam.txt",
     "tigrfam.gff": ".tigr.txt",
+    "cath_funfam.gff": ".cathfunfam.txt",
+    "smart.gff": ".smart.txt",
+    "supfam.gff": ".supfam.txt",
     "functional_annotation.gff": ".gff"
 }
 
