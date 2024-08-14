@@ -237,7 +237,7 @@ task stage {
         String ko_out="ko.tsv"
         String pfam_out="pfam.gff"
         String tigrfam_out="tigrfam.gff"
-        String crispr_out="crispr.gff"
+        String crispr_out="crispr.txt"
         String products_out="products.tsv"
         String gene_phylogeny_out="gene_phylogeny.tsv"
         String lineage_out="lineage.tsv"
@@ -266,7 +266,7 @@ task stage {
         stage ~{ko_file} ~{ko_out} &
         stage ~{pfam_file} ~{pfam_out} &
         stage ~{tigrfam_file} ~{tigrfam_out} &
-        stage ~{crispr_file} ~{crispr_file} &
+        stage ~{crispr_file} ~{crispr_out} &
         stage ~{product_names_file} ~{products_out} &
         stage ~{gene_phylogeny_file} ~{gene_phylogeny_out} &
         stage ~{lineage_file} ~{lineage_out}
@@ -325,7 +325,6 @@ task check_id_map{
             if line.startswith(">"):
                 seq_id = line[1:].rstrip().split()[0]  # nmdc:wfmgan-12-gbysvd76.1_0000001_1_225
                 contig_id = "_".join(seq_id.split("_")[0:-2]) # nmdc:wfmgan-12-gbysvd76.1_0000001
-                checknum += 1
                 if contig_id not in contigIDs:
                     print(f"{contig_id} is not in ~{contig_file_name}.", file=sys.stderr)
                     sys.exit(1)
