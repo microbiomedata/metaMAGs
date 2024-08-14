@@ -237,7 +237,7 @@ task stage {
         String ko_out="ko.tsv"
         String pfam_out="pfam.gff"
         String tigrfam_out="tigrfam.gff"
-        String crispr_out="crispr.txt"
+        String crispr_out="crispr.tsv"
         String products_out="products.tsv"
         String gene_phylogeny_out="gene_phylogeny.tsv"
         String lineage_out="lineage.tsv"

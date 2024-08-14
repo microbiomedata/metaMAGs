@@ -27,7 +27,7 @@ EXTENSION_MAPPING = {
     "ko.tsv": ".ko.txt",
     "gene_phylogeny.tsv": ".phylodist.txt",
     "ec.tsv": ".ec.txt",
-    "crt.crisprs": ".crisprs.txt",
+    "crispr.tsv": ".crisprs.txt",
     "pfam.gff": ".pfam.txt",
     "tigrfam.gff": ".tigr.txt",
     "cath_funfam.gff": ".cathfunfam.txt",
