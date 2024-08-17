@@ -23,7 +23,7 @@ workflow nmdc_mags {
         String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
         String checkm_db="/refdata/checkM_DB/checkm_data_2015_01_16"
         String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
-        String package_container = "microbiomedata/nmdc_mbin_vis:0.6.0"
+        String package_container = "microbiomedata/nmdc_mbin_vis:0.7.0"
         String container = "microbiomedata/nmdc_mbin@sha256:57930406fb5cc364bacfc904066519de6cdc2d0ceda9db0eebf2336df3ef5349"
     }
     call stage {
@@ -95,7 +95,7 @@ workflow nmdc_mags {
         	checkm = mbin_nmdc.checkm,
         	mbin_sdb = mbin_nmdc.mbin_sdb,
         	mbin_version = mbin_nmdc.mbin_version,
-        	stats_json = mbin_nmdc.stats_json,
+        	stats_json = package.stats_json,
         	stats_tsv = mbin_nmdc.stats_tsv,
         	hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
         	lq_bin_tarfiles = package.lq_bin_tarfiles,
@@ -388,6 +388,7 @@ task package{
          File heatmap = prefix + "_heatmap.pdf"
          File kronaplot = prefix + "_ko_krona.html"
          File ko_matrix = prefix + "_module_completeness.tab"
+         File stats_json = prefix + "_stats.json"
      }
      runtime {
          docker: container
