@@ -13,6 +13,8 @@ import fitz
 from gff2txt import parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files
 from multiprocessing import Pool
 from time import time
+from collections import OrderedDict
+
 
 
 __version__ = "0.7.0"
@@ -51,7 +53,6 @@ def get_contig_gff(line, contig_id):
 def get_contig_tsv(line, contig_id):
     file_id = line.rstrip().split()[0]
     return "_".join(file_id.split("_")[0:-2])
-
 
 def filter_one_pass(input_file, prefix, mags_data, ext, filter_func,
                     post=None):
@@ -162,16 +163,17 @@ def rewrite_files(prefix, inputs, mags):
             post = parse_gffs
         elif extension.endswith(".gff"):
             filter_func = get_contig_gff
-        elif input_file.endswith("crispr.tsv"):
-            filter_func = get_contig_gff
         elif input_file.endswith("ko.tsv"):
             filter_func = get_contig_tsv
             post = write_kos
+        elif input_file.endswith("crispr.tsv"):
+            filter_func = get_contig_gff
         else:
             filter_func = get_contig_tsv
         filter_one_pass(input_file, prefix, mags, extension, filter_func,
                         post=post)
-        print(f" - {input_file.split('/')[-1]}: {time()-start:.3f}s")
+        
+        print(f" - {input_file.split('/')[-1]}: {time()-start:.3f}s")   
 
 
 def ko_analysis(prefix):
@@ -224,6 +226,25 @@ def krona_plot(ko_result, prefix):
             print(errs.decode().rstrip(), file=sys.stderr)
             return
 
+def gene_count(bin_dirs):
+    mags_list=[]
+    for bin_dir in bin_dirs:
+        bin_data=bin_dirs[bin_dir]
+        for output_file_name in glob.glob(f"{bin_dir}/*", recursive=True):
+            if output_file_name.endswith(".fna"):
+                total_bases=0
+                with open (output_file_name, "r") as f :
+                    for line in f:
+                        if(line[0] == ">") :
+                            continue
+                        total_bases += len(line)-1
+                bin_data['total_bases'] = total_bases
+            if output_file_name.endswith(".gff"):
+                with open(output_file_name, 'r') as fp:
+                    lines = len(fp.readlines())
+                bin_data['gene_count'] = lines
+        mags_list.append(bin_data)
+    return mags_list
 
 def create_tar_file(bin_dir):
     tar_file_name = f"{bin_dir}.tar.gz"
@@ -251,7 +272,7 @@ if __name__ == "__main__":
     data = None
     input_files = []
     bin_files_dict = {}
-    bin_dirs = []
+    bin_dirs = OrderedDict()
     threads = int(os.environ.get("THREADS", "32"))
     prefix = sys.argv[1]
     for file in sys.argv[2:]:
@@ -272,7 +293,7 @@ if __name__ == "__main__":
             if not os.path.exists(output_dir):
                 os.mkdir(output_dir)
             bin_data['output_dir'] = output_dir
-            bin_dirs.append(output_dir)
+            bin_dirs[output_dir] = bin_data
             output_filename = f"{prefix}_{bin_id}.fna"
             shutil.copy(bin_file, os.path.join(output_dir, output_filename))
     print(f"Processing {len(bin_dirs)} mags")
@@ -281,5 +302,12 @@ if __name__ == "__main__":
     ko_result = ko_analysis(prefix)
     print("Generating Krona Plot")
     krona_plot(ko_result, prefix)
+    print("Count Total base and Gene for bins")
+    mags_list = gene_count(bin_dirs)
+    print(f"Update {prefix}_stats.json")
+    data['mags_list'] = mags_list
+    with open(f"{prefix}_stats.json", "w") as of:
+        json.dump(data,of,indent = 4)
+
     print("Generating zip")
     create_tarfiles(bin_dirs, threads)
