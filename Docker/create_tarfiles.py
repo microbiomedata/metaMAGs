@@ -15,7 +15,7 @@ from multiprocessing import Pool
 from time import time
 
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 
 # File extension mapping
@@ -27,11 +27,12 @@ EXTENSION_MAPPING = {
     "ko.tsv": ".ko.txt",
     "gene_phylogeny.tsv": ".phylodist.txt",
     "ec.tsv": ".ec.txt",
-    "supfam.gff": ".supfam.txt",
+    "crispr.tsv": ".crisprs.txt",
     "pfam.gff": ".pfam.txt",
     "tigrfam.gff": ".tigr.txt",
     "cath_funfam.gff": ".cathfunfam.txt",
     "smart.gff": ".smart.txt",
+    "supfam.gff": ".supfam.txt",
     "functional_annotation.gff": ".gff"
 }
 
@@ -160,6 +161,8 @@ def rewrite_files(prefix, inputs, mags):
             extension += ".tmp"
             post = parse_gffs
         elif extension.endswith(".gff"):
+            filter_func = get_contig_gff
+        elif input_file.endswith("crispr.tsv"):
             filter_func = get_contig_gff
         elif input_file.endswith("ko.tsv"):
             filter_func = get_contig_tsv
