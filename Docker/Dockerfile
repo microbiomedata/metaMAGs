@@ -2,7 +2,7 @@ FROM doejgi/mbin:v1.0.1
 ## python 3.9.12
 MAINTAINER chienchi@lanl.gov
 
-LABEL version="1.0.1"
+LABEL version="1.0.2"
 LABEL software="NMDC_MAG_Pipeline"
 LABEL tags="bioinformatics"
 
@@ -10,7 +10,9 @@ LABEL tags="bioinformatics"
 
 ENV container docker
 
+
 ADD * /opt/conda/bin/
+
 
 ENV GTDBTK_DATA_PATH /databases/GTDBTK_DB
 ENV CHECKM_DATA_PATH /databases/CheckM_DB
