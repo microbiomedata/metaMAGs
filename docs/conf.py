@@ -20,14 +20,14 @@
 # -- Project information -----------------------------------------------------
 
 project = 'NMDC Workflows'
-copyright = '2020, National Microbiome Data Collaborative'
+copyright = '2024, National Microbiome Data Collaborative'
 author = 'National Microbiome Data Collaborative'
 
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.3.9'
 
 
 # -- General configuration ---------------------------------------------------
