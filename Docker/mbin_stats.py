@@ -53,7 +53,7 @@ def mag_meta(dbname, output):
         tmp_d["num_16s"] = row[13]
         tmp_d["num_5s"] = row[14]
         tmp_d["num_23s"] = row[15]
-        tmp_d["num_tRNA"] = row[16]
+        tmp_d["num_t_rna"] = row[16]
         tmp_d["gtdbtk_domain"] = row[17]
         tmp_d["gtdbtk_phylum"] = row[18]
         tmp_d["gtdbtk_class"] = row[19]
