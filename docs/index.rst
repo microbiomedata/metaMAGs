@@ -2,7 +2,6 @@ Metagenome Assembled Genomes Workflow (v1.3.9)
 =============================================
 
 .. image:: mags_workflow2024.png
-   :scale: 65%
    :alt: Metagenome assembled genomes generation 
 
 
