@@ -76,8 +76,8 @@ def parse_eukcc(file, bin_list):
             if 'completeness' not in line:
                 content = line.rstrip().split("\t")
                 binname = content[0].replace('.fa','')
-                eukcc[binname]['completeness'] = content[1]
-                eukcc[binname]['contamination'] = content[2]
+                eukcc[binname]['completeness'] = float(content[1])
+                eukcc[binname]['contamination'] = float(content[2])
                 eukcc[binname]['ncbi_lineage_tax_ids'] = content[3]
                 eukcc[binname]['ncbi_lineage'] = content[4]
 
