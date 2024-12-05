@@ -76,8 +76,8 @@ def parse_eukcc(file, bin_list):
             if 'completeness' not in line:
                 content = line.rstrip().split("\t")
                 binname = content[0].replace('.fa','')
-                eukcc[binname]['completeness'] = content[1]
-                eukcc[binname]['contamination'] = content[2]
+                eukcc[binname]['completeness'] = float(content[1])
+                eukcc[binname]['contamination'] = float(content[2])
                 eukcc[binname]['ncbi_lineage_tax_ids'] = content[3]
                 eukcc[binname]['ncbi_lineage'] = content[4]
 
@@ -85,8 +85,8 @@ def parse_eukcc(file, bin_list):
         if bin['bin_name'] in eukcc:
             if 'eukaryotic_evaluation' not in bin:
                 bin['eukaryotic_evaluation']= dict()
-            bin['eukaryotic_evaluation']['completeness'] = eukcc[bin['bin_name']]['completeness']
-            bin['eukaryotic_evaluation']['contamination'] = eukcc[bin['bin_name']]['contamination']
+            bin['eukaryotic_evaluation']['completeness'] = float(eukcc[bin['bin_name']]['completeness'])
+            bin['eukaryotic_evaluation']['contamination'] = float(eukcc[bin['bin_name']]['contamination'])
             bin['eukaryotic_evaluation']['ncbi_lineage_tax_ids'] = eukcc[bin['bin_name']]['ncbi_lineage_tax_ids']
             bin['eukaryotic_evaluation']['ncbi_lineage'] = eukcc[bin['bin_name']]['ncbi_lineage']
         update_bin_list.append(bin)
