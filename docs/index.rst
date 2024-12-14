@@ -1,3 +1,5 @@
+:github_url: https://github.com/microbiomedata/metaMAGs/blob/master/docs/index.rst
+
 Metagenome Assembled Genomes Workflow (v1.3.9)
 =============================================
 
