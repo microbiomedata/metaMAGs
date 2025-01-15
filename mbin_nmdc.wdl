@@ -256,7 +256,11 @@ task stage {
                 ln $in $out || cp $in $out
             fi
         }
-
+        function fail {
+            printf '%s\n' "$1" >&2 ## Send message to stderr.
+            exit "${2-1}" ## Return a code specified by $2, or 1 by default.
+        }
+        
         stage ~{contig_file} ~{contigs_out} &
         stage ~{sam_file} ~{bam_out} &
         stage ~{gff_file} ~{gff_out} &
@@ -272,7 +276,50 @@ task stage {
         stage ~{lineage_file} ~{lineage_out}
         ~{"stage " + map_file + " " + map_out}
         wait
-
+        if grep -q "Retrying" stderr; then
+            if [ ! -s ~{contigs_out} ]; then
+                fail "Staged Contig file is empty."
+            fi
+            if [ ! -s ~{bam_out} ]; then 
+                fail "Staged Bam file is empty."
+            fi
+            if [ ! -s ~{gff_out} ]; then
+                fail "Staged gff file is empty."
+            fi
+            if [ ! -s ~{proteins_out} ]; then
+                fail "Staged proteins file is empty."
+            fi
+            if [ ! -s ~{cog_out} ]; then
+                fail "Staged cog file is empty."
+            fi
+            if [ ! -s ~{ec_out} ]; then
+                fail "Staged ec file is empty."
+            fi
+            if [ ! -s ~{ko_out} ]; then
+                fail "Staged ko file is empty."
+            fi
+            if [ ! -s ~{pfam_out} ]; then
+                fail "Staged pfam file is empty."
+            fi
+            if [ ! -s ~{tigrfam_out} ]; then
+                fail "Staged tigrfam file is empty."
+            fi
+            if [ ! -s ~{crispr_out} ]; then
+                fail "Staged crispr file is empty."
+            fi
+            if [ ! -s ~{products_out} ]; then
+                fail "Staged products file is empty."
+            fi
+            if [ ! -s ~{gene_phylogeny_out} ]; then
+                fail "Staged gene_phylogeny file is empty."
+            fi
+            if [ ! -s ~{lineage_out} ]; then
+                fail "Staged lineage file is empty."
+            fi
+            if [ ! -s ~{map_out} ]; then
+                fail "Staged map file is empty."
+            fi
+        fi 
         date --iso-8601=seconds > start.txt
 
     >>>
