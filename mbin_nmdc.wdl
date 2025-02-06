@@ -320,6 +320,9 @@ task stage {
                 fail "Staged map file is empty."
             fi
         fi 
+        if grep -q "ERROR" stderr; then
+            fail "Staging task has Error. Please check the $PWD/stderr and make sure there are no incomplete/partial files."
+        fi
         date --iso-8601=seconds > start.txt
 
     >>>
