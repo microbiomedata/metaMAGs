@@ -107,7 +107,7 @@ Sample dataset(s)
 
 The following test datasets include an assembled contigs file, a SAM.gz file, and functional annotation files:
 
-- dataset: `with HQ, MQ and MQ bins (38G) <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_test_dataset.tgz>`_ . You can find input/output in the downloaded tar gz file.
+- dataset: `with HQ, MQ and LQ bins (3.3G) <https://portal.nersc.gov/cfs/m3408/test_data/metaMAGs_test_dataset.tgz>`_ . You can find input/output in the downloaded tar gz file.
 
 
 
@@ -130,31 +130,35 @@ A JSON file containing the following:
 12. Tab delimited file for Gene Product name assignment.
 13. Tab delimited file for Gene Phylogeny assignment.
 14. Tab delimited file for Contig/Scaffold lineage.
-15. GTDBTK Database
-16. CheckM Database
-17. (optional) nmdc_mags.threads: The number of threads used by metabat/samtools/checkm/gtdbtk. default: 64
-18. (optional) nmdc_mags.pthreads: The number of threads used by pplacer (Use lower number to reduce the memory usage) default: 1
-19. (optional) nmdc_mags.map_file: MAP file containing mapping of contig headers to annotation IDs 
+15. nmdc_mags.map_file: MAP file containing mapping of contig headers to annotation IDs 
+16. GTDBTK Database
+17. CheckM Database
+18. EuKCC Database
+19. (optional) nmdc_mags.threads: The number of threads used by metabat/samtools/checkm/gtdbtk. default: 64
+20. (optional) nmdc_mags.pthreads: The number of threads used by pplacer (Use lower number to reduce the memory usage) default: 1
+ 
 
 An example JSON file is shown below::
 
     {
         "nmdc_mags.proj_name": "nmdc_wfmgan-xx-xxxxxxxx",
-        "nmdc_mags.contig_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_contigs.fna",
+        "nmdc_mags.contig_file": "/path/to/Assembly/nmdc_wfmgan-xx-xxxxxxx_contigs.fna",
         "nmdc_mags.sam_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_pairedMapped_sorted.bam",
-        "nmdc_mags.gff_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_functional_annotation.gff",
-        "nmdc_mags.proteins_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_proteins.faa",
-        "nmdc_mags.cog_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_cog.gff",
-        "nmdc_mags.ec_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_ec.tsv",
-        "nmdc_mags.ko_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_ko.tsv",
-        "nmdc_mags.pfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_pfam.gff",
-        "nmdc_mags.tigrfam_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxxtigrfam.gff",
-        "nmdc_mags.crispr_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_crt.crisprs,
-        "nmdc_mags.product_names_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_product_names.tsv",
-        "nmdc_mags.gene_phylogeny_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_gene_phylogeny.tsv",
-        "nmdc_mags.lineage_file": "/path/to/Annotation/nmdc_wfmgas-xx-xxxxxxx_scaffold_lineage.tsv",
+        "nmdc_mags.gff_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_functional_annotation.gff",
+        "nmdc_mags.proteins_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_proteins.faa",
+        "nmdc_mags.cog_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_cog.gff",
+        "nmdc_mags.ec_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_ec.tsv",
+        "nmdc_mags.ko_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_ko.tsv",
+        "nmdc_mags.pfam_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_pfam.gff",
+        "nmdc_mags.tigrfam_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxxtigrfam.gff",
+        "nmdc_mags.crispr_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_crt.crisprs,
+        "nmdc_mags.product_names_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_product_names.tsv",
+        "nmdc_mags.gene_phylogeny_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_gene_phylogeny.tsv",
+        "nmdc_mags.lineage_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_scaffold_lineage.tsv",
+        "nmdc_mags.map_file":"/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_contig_names_mapping.tsv",
         "nmdc_mags.gtdbtk_db": "refdata/GTDBTK_DB",
         "nmdc_mags.checkm_db": "refdata/CheckM_DB"
+        "nmdc_mags.eukcc2_db": "refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
     }
 
 
@@ -191,7 +195,7 @@ project_name_gtdbtk.bac122.summary.tsv                                          
 Version History
 ---------------
 
-- 1.3.9 (release date **08/23/2024**; previous versions: 1.3.8)
+- 1.3.14 (release date **02/06/2025**; previous versions: 1.3.13)
 
 Point of contact
 ----------------
