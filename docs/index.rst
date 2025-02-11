@@ -7,7 +7,7 @@
          https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html#confval-github_url
 
 
-Metagenome Assembled Genomes Workflow (v1.3.9)
+Metagenome Assembled Genomes Workflow (v1.3.14)
 =============================================
 
 .. image:: mags_workflow2024.svg
