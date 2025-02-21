@@ -188,7 +188,7 @@ project_name_gtdbtk.bac122.summary.tsv                                          
 `project_name_kronaplot.html <https://github.com/user-attachments/assets/fee36f54-914c-45f7-bc07-379b4da4ea72>`_                  The Krona plot presents the HTML file containing the KO analysis results for metagenome bins
 ================================================================================================================================= =============================================================================================
 
-\* Each bin tar.gz file has bin's contig fasta (.fna), protein fasta (.faa) and coresponding ko, cog, phylodist, ec, gene_product, gff, tigr, crisprs and pfam annotation text files.
+\* Each bin tar.gz file has bin's contig fasta (.fna), protein fasta (.faa) and corresponding ko, cog, phylodist, ec, gene_product, gff, tigr, crisprs and pfam annotation text files.
 
 \*\* `ko_matrix <https://github.com/user-attachments/files/16498858/MetaG_test_ko_matrix.txt>`_ file in bin.zip: The row of the matrix is each KO modules and its name/pathway group. The value of each MAG (per column) is the module completeness. This file can be used to generate customized plots with other graphic tools/libraries.
 
