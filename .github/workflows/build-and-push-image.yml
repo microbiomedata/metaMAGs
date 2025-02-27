@@ -20,7 +20,6 @@ jobs:
               run: |
                   VERSION=$(grep "version=" Docker/Dockerfile  | cut -d"=" -f 2 | sed -e 's/\"//g')
                   echo "version=${VERSION}" >> $GITHUB_OUTPUT
-                  ## update the image version in wdl and it will pushed back in the end.
             - name: Authenticate with container registry
               uses: docker/login-action@v3
               with:
