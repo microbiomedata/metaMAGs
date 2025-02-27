@@ -1,7 +1,7 @@
 version 1.0
 workflow nmdc_mags {
     input {
-        String proj_name
+        String proj
         File contig_file
         File sam_file
         File gff_file
@@ -15,7 +15,7 @@ workflow nmdc_mags {
         File product_names_file
         File gene_phylogeny_file
         File lineage_file
-        File?   map_file
+        File? map_file
         String? scratch_dir
         Int cpu=32
         Int threads=64
@@ -54,7 +54,7 @@ workflow nmdc_mags {
 
     call mbin_nmdc {
         input:  
-                name=proj_name,
+                name=proj,
                 fna = check_id_map.contig,
                 aln = stage.sam,
                 gff = stage.gff,
@@ -69,7 +69,7 @@ workflow nmdc_mags {
     }
     call package {
          input:  
-                proj = proj_name,
+                proj = proj,
                 bins=flatten([mbin_nmdc.hqmq_bin_fasta_files,mbin_nmdc.lq_bin_fasta_files]),
                 json_stats=mbin_nmdc.stats_json,
                 gff_file=stage.gff,
@@ -88,7 +88,7 @@ workflow nmdc_mags {
     call finish_mags {
         input:  
             container="microbiomedata/workflowmeta:1.1.1",
-        	proj=proj_name,
+        	proj=proj,
         	bacsum= mbin_nmdc.bacsum,
         	arcsum = mbin_nmdc.arcsum,
         	short = mbin_nmdc.short,
