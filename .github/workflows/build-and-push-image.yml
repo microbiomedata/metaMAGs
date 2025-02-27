@@ -40,7 +40,7 @@ jobs:
                   file: Docker/Dockerfile
                   push: true
                   tags: ghcr.io/microbiomedata/nmdc-mbin:${{ steps.get_version.outputs.version }}
-            - name: update image digest OD in the wdl
+            - name: update image digest ID in the wdl
               run: |
                  DigestID=${{ steps.push.outputs.digest }}
                  sed -i -E "s;microbiomedata/nmdc-mbin\@sha256:[0-9a-zA-Z]+;microbiomedata/nmdc-mbin\@${DigestID};" mbin_nmdc.wdl
