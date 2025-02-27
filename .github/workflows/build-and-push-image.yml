@@ -42,7 +42,7 @@ jobs:
                   tags: ghcr.io/microbiomedata/nmdc-mbin:${{ steps.get_version.outputs.version }}
             - name: update imageid in the wdl
               run: |
-                 ImageID = ${{ steps.push.outputs.imageid }}
+                 ImageID=${{ steps.push.outputs.imageid }}
                  sed -i -E "s;microbiomedata/nmdc_mbin\@sha256:[0-9a-zA-Z]+;microbiomedata/nmdc-mbin\@${ImageID};" mbin_nmdc.wdl
             #A GitHub Action to detect changed files during a Workflow run and to commit and push them back to the GitHub repository. 
             #By default, the commit is made in the name of "GitHub Actions" and co-authored by the user that made the last commit.
