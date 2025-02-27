@@ -1,21 +1,21 @@
 version 1.0
 workflow nmdc_mags {
     input {
-        String proj
-        String contig_file
-        String sam_file
-        String gff_file
-        String proteins_file
-        String cog_file
-        String ec_file
-        String ko_file
-        String pfam_file
-        String tigrfam_file
-        String crispr_file
-        String product_names_file
-        String gene_phylogeny_file
-        String lineage_file
-        String? map_file
+        String proj_name
+        File contig_file
+        File sam_file
+        File gff_file
+        File proteins_file
+        File cog_file
+        File ec_file
+        File ko_file
+        File pfam_file
+        File tigrfam_file
+        File crispr_file
+        File product_names_file
+        File gene_phylogeny_file
+        File lineage_file
+        File?   map_file
         String? scratch_dir
         Int cpu=32
         Int threads=64
@@ -54,7 +54,7 @@ workflow nmdc_mags {
 
     call mbin_nmdc {
         input:  
-                name=proj,
+                name=proj_name,
                 fna = check_id_map.contig,
                 aln = stage.sam,
                 gff = stage.gff,
@@ -68,25 +68,27 @@ workflow nmdc_mags {
                 mbin_container = container
     }
     call package {
-         input:  proj = proj,
-                 bins=flatten([mbin_nmdc.hqmq_bin_fasta_files,mbin_nmdc.lq_bin_fasta_files]),
-                 json_stats=mbin_nmdc.stats_json,
-                 gff_file=stage.gff,
-                 proteins_file=stage.proteins,
-                 cog_file=stage.cog,
-                 ec_file=stage.ec,
-                 ko_file=stage.ko,
-                 pfam_file=stage.pfam,
-                 tigrfam_file=stage.tigrfam,
-                 crispr_file=stage.crispr,
-                 gene_phylogeny_file=stage.gene_phylogeny,
-                 product_names_file=stage.product_names,
-                 container=package_container
+         input:  
+                proj = proj_name,
+                bins=flatten([mbin_nmdc.hqmq_bin_fasta_files,mbin_nmdc.lq_bin_fasta_files]),
+                json_stats=mbin_nmdc.stats_json,
+                gff_file=stage.gff,
+                proteins_file=stage.proteins,
+                cog_file=stage.cog,
+                ec_file=stage.ec,
+                ko_file=stage.ko,
+                pfam_file=stage.pfam,
+                tigrfam_file=stage.tigrfam,
+                crispr_file=stage.crispr,
+                gene_phylogeny_file=stage.gene_phylogeny,
+                product_names_file=stage.product_names,
+                container=package_container
     }
 
     call finish_mags {
-        input:  container="microbiomedata/workflowmeta:1.1.1",
-        	proj=proj,
+        input:  
+            container="microbiomedata/workflowmeta:1.1.1",
+        	proj=proj_name,
         	bacsum= mbin_nmdc.bacsum,
         	arcsum = mbin_nmdc.arcsum,
         	short = mbin_nmdc.short,
@@ -127,18 +129,18 @@ workflow nmdc_mags {
 
 task mbin_nmdc {
     input{
-        File fna
-        File aln
-        File gff
-        File lineage
         String name
-        File? map_file
-        Int? threads
-        Int? pthreads
+        File   fna
+        File   aln
+        File   gff
+        File   lineage
+        File?  map_file
+        Int?   threads
+        Int?   pthreads
         String gtdbtk_env
         String checkm_env
         String? eukcc2_env
-        String mbin_container
+        String  mbin_container
     }
 
     command<<<
@@ -214,20 +216,20 @@ task mbin_nmdc {
 task stage {
     input{
         String container
-        String contig_file
-        String sam_file
-        String gff_file
-        String proteins_file
-        String cog_file
-        String ec_file
-        String ko_file
-        String pfam_file
-        String tigrfam_file
-        String crispr_file
-        String product_names_file
-        String gene_phylogeny_file
-        String lineage_file
-        String? map_file
+        File contig_file
+        File sam_file
+        File gff_file
+        File proteins_file
+        File cog_file
+        File ec_file
+        File ko_file
+        File pfam_file
+        File tigrfam_file
+        File crispr_file
+        File product_names_file
+        File gene_phylogeny_file
+        File lineage_file
+        File? map_file
         String contigs_out="contigs.fasta"
         String bam_out="pairedMapped_sorted.bam"
         String gff_out="functional_annotation.gff"
@@ -355,8 +357,8 @@ task stage {
 task check_id_map{
     input{
         String container
-        File contig_file
-        File proteins_file
+        File   contig_file
+        File   proteins_file
         String contig_file_name=basename(contig_file)
     }
     command<<<
@@ -450,22 +452,22 @@ task package{
 task finish_mags {
     input{
         String container
-        File mbin_sdb
-        File mbin_version
+        File   mbin_sdb
+        File   mbin_version
         String proj
         String prefix=sub(proj, ":", "_")
-        File bacsum
-        File arcsum
-        File? short
-        File? low
-        File? unbinned
-        File? checkm
+        File   bacsum
+        File   arcsum
+        File?  short
+        File?  low
+        File?  unbinned
+        File?  checkm
         Array[File] hqmq_bin_tarfiles
         Array[File] lq_bin_tarfiles
         File stats_json
         File stats_tsv
-        Int n_hqmq=length(hqmq_bin_tarfiles)
-        Int n_lq=length(lq_bin_tarfiles)
+        Int  n_hqmq=length(hqmq_bin_tarfiles)
+        Int  n_lq=length(lq_bin_tarfiles)
         File barplot
         File heatmap
         File kronaplot
