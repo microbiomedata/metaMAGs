@@ -1,0 +1,55 @@
+name: Build and push container image to GHCR
+
+# Run this workflow whenever a Dockerfile is updated.
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - master
+        paths:
+            - 'Docker/Dockerfile'
+
+jobs:
+    build-and-push-image:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout branch
+              uses: actions/checkout@v4
+            - name: Get Version
+              id: get_version
+              run: |
+                  VERSION=$(grep "version=" Docker/Dockerfile  | cut -d"=" -f 2 | sed -e 's/\"//g')
+                  echo "version=${VERSION}" >> $GITHUB_OUTPUT
+                  ## update the image version in wdl and it will pushed back in the end.
+            - name: Authenticate with container registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+              # Use the `docker/build-push-action` action to build the image described
+              # by the specified Dockerfile. If the build succeeds, push the image to GHCR.
+              # This action uses the `tags` parameters to tag the image with the Git tag name
+              # the image, respectively, with the output from the "get_version" step above.
+              # For more info: https://github.com/docker/build-push-action#usage.
+            - name: Build and push container image
+              id: push
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: Docker/Dockerfile
+                  push: true
+                  tags: ghcr.io/microbiomedata/nmdc-mbin:${{ steps.get_version.outputs.version }}
+            - name: update imageid in the wdl
+              run: |
+                 ImageID = ${{ steps.push.outputs.imageid }}
+                 sed -i -E "s;microbiomedata/nmdc_mbin\@sha256:[0-9a-zA-Z]+;microbiomedata/nmdc-mbin\@${ImageID};" mbin_nmdc.wdl
+            #A GitHub Action to detect changed files during a Workflow run and to commit and push them back to the GitHub repository. 
+            #By default, the commit is made in the name of "GitHub Actions" and co-authored by the user that made the last commit.
+            - uses: stefanzweifel/git-auto-commit-action@v5
+
+# References:
+# - https://docs.github.com/en/actions/learn-github-actions/variables#using-the-vars-context-to-access-configuration-variable-values
+# - https://docs.github.com/en/actions/publishing-packages/publishing-docker-images#publishing-images-to-github-packages
+# - https://github.com/microbiomedata/nmdc-edge/blob/main/.github/workflows/build-and-push-image.yml
+# - https://stackoverflow.com/questions/59191913/how-do-i-get-the-output-of-a-specific-step-in-github-actions
