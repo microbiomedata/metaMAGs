@@ -11,7 +11,7 @@ LABEL tags="bioinformatics"
 ENV container="docker"
 
 
-ADD * /opt/conda/bin/
+ADD Docker/* /opt/conda/bin/
 
 
 ENV GTDBTK_DATA_PATH=/databases/GTDBTK_DB

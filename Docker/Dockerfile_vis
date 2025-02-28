@@ -29,7 +29,7 @@ RUN \
     ln -s /opt/conda/envs/mags_vis/lib/python3.7/site-packages/microbeannotator/data /opt/conda/envs/mags_vis/data && \
     pip3 cache purge
 
-ADD *.py /opt/conda/envs/$conda_env/bin/
+ADD Docker/*.py /opt/conda/envs/$conda_env/bin/
 
 WORKDIR /data
 
