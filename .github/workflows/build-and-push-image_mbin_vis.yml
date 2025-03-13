@@ -5,7 +5,7 @@ on:
     workflow_dispatch:
     push:
         branches:
-            - master
+            - Docker
         paths:
             - 'Docker/Dockerfile_vis'
 
@@ -15,6 +15,8 @@ jobs:
         steps:
             - name: Checkout branch
               uses: actions/checkout@v4
+              with:
+                  ref: Docker
             - name: Get Version
               id: get_version
               run: |
