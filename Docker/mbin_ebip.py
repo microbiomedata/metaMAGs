@@ -49,11 +49,11 @@ def run(bins_dir, eukcc_db, num_threads, log):
    )
    log.info("EukCC completed successfully.")
   except subprocess.CalledProcessError as e:
-   log.error(f"EukCC failed with return code {e.returncode}. Check the log file for details.")
-   sys.exit('EukCC failed. Please check\n')
+   log.error(f"EukCC failed with return code {e.returncode}. Check the {eukcc_log} file for details.")
+   raise
   except Exception as e:
    log.error(f"An unexpected error occurred while running EukCC: {str(e)}")
-   sys.exit('EukCC failed. Please check\n')
+   raise
 
  #run taxonomy conversion
  ouput_with_lineage = taxlookup(ofile, ncbi_db)
