@@ -237,6 +237,7 @@ def run(contigs, bam, mapfn, gff, lineage_sdb, lineage_tsv, numcores, pplacer_co
     mbin_ebip.run(filtered_bins_dir, eukcc_db, numcores, log)
    except subprocess.CalledProcessError as e:
     log.info(f"Error during euk identification: {e}. Skipping this step.")
+
    #add checkpoint file
    if (checkpoint == "yes") : subprocess.check_call(['touch',eukcc_complete])
 
