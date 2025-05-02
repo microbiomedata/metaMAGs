@@ -233,7 +233,11 @@ def run(contigs, bam, mapfn, gff, lineage_sdb, lineage_tsv, numcores, pplacer_co
   else:
    log.info(".. running euk identification using eukcc on low quality bins.")
    #run eukcc plus tax lineage conversion
-   mbin_ebip.run(filtered_bins_dir, eukcc_db, numcores, log)
+   try:
+    mbin_ebip.run(filtered_bins_dir, eukcc_db, numcores, log)
+   except subprocess.CalledProcessError as e:
+    log.info(f"Error during euk identification: {e}. Skipping this step.")
+
    #add checkpoint file
    if (checkpoint == "yes") : subprocess.check_call(['touch',eukcc_complete])
 
