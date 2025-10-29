@@ -23,7 +23,7 @@ workflow nmdc_mags {
         String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
         String checkm_db="/refdata/checkM_DB/checkm_data_2015_01_16"
         String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
-        String package_container = "microbiomedata/nmdc_mbin_vis:0.7.1"
+        String package_container = "ghcr.io/microbiomedata/nmdc_mbin_vis:0.7.1"
         String container = "ghcr.io/microbiomedata/nmdc-mbin@sha256:e01c4ec96c3d6ac050c0cf9b83ed435209be840ce085d71bbb8dd868ee241fe1"
     }
     call stage {
