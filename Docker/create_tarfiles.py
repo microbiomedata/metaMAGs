@@ -194,8 +194,8 @@ def ko_analysis(prefix):
             else:
                 print(errs.decode().rstrip(), file=sys.stderr)
                 return f"{prefix}_module_completeness.tab"
-        except Exception as e:
-            print(f"Error running ko_mapper.py: {str(e)}")
+        except (subprocess.SubprocessError, OSError) as e:
+            print(f"Error running ko_mapper.py: {str(e)}", file=sys.stderr)
             return f"{prefix}_module_completeness.tab"
 
 
