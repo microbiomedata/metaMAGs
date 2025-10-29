@@ -192,7 +192,7 @@ def ko_analysis(prefix):
                     pdf_to_png(f"{prefix}_heatmap.pdf")
                 return f"{prefix}_module_completeness.tab"
             else:
-                print(errs.decode().rstrip())
+                print(errs.decode().rstrip(), file=sys.stderr)
                 return f"{prefix}_module_completeness.tab"
         except Exception as e:
             print(f"Error running ko_mapper.py: {str(e)}")
