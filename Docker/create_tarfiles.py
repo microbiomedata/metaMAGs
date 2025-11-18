@@ -17,7 +17,7 @@ from collections import OrderedDict
 
 
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 
 # File extension mapping
@@ -180,19 +180,23 @@ def ko_analysis(prefix):
     ko_list = glob.glob("*.ko")
     if ko_list:
         cmd = ["ko_mapper.py", "-i"] + sorted(ko_list) + ["-p", prefix]
-        proc = subprocess.Popen(shlex.split(" ".join(cmd)), shell=False,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        outs, errs = proc.communicate()
-        if proc.returncode == 0:
-            if os.path.exists(f"{prefix}_barplot.pdf"):
-                pdf_to_png(f"{prefix}_barplot.pdf")
-            if os.path.exists(f"{prefix}_heatmap.pdf"):
-                pdf_to_png(f"{prefix}_heatmap.pdf")
+        try:
+            proc = subprocess.Popen(shlex.split(" ".join(cmd)), shell=False,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+            outs, errs = proc.communicate()
+            if proc.returncode == 0:
+                if os.path.exists(f"{prefix}_barplot.pdf"):
+                    pdf_to_png(f"{prefix}_barplot.pdf")
+                if os.path.exists(f"{prefix}_heatmap.pdf"):
+                    pdf_to_png(f"{prefix}_heatmap.pdf")
+                return f"{prefix}_module_completeness.tab"
+            else:
+                print(errs.decode().rstrip(), file=sys.stderr)
+                return f"{prefix}_module_completeness.tab"
+        except (subprocess.SubprocessError, OSError) as e:
+            print(f"Error running ko_mapper.py: {str(e)}", file=sys.stderr)
             return f"{prefix}_module_completeness.tab"
-        else:
-            print(errs.decode().rstrip(), file=sys.stderr)
-            sys.exit()
 
 
 def pdf_to_png(pdf):
