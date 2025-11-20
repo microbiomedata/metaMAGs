@@ -1,4 +1,7 @@
 version 1.0
+
+import mbin_v2.wdl as mbin_v2
+
 workflow nmdc_mags {
     input {
         String proj
@@ -16,15 +19,21 @@ workflow nmdc_mags {
         File gene_phylogeny_file
         File lineage_file
         File? map_file
-        String? scratch_dir
-        Int cpu=32
         Int threads=64
-        Int pthreads=1
-        String gtdbtk_db="/refdata/GTDBTK_DB/gtdbtk_release207_v2"
-        String checkm_db="/refdata/checkM_DB/checkm_data_2015_01_16"
+        String seqtype
+        Boolean use_gpu = true  
+        String gtdbtk_db="/refdata/GTDBTK_DB/release220"
+        String gtdbtk_mash_db = '/refdata/GTDBTK_DB/mash_sketch_db_r220.msh'
+        String checkm2_db="/refdata/CheckM2_database/uniref100.KO.1.dmnd"
         String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
+        String base_container = 'njvarghese/img-base:v1.0'
+        String semibin_container = 'njvarghese/semibin:v2.2.0-pyt'
+        String checkm_container = 'quay.io/biocontainers/checkm2:1.0.2--pyh7cba7a3_0'
+        String gtdbtk_container = 'ecogenomic/gtdbtk:2.4.0' 
+        String eukcc_container = 'doejgi/eukcc:2.1.2'
         String package_container = "microbiomedata/nmdc_mbin_vis:0.7.1"
-        String container = "ghcr.io/microbiomedata/nmdc-mbin@sha256:e01c4ec96c3d6ac050c0cf9b83ed435209be840ce085d71bbb8dd868ee241fe1"
+        #String prok_bin_methods = 'SemiBin2:v2.2.0, CheckM2:v1.0.2, GTDB-Tk:v2.4.0, GTDB-Tk-database:release220'
+        #String euk_bin_methods = 'SemiBin2:v2.2.0, EukCC:v2.1.2'
     }
     call stage {
         input:
@@ -52,26 +61,37 @@ workflow nmdc_mags {
             proteins_file=stage.proteins
     }
 
-    call mbin_nmdc {
+    call mbin_v2.mbin {
         input:  
-                name=proj,
-                fna = check_id_map.contig,
-                aln = stage.sam,
-                gff = stage.gff,
-                lineage=stage.lineage_tsv,
+                contigs_file = check_id_map.contig,
+                aln_file = stage.sam,
+                img_gff = stage.gff,
+                img_lin_tsv=stage.lineage_tsv,
+                img_map = stage.map_tsv,
                 threads =  threads,
-                pthreads = pthreads,
-                gtdbtk_env = gtdbtk_db,
-                checkm_env = checkm_db,
-                eukcc2_env = eukcc2_db,
-                map_file = stage.map_tsv,
-                mbin_container = container
+                base_container = base_container,
+                semibin_container = semibin_container,
+                checkm_container = checkm_container,
+                gtdbtk_container = gtdbtk_container,
+                eukcc_container = eukcc_container,
+                gtdbtk_db = gtdbtk_db,
+                gtdbtk_mash_db = gtdbtk_mash_db, 
+                checkm2_db = checkm2_db,
+                eukcc_db = eukcc_db,
+                use_gpu = use_gpu
     }
+
+    call mbin_v2_stats{
+        input:
+            mbin_sdb = mbin.mbin_sdb
+            container = package_container
+    }
+
     call package {
          input:  
                 proj = proj,
-                bins=flatten([mbin_nmdc.hqmq_bin_fasta_files,mbin_nmdc.lq_bin_fasta_files]),
-                json_stats=mbin_nmdc.stats_json,
+                bins=mbin.bins_tar,
+                json_stats=mbin_v2_stats.stats_json,
                 gff_file=stage.gff,
                 proteins_file=stage.proteins,
                 cog_file=stage.cog,
@@ -87,24 +107,24 @@ workflow nmdc_mags {
 
     call finish_mags {
         input:  
-            container="microbiomedata/workflowmeta:1.1.1",
+            container=base_container,
         	proj=proj,
-        	bacsum= mbin_nmdc.bacsum,
-        	arcsum = mbin_nmdc.arcsum,
-        	short = mbin_nmdc.short,
-        	low = mbin_nmdc.low,
-        	unbinned = mbin_nmdc.unbinned,
-        	checkm = mbin_nmdc.checkm,
-        	mbin_sdb = mbin_nmdc.mbin_sdb,
-        	mbin_version = mbin_nmdc.mbin_version,
+        	bacsum= mbin.bacsum,
+        	arcsum = mbin.arcsum,
+        	short = mbin.short,
+        	low = mbin.low,
+        	unbinned = mbin.nobins,
+        	checkm = mbin.checkm_out,
+        	mbin_sdb = mbin.mbin_sdb,
+        	mbin_version = mbin.mbin_version,
         	stats_json = package.stats_json,
-        	stats_tsv = mbin_nmdc.stats_tsv,
+        	stats_tsv = mbin_v2_stats.stats_tsv,
         	hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
         	lq_bin_tarfiles = package.lq_bin_tarfiles,
         	barplot = package.barplot,
         	heatmap = package.heatmap,
         	kronaplot = package.kronaplot,
-        	eukcc_file=mbin_nmdc.eukcc_csv,
+        	eukcc_file=mbin.eukcc_out,
         	ko_matrix = package.ko_matrix
     }
 
@@ -124,6 +144,27 @@ workflow nmdc_mags {
         File kronaplot = finish_mags.final_kronaplot
     }
 
+
+}
+
+task mbin_v2_stats{
+    input{
+        File mbin_sdb
+        String container
+    }
+    command<<<
+
+
+    >>>
+
+    runtime{
+        docker : container
+        memory : "2 GiB"
+        runtime_minutes : 100
+    }
+    output {
+        File stats_json = 
+    }
 
 }
 
@@ -191,7 +232,7 @@ task mbin_nmdc {
     runtime{
         docker : mbin_container
         memory : "120 G"
-        time : "2:00:00"
+        runtime_minutes : 100
         cpu : threads
     }
 
@@ -351,6 +392,7 @@ task stage {
      cpu:  2
      maxRetries: 1
      docker: container
+     runtime_minutes : 1400
    }
 }
 
@@ -390,6 +432,7 @@ task check_id_map{
         memory: "1 GiB"
         cpu:  1
         docker: container
+        runtime_minutes : 100
    }
 }
 
@@ -446,6 +489,7 @@ task package{
          docker: container
          memory: "1 GiB"
          cpu:  1
+         runtime_minutes : 100
      }
 }
 
@@ -542,5 +586,6 @@ task finish_mags {
         cpu:  4
         maxRetries: 1
         docker: container
+        runtime_minutes : 1000
     }
 }
