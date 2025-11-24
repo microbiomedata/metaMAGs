@@ -1,6 +1,6 @@
 version 1.0
 
-import mbin_v2.wdl as mbin_v2
+import "mbin_v2.wdl" as mbin_v2
 
 workflow nmdc_mags {
     input {
@@ -26,18 +26,13 @@ workflow nmdc_mags {
         String gtdbtk_mash_db = '/refdata/GTDBTK_DB/mash_sketch_db_r220.msh'
         String checkm2_db="/refdata/CheckM2_database/uniref100.KO.1.dmnd"
         String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
-        String base_container = 'njvarghese/img-base:v1.0'
-        String semibin_container = 'njvarghese/semibin:v2.2.0-pyt'
-        String checkm_container = 'quay.io/biocontainers/checkm2:1.0.2--pyh7cba7a3_0'
-        String gtdbtk_container = 'ecogenomic/gtdbtk:2.4.0' 
-        String eukcc_container = 'doejgi/eukcc:2.1.2'
         String package_container = "microbiomedata/nmdc_mbin_vis:0.8.0"
         #String prok_bin_methods = 'SemiBin2:v2.2.0, CheckM2:v1.0.2, GTDB-Tk:v2.4.0, GTDB-Tk-database:release220'
         #String euk_bin_methods = 'SemiBin2:v2.2.0, EukCC:v2.1.2'
     }
     call stage {
         input:
-            container=container,
+            container=package_container,
             contig_file=contig_file,
             sam_file=sam_file,
             gff_file=gff_file,
@@ -56,7 +51,7 @@ workflow nmdc_mags {
 
     call check_id_map {
         input:
-            container=container,
+            container=package_container,
             contig_file=stage.contig,
             proteins_file=stage.proteins,
             map_file=stage.map_tsv
@@ -70,21 +65,16 @@ workflow nmdc_mags {
                 img_lin_tsv=stage.lineage_tsv,
                 img_map = stage.map_tsv,
                 threads =  threads,
-                base_container = base_container,
-                semibin_container = semibin_container,
-                checkm_container = checkm_container,
-                gtdbtk_container = gtdbtk_container,
-                eukcc_container = eukcc_container,
                 gtdbtk_db = gtdbtk_db,
                 gtdbtk_mash_db = gtdbtk_mash_db, 
                 checkm2_db = checkm2_db,
-                eukcc_db = eukcc_db,
+                eukcc_db = eukcc2_db,
                 use_gpu = use_gpu
     }
 
     call mbin_v2_stats{
         input:
-            mbin_sdb = mbin.mbin_sdb
+            mbin_sdb = mbin.mbin_sdb,
             contigs_file = check_id_map.contig,
             container = package_container
     }
@@ -92,7 +82,7 @@ workflow nmdc_mags {
     call package {
         input:  
                 proj = proj,
-                bins=mbin.bins_tar,
+                bins_tar=mbin.bins_tar,
                 json_stats=mbin_v2_stats.stats_json,
                 gff_file=stage.gff,
                 proteins_file=stage.proteins,
@@ -109,13 +99,9 @@ workflow nmdc_mags {
 
     call finish_mags {
         input:  
-            container=base_container,
+            container=package_container,
             proj=proj,
-            bacsum= mbin.bacsum,
-            arcsum = mbin.arcsum,
-            short = mbin.short,
-            low = mbin.low,
-            unbinned = mbin.nobins,
+            gtdbtk_json= mbin.gtdbtk_json,
             checkm = mbin.checkm_out,
             mbin_sdb = mbin.mbin_sdb,
             mbin_version = mbin_v2_stats.mbin_methods,
@@ -133,12 +119,8 @@ workflow nmdc_mags {
     output {
         File final_hqmq_bins_zip = finish_mags.final_hqmq_bins_zip
         File final_lq_bins_zip = finish_mags.final_lq_bins_zip
-        File final_gtdbtk_bac_summary = finish_mags.final_gtdbtk_bac_summary
-        File final_gtdbtk_ar_summary = finish_mags.final_gtdbtk_ar_summary
-        File short = finish_mags.final_short
-        File low = finish_mags.final_lowDepth_fa
-        File final_unbinned_fa  = finish_mags.final_unbinned_fa
-        File final_checkm = finish_mags.final_checkm
+        File? final_gtdbtk_json = finish_mags.final_gtdbtk_json
+        File? final_checkm = finish_mags.final_checkm
         File mags_version = finish_mags.final_version
         File final_stats_json = finish_mags.final_stats_json
         File barplot = finish_mags.final_barplot
@@ -151,17 +133,20 @@ workflow nmdc_mags {
 
 task mbin_v2_stats{
     input{
-        File mbin_sdb
+        File? mbin_sdb
         File contigs_file
         String container
     }
     command<<<
-
-        mbin_stats.py --sdb ~{mbin_sdb} --fasta ~{contigs_file}
+        if [[ -f "~{mbin_sdb}" ]]; then
+            mbin_stats.py --sdb ~{mbin_sdb} --fasta ~{contigs_file}
+        fi
         if [ -f "MAGs_stats.tsv" ]; then
             grep "^#" "MAGs_stats.tsv" > mbin_methods.txt
         fi
-
+        touch MAGs_stats.json
+        touch MAGs_stats.tsv
+        touch mbin_methods.txt
     >>>
 
     runtime{
@@ -403,43 +388,61 @@ task stage {
         docker: container
         runtime_minutes : 1400
     }
+}
 
 task check_id_map{
     input{
         String container
         File   contig_file
         File   proteins_file
-        File   map_file
-        String map_file_name=basename(map_file)
+        File?   map_file
     }
+
     command<<<
     set -euo pipefail 
 
+    if [[ ! -f "~{map_file}" ]]; then
+        echo "no map file to check id mapping."
+        exit;
+    fi
+    
     python <<CODE
-    import sys
-    contigIDs={}
-    contig_anno_IDs={}
-    with open("~{map_file}","r") as m_file:
+    import os, sys
+    map_file = "~{map_file}"
+    contig_file = "~{contig_file}"
+    proteins_file = "~{proteins_file}"
+
+    map_file_name = os.path.basename(map_file)
+
+    contigIDs = {}
+    contig_anno_IDs = {}
+
+    with open(map_file, "r") as m_file:
         for line in m_file:
             if line.startswith("#"):
                 continue
-            parts = line.rstrip().split("\t") # scaffold_3_c1	nmdc:wfmgan-11-585bp531.2_0000001
-            contigIDs[parts[0]]=1
-            contig_anno_IDs[parts[1]]=1 
-    with open("~{contig_file}","r") as c_file:
+            parts = line.rstrip().split("\t")
+            if len(parts) < 2:
+                print(f"Bad line in {map_file_name}: {line!r}", file=sys.stderr)
+                sys.exit(1)
+            contigIDs[parts[0]] = 1
+            contig_anno_IDs[parts[1]] = 1
+
+    with open(contig_file, "r") as c_file:
         for line in c_file:
             if line.startswith(">"):
-                seq_id = line[1:].rstrip().split()[0] # scaffold_3_c1
+                seq_id = line[1:].rstrip().split()[0]
                 if seq_id not in contigIDs:
-                    print(f"{seq_id} is not in ~{map_file_name}.", file=sys.stderr)
+                    print(f"{seq_id} is not in {map_file_name}.", file=sys.stderr)
                     sys.exit(1)
-    with open("~{proteins_file}","r") as p_file:
+
+    with open(proteins_file, "r") as p_file:
         for line in p_file:
             if line.startswith(">"):
-                seq_id = line[1:].rstrip().split()[0]  # nmdc:wfmgan-12-gbysvd76.1_0000001_1_225
-                contig_anno_id = "_".join(seq_id.split("_")[0:-2]) # nmdc:wfmgan-12-gbysvd76.1_0000001
+                seq_id = line[1:].rstrip().split()[0]
+                contig_anno_id = "_".join(seq_id.split("_")[0:-2])
                 if contig_anno_id not in contig_anno_IDs:
-                    print(f"{contig_anno_id} is not in ~{map_file_name}.", file=sys.stderr)
+                    print(f"{contig_anno_id} is not in {map_file_name}.", file=sys.stderr)
                     sys.exit(1)
     CODE
     >>>
@@ -459,7 +462,7 @@ task package{
     input{
         String proj
         String prefix=sub(proj, ":", "_")
-        Array[File] bins
+        File? bins_tar
         File json_stats
         File gff_file
         File proteins_file
@@ -475,12 +478,13 @@ task package{
     }
     command<<<
         set -euo pipefail
+        tar xvf ~{bins_tar}
         create_tarfiles.py ~{prefix} \
                     ~{json_stats} ~{gff_file} ~{proteins_file} ~{cog_file} \
                     ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
                     ~{crispr_file} ~{gene_phylogeny_file} \
                     ~{product_names_file} \
-                    ~{sep=" " bins}
+                    seminin2_output/output_bins/*
 
         if [ -f ~{prefix}_heatmap.pdf ]; then
             if [ -f ~{prefix}_barplot.pdf ]; then
@@ -515,15 +519,11 @@ task package{
 task finish_mags {
     input{
         String container
-        File   mbin_sdb
+        File?   mbin_sdb
         File   mbin_version
         String proj
         String prefix=sub(proj, ":", "_")
-        File   bacsum
-        File   arcsum
-        File?  short
-        File?  low
-        File?  unbinned
+        File?  gtdbtk_json
         File?  checkm
         Array[File] hqmq_bin_tarfiles
         Array[File] lq_bin_tarfiles
@@ -535,65 +535,61 @@ task finish_mags {
         File heatmap
         File kronaplot
         File ko_matrix
-        File eukcc_file
+        File? eukcc_file
     }
     command<<<
         set -euo pipefail
         end=`date --iso-8601=seconds`
 
-        ln ~{low} ~{prefix}_bins.lowDepth.fa
-        ln ~{short} ~{prefix}_bins.tooShort.fa
-        ln ~{unbinned} ~{prefix}_bins.unbinned.fa
-        ln ~{checkm} ~{prefix}_checkm_qa.out
+        if [[ -f "~{checkm}" ]]; then
+            ln ~{checkm} ~{prefix}_checkm_qa.out
+        fi
+        if [[ -f "~{gtdbtk_json}" ]]; then
+            ln ~{gtdbtk_json} ~{prefix}_gtdbtk.json
+        fi
         ln ~{mbin_version} ~{prefix}_bin.info
-        ln ~{bacsum} ~{prefix}_gtdbtk.bac122.summary.tsv
-        ln ~{arcsum} ~{prefix}_gtdbtk.ar122.summary.tsv
         ln ~{barplot} ~{prefix}_barplot.pdf
         ln ~{heatmap} ~{prefix}_heatmap.pdf
         ln ~{kronaplot} ~{prefix}_kronaplot.html
         ln ~{ko_matrix} ~{prefix}_ko_matrix.txt
-        ln ~{eukcc_file} ~{prefix}_eukcc.csv
-
+        if [[ -f "~{eukcc_file}" ]]; then
+            ln ~{eukcc_file} ~{prefix}_eukcc.csv
+        fi
         # cp all tarfiles, zip them under prefix, if empty touch no_mags.txt
         mkdir -p hqmq
         if [ ~{n_hqmq} -gt 0 ] ; then
             (cd hqmq && cp ~{sep=" " hqmq_bin_tarfiles} .)
             (cd hqmq && cp ~{mbin_sdb} .)
-            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip *tar.gz mbin.sdb ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
+            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip *tar.gz *.sdb ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
         else
             (cd hqmq && touch no_hqmq_mags.txt)
             (cd hqmq && cp ~{mbin_sdb} .)
-            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip *.txt mbin.sdb)
+            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip *.txt *.sdb)
         fi
 
         mkdir -p lq
         if [ ~{n_lq} -gt 0 ] ; then
             (cd lq && cp ~{sep=" " lq_bin_tarfiles} .)
             (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip -j ../~{prefix}_lq_bin.zip *tar.gz mbin.sdb ../~{prefix}_eukcc.csv ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
+            (cd lq && zip -j ../~{prefix}_lq_bin.zip *tar.gz *.sdb ../~{prefix}_eukcc.csv ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
         else
             (cd lq && touch no_lq_mags.txt)
             (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip -j ../~{prefix}_lq_bin.zip *.txt mbin.sdb ../~{prefix}_eukcc.csv )
+            (cd lq && zip -j ../~{prefix}_lq_bin.zip *.txt *.sdb ../~{prefix}_eukcc.csv )
         fi
 
         # Fix up attribute name
         cat ~{stats_json} | \
-        sed 's/: null/: "null"/g' | \
-        sed 's/lowDepth_/low_depth_/' > ~{prefix}_mags_stats.json
+        sed 's/: null/: "null"/g' > ~{prefix}_mags_stats.json
 
     >>>
 
     output {
-        File final_checkm = "~{prefix}_checkm_qa.out"
+        File? final_checkm = "~{prefix}_checkm_qa.out"
         File final_hqmq_bins_zip = "~{prefix}_hqmq_bin.zip"
         File final_lq_bins_zip = "~{prefix}_lq_bin.zip"
         File final_stats_json = "~{prefix}_mags_stats.json"
-        File final_gtdbtk_bac_summary = "~{prefix}_gtdbtk.bac122.summary.tsv"
-        File final_gtdbtk_ar_summary = "~{prefix}_gtdbtk.ar122.summary.tsv"
-        File final_lowDepth_fa = "~{prefix}_bins.lowDepth.fa"
-        File final_unbinned_fa = "~{prefix}_bins.unbinned.fa"
-        File final_short = "~{prefix}_bins.tooShort.fa"
+        File? final_gtdbtk_json = "~{prefix}_gtdbtk.json"
         File final_version = "~{prefix}_bin.info"
         File final_kronaplot = "~{prefix}_kronaplot.html"
         File final_heatmap = "~{prefix}_heatmap.pdf"
