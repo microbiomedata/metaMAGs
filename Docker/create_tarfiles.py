@@ -17,7 +17,7 @@ from collections import OrderedDict
 
 
 
-__version__ = "0.7.1"
+__version__ = "0.8.0"
 
 
 # File extension mapping
@@ -283,8 +283,8 @@ if __name__ == "__main__":
         file_name = os.path.basename(file)
         if file_name.endswith(".json"):
             data = json.load(open(file))
-        elif file_name.startswith("bins") and file_name.endswith(".fa"):
-            bin_id = file_name.replace('.fa', '')
+        elif file_name.startswith("SemiBin") and file_name.endswith(".fa.gz"):
+            bin_id = file_name.replace('.fa.gz', '')
             bin_files_dict[bin_id] = file
         else:
             input_files.append(file)
