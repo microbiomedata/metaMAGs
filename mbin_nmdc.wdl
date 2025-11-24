@@ -31,7 +31,7 @@ workflow nmdc_mags {
         String checkm_container = 'quay.io/biocontainers/checkm2:1.0.2--pyh7cba7a3_0'
         String gtdbtk_container = 'ecogenomic/gtdbtk:2.4.0' 
         String eukcc_container = 'doejgi/eukcc:2.1.2'
-        String package_container = "microbiomedata/nmdc_mbin_vis:0.7.1"
+        String package_container = "microbiomedata/nmdc_mbin_vis:0.8.0"
         #String prok_bin_methods = 'SemiBin2:v2.2.0, CheckM2:v1.0.2, GTDB-Tk:v2.4.0, GTDB-Tk-database:release220'
         #String euk_bin_methods = 'SemiBin2:v2.2.0, EukCC:v2.1.2'
     }
@@ -58,7 +58,8 @@ workflow nmdc_mags {
         input:
             container=container,
             contig_file=stage.contig,
-            proteins_file=stage.proteins
+            proteins_file=stage.proteins,
+            map_file=stage.map_tsv
     }
 
     call mbin_v2.mbin {
@@ -84,11 +85,12 @@ workflow nmdc_mags {
     call mbin_v2_stats{
         input:
             mbin_sdb = mbin.mbin_sdb
+            contigs_file = check_id_map.contig,
             container = package_container
     }
 
     call package {
-         input:  
+        input:  
                 proj = proj,
                 bins=mbin.bins_tar,
                 json_stats=mbin_v2_stats.stats_json,
@@ -108,24 +110,24 @@ workflow nmdc_mags {
     call finish_mags {
         input:  
             container=base_container,
-        	proj=proj,
-        	bacsum= mbin.bacsum,
-        	arcsum = mbin.arcsum,
-        	short = mbin.short,
-        	low = mbin.low,
-        	unbinned = mbin.nobins,
-        	checkm = mbin.checkm_out,
-        	mbin_sdb = mbin.mbin_sdb,
-        	mbin_version = mbin.mbin_version,
-        	stats_json = package.stats_json,
-        	stats_tsv = mbin_v2_stats.stats_tsv,
-        	hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
-        	lq_bin_tarfiles = package.lq_bin_tarfiles,
-        	barplot = package.barplot,
-        	heatmap = package.heatmap,
-        	kronaplot = package.kronaplot,
-        	eukcc_file=mbin.eukcc_out,
-        	ko_matrix = package.ko_matrix
+            proj=proj,
+            bacsum= mbin.bacsum,
+            arcsum = mbin.arcsum,
+            short = mbin.short,
+            low = mbin.low,
+            unbinned = mbin.nobins,
+            checkm = mbin.checkm_out,
+            mbin_sdb = mbin.mbin_sdb,
+            mbin_version = mbin_v2_stats.mbin_methods,
+            stats_json = package.stats_json,
+            stats_tsv = mbin_v2_stats.stats_tsv,
+            hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
+            lq_bin_tarfiles = package.lq_bin_tarfiles,
+            barplot = package.barplot,
+            heatmap = package.heatmap,
+            kronaplot = package.kronaplot,
+            eukcc_file=mbin.eukcc_out,
+            ko_matrix = package.ko_matrix
     }
 
     output {
@@ -150,10 +152,15 @@ workflow nmdc_mags {
 task mbin_v2_stats{
     input{
         File mbin_sdb
+        File contigs_file
         String container
     }
     command<<<
 
+        mbin_stats.py --sdb ~{mbin_sdb} --fasta ~{contigs_file}
+        if [ -f "MAGs_stats.tsv" ]; then
+            grep "^#" "MAGs_stats.tsv" > mbin_methods.txt
+        fi
 
     >>>
 
@@ -163,7 +170,9 @@ task mbin_v2_stats{
         runtime_minutes : 100
     }
     output {
-        File stats_json = 
+        File stats_json = "MAGs_stats.json"
+        File stats_tsv = "MAGs_stats.tsv"
+        File mbin_methods = "mbin_methods.txt"
     }
 
 }
@@ -286,9 +295,9 @@ task stage {
         String lineage_out="lineage.tsv"
         String map_out="map_file.tsv"
     }
-   command<<<
+    command<<<
 
-       set -euo pipefail
+        set -euo pipefail
 
         function stage() {
             in=$1
@@ -370,7 +379,7 @@ task stage {
 
     >>>
 
-   output{
+    output{
         File contig = contigs_out
         File sam = bam_out
         File gff = gff_out
@@ -386,22 +395,22 @@ task stage {
         File lineage_tsv = lineage_out
         File? map_tsv = map_out
         String start = read_string("start.txt")
-   }
-   runtime {
-     memory: "1 GiB"
-     cpu:  2
-     maxRetries: 1
-     docker: container
-     runtime_minutes : 1400
-   }
-}
+    }
+    runtime {
+        memory: "1 GiB"
+        cpu:  2
+        maxRetries: 1
+        docker: container
+        runtime_minutes : 1400
+    }
 
 task check_id_map{
     input{
         String container
         File   contig_file
         File   proteins_file
-        String contig_file_name=basename(contig_file)
+        File   map_file
+        String map_file_name=basename(map_file)
     }
     command<<<
     set -euo pipefail 
@@ -409,18 +418,28 @@ task check_id_map{
     python <<CODE
     import sys
     contigIDs={}
+    contig_anno_IDs={}
+    with open("~{map_file}","r") as m_file:
+        for line in m_file:
+            if line.startswith("#"):
+                continue
+            parts = line.rstrip().split("\t") # scaffold_3_c1	nmdc:wfmgan-11-585bp531.2_0000001
+            contigIDs[parts[0]]=1
+            contig_anno_IDs[parts[1]]=1 
     with open("~{contig_file}","r") as c_file:
         for line in c_file:
             if line.startswith(">"):
-                seq_id = line[1:].rstrip().split()[0] # nmdc:wfmgan-12-gbysvd76.1_0000001
-                contigIDs[seq_id]=1
+                seq_id = line[1:].rstrip().split()[0] # scaffold_3_c1
+                if seq_id not in contigIDs:
+                    print(f"{seq_id} is not in ~{map_file_name}.", file=sys.stderr)
+                    sys.exit(1)
     with open("~{proteins_file}","r") as p_file:
         for line in p_file:
             if line.startswith(">"):
                 seq_id = line[1:].rstrip().split()[0]  # nmdc:wfmgan-12-gbysvd76.1_0000001_1_225
-                contig_id = "_".join(seq_id.split("_")[0:-2]) # nmdc:wfmgan-12-gbysvd76.1_0000001
-                if contig_id not in contigIDs:
-                    print(f"{contig_id} is not in ~{contig_file_name}.", file=sys.stderr)
+                contig_anno_id = "_".join(seq_id.split("_")[0:-2]) # nmdc:wfmgan-12-gbysvd76.1_0000001
+                if contig_anno_id not in contig_anno_IDs:
+                    print(f"{contig_anno_id} is not in ~{map_file_name}.", file=sys.stderr)
                     sys.exit(1)
     CODE
     >>>
@@ -433,7 +452,7 @@ task check_id_map{
         cpu:  1
         docker: container
         runtime_minutes : 100
-   }
+    }
 }
 
 task package{
@@ -454,14 +473,14 @@ task package{
         File product_names_file
         String container 
     }
-     command<<<
-         set -euo pipefail
-         create_tarfiles.py ~{prefix} \
-                     ~{json_stats} ~{gff_file} ~{proteins_file} ~{cog_file} \
-                     ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
-                     ~{crispr_file} ~{gene_phylogeny_file} \
-                     ~{product_names_file} \
-                     ~{sep=" " bins}
+    command<<<
+        set -euo pipefail
+        create_tarfiles.py ~{prefix} \
+                    ~{json_stats} ~{gff_file} ~{proteins_file} ~{cog_file} \
+                    ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
+                    ~{crispr_file} ~{gene_phylogeny_file} \
+                    ~{product_names_file} \
+                    ~{sep=" " bins}
 
         if [ -f ~{prefix}_heatmap.pdf ]; then
             if [ -f ~{prefix}_barplot.pdf ]; then
@@ -475,22 +494,22 @@ task package{
             echo "No KO analysis result for ~{proj}" > ~{prefix}_ko_krona.html
             echo "No KO analysis result for ~{proj}" > ~{prefix}_module_completeness.tab
         fi
-     >>>
-     output {
-         Array[File] hqmq_bin_tarfiles = flatten([glob("*_HQ.tar.gz"), glob("*_MQ.tar.gz")])
-         Array[File] lq_bin_tarfiles = glob("*_LQ.tar.gz") 
-         File barplot = prefix + "_barplot.pdf"
-         File heatmap = prefix + "_heatmap.pdf"
-         File kronaplot = prefix + "_ko_krona.html"
-         File ko_matrix = prefix + "_module_completeness.tab"
-         File stats_json = prefix + "_stats.json"
-     }
-     runtime {
-         docker: container
-         memory: "1 GiB"
-         cpu:  1
-         runtime_minutes : 100
-     }
+    >>>
+    output {
+        Array[File] hqmq_bin_tarfiles = flatten([glob("*_HQ.tar.gz"), glob("*_MQ.tar.gz")])
+        Array[File] lq_bin_tarfiles = glob("*_LQ.tar.gz") 
+        File barplot = prefix + "_barplot.pdf"
+        File heatmap = prefix + "_heatmap.pdf"
+        File kronaplot = prefix + "_ko_krona.html"
+        File ko_matrix = prefix + "_module_completeness.tab"
+        File stats_json = prefix + "_stats.json"
+    }
+    runtime {
+        docker: container
+        memory: "1 GiB"
+        cpu:  1
+        runtime_minutes : 100
+    }
 }
 
 task finish_mags {
@@ -560,8 +579,8 @@ task finish_mags {
 
         # Fix up attribute name
         cat ~{stats_json} | \
-           sed 's/: null/: "null"/g' | \
-           sed 's/lowDepth_/low_depth_/' > ~{prefix}_mags_stats.json
+        sed 's/: null/: "null"/g' | \
+        sed 's/lowDepth_/low_depth_/' > ~{prefix}_mags_stats.json
 
     >>>
 
