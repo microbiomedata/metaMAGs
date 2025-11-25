@@ -22,17 +22,23 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.93406157"
-     inkscape:cx="233.38933"
-     inkscape:cy="39.076653"
+     inkscape:zoom="2"
+     inkscape:cx="439.5"
+     inkscape:cy="140.75"
      inkscape:window-width="1824"
      inkscape:window-height="1104"
      inkscape:window-x="531"
-     inkscape:window-y="93"
+     inkscape:window-y="65"
      inkscape:window-maximized="0"
      inkscape:current-layer="Layer_1" />
   <defs
      id="defs6">
+    <rect
+       x="184.14204"
+       y="141.31831"
+       width="2.1411865"
+       height="23.553051"
+       id="rect8" />
     <style
        id="style1">
       .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11, .cls-12, .cls-13, .cls-14, .cls-15, .cls-16 {
@@ -465,14 +471,13 @@
        id="rect23" />
     <text
        class="cls-38"
-       transform="translate(187.4 136.96)"
-       id="text25"><tspan
+       transform="translate(179.9,143.96)"
+       id="text25"
+       style="font-size:13.3333px;white-space:pre;inline-size:59.9079;display:inline"
+       xml:space="preserve"><tspan
          x="0"
          y="0"
-         id="tspan24">Meta</tspan><tspan
-         x="1.25"
-         y="18"
-         id="tspan25">Bat2</tspan></text>
+         id="tspan1">SemiBin</tspan></text>
   </g>
   <g
      id="g27">
@@ -499,14 +504,17 @@
        id="path27" />
     <text
        class="cls-38"
-       transform="translate(493.38 136.96)"
-       id="text29"><tspan
+       transform="translate(493.38,136.96)"
+       id="text29"
+       style="font-size:13.3333px;white-space:pre;inline-size:68.462;display:inline"
+       xml:space="preserve"><tspan
          x="0"
          y="0"
-         id="tspan28">CheckM</tspan><tspan
-         x=".42"
-         y="18"
-         id="tspan29">/MiMAG</tspan></text>
+         id="tspan2">CheckM2
+</tspan><tspan
+         x="0"
+         y="16.666624"
+         id="tspan3">/MiMAG</tspan></text>
   </g>
   <g
      id="g31">
@@ -1125,4 +1133,8 @@
      d="m 650.50585,182.19163 h 0.62 c 6.01,0 10.88,1.54382 10.88,3.45025 v 15.70744 c 0,1.90644 4.87,3.45025 10.88,3.45025 -6.01,0 -10.88,1.54382 -10.88,3.45025 v 15.70744 c 0,1.90644 -4.87,3.45026 -10.88,3.45026 h -0.62"
      id="path109-9"
      style="fill:none;fill-rule:evenodd;stroke:#000001;stroke-width:0.599189;stroke-miterlimit:10" />
+  <text
+     xml:space="preserve"
+     id="text1"
+     style="font-size:17.3333px;white-space:pre;shape-inside:url(#rect8);display:inline;fill:#82d4f1;fill-opacity:1" />
 </svg>
