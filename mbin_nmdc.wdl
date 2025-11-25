@@ -26,7 +26,7 @@ workflow nmdc_mags {
         String gtdbtk_mash_db = '/refdata/GTDBTK_DB/mash_sketch_db_r220.msh'
         String checkm2_db="/refdata/CheckM2_database/uniref100.KO.1.dmnd"
         String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
-        String package_container = "microbiomedata/nmdc_mbin_vis:0.8.0"
+        String package_container = "microbiomedata/nmdc-mbin_vis:0.8.0"
         #String prok_bin_methods = 'SemiBin2:v2.2.0, CheckM2:v1.0.2, GTDB-Tk:v2.4.0, GTDB-Tk-database:release220'
         #String euk_bin_methods = 'SemiBin2:v2.2.0, EukCC:v2.1.2'
     }
