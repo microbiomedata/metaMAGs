@@ -1,6 +1,6 @@
 version 1.0
 
-import "mbin_v2.wdl" as mbin_v2
+import "https://code.jgi.doe.gov/metagenome-science-program/mbin-docker/-/raw/main/v2-wdl/mbin_v2.wdl" as mbin_v2
 
 workflow nmdc_mags {
     input {
