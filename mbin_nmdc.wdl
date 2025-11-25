@@ -60,6 +60,7 @@ workflow nmdc_mags {
     call mbin_v2.mbin {
         input:  
                 contigs_file = check_id_map.contig,
+                seqtype = seqtype,
                 aln_file = stage.sam,
                 img_gff = stage.gff,
                 img_lin_tsv=stage.lineage_tsv,
@@ -150,9 +151,10 @@ task mbin_v2_stats{
     >>>
 
     runtime{
-        docker : container
-        memory : "2 GiB"
-        runtime_minutes : 100
+        docker: container
+        memory: "2 GiB"
+        runtime_minutes: 100
+        cpu: 1
     }
     output {
         File stats_json = "MAGs_stats.json"
@@ -224,10 +226,10 @@ task mbin_nmdc {
     >>>
 
     runtime{
-        docker : mbin_container
-        memory : "120 G"
-        runtime_minutes : 100
-        cpu : threads
+        docker: mbin_container
+        memory: "120 G"
+        runtime_minutes: 100
+        cpu: threads
     }
 
     output{
@@ -386,7 +388,7 @@ task stage {
         cpu:  2
         maxRetries: 1
         docker: container
-        runtime_minutes : 1400
+        runtime_minutes: 1400
     }
 }
 
@@ -454,7 +456,7 @@ task check_id_map{
         memory: "1 GiB"
         cpu:  1
         docker: container
-        runtime_minutes : 100
+        runtime_minutes: 100
     }
 }
 
@@ -512,7 +514,7 @@ task package{
         docker: container
         memory: "1 GiB"
         cpu:  1
-        runtime_minutes : 100
+        runtime_minutes: 100
     }
 }
 
@@ -601,6 +603,6 @@ task finish_mags {
         cpu:  4
         maxRetries: 1
         docker: container
-        runtime_minutes : 1000
+        runtime_minutes: 1000
     }
 }
