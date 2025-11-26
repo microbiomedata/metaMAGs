@@ -18,7 +18,7 @@ from collections import OrderedDict
 
 
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 
 
 # File extension mapping
