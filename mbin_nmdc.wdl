@@ -486,7 +486,7 @@ task package{
                     ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
                     ~{crispr_file} ~{gene_phylogeny_file} \
                     ~{product_names_file} \
-                    semibin2_output/output_bins/*
+                    semibin2_out/output_bins/*
 
         if [ -f ~{prefix}_heatmap.pdf ]; then
             if [ -f ~{prefix}_barplot.pdf ]; then
