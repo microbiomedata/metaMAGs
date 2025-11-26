@@ -9,6 +9,7 @@ import subprocess
 import shlex
 import pandas as pd
 from pathlib import Path
+import gzip
 import fitz
 from gff2txt import parse_cog_tigr_cathfunfam_smart_supfam_input_gff_files
 from multiprocessing import Pool
@@ -235,9 +236,9 @@ def gene_count(bin_dirs):
     for bin_dir in bin_dirs:
         bin_data=bin_dirs[bin_dir]
         for output_file_name in glob.glob(f"{bin_dir}/*", recursive=True):
-            if output_file_name.endswith(".fna"):
+            if output_file_name.endswith(".fna.gz"):
                 total_bases=0
-                with open (output_file_name, "r") as f :
+                with gzip.open(output_file_name, "rt") as f :
                     for line in f:
                         if(line[0] == ">") :
                             continue
@@ -298,7 +299,7 @@ if __name__ == "__main__":
                 os.mkdir(output_dir)
             bin_data['output_dir'] = output_dir
             bin_dirs[output_dir] = bin_data
-            output_filename = f"{prefix}_{bin_id}.fna"
+            output_filename = f"{prefix}_{bin_id}.fna.gz"
             shutil.copy(bin_file, os.path.join(output_dir, output_filename))
     print(f"Processing {len(bin_dirs)} mags")
     rewrite_files(prefix, input_files, data['mags_list'])
@@ -306,10 +307,10 @@ if __name__ == "__main__":
     ko_result = ko_analysis(prefix)
     print("Generating Krona Plot")
     krona_plot(ko_result, prefix)
-    print("Count Total base and Gene for bins")
-    mags_list = gene_count(bin_dirs)
-    print(f"Update {prefix}_stats.json")
-    data['mags_list'] = mags_list
+    #print("Count Total base and Gene for bins")
+    #mags_list = gene_count(bin_dirs)
+    #print(f"Update {prefix}_stats.json")
+    #data['mags_list'] = mags_list
     with open(f"{prefix}_stats.json", "w") as of:
         json.dump(data,of,indent = 4)
 
