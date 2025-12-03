@@ -14,5 +14,8 @@
     "nmdc_mags.proteins_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgan-11-7ma7ty92.1/nmdc_wfmgan-11-7ma7ty92.1_proteins.faa",
     "nmdc_mags.gene_phylogeny_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgan-11-7ma7ty92.1/nmdc_wfmgan-11-7ma7ty92.1_gene_phylogeny.tsv",
     "nmdc_mags.map_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgan-11-7ma7ty92.1/nmdc_wfmgan-11-7ma7ty92.1_contig_names_mapping.tsv",
-    "nmdc_mags.proj": "nmdc:wfmag-11-9dgz7m72.1"
+    "nmdc_mags.proj": "nmdc:wfmag-11-9dgz7m72.1",
+    "nmdc_mags.threads": 64,
+	"nmdc_mags.seqtype":"short_reads",
+	"nmdc_mags.use_gpu": true
 }
