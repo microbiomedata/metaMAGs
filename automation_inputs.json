@@ -1,6 +1,6 @@
 
 {
-    "nmdc_mags.contig_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgan-11-7ma7ty92.1/nmdc_wfmgan-11-7ma7ty92.1_contigs.fna",
+    "nmdc_mags.contig_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgas-13-02qywk04.1/nmdc_wfmgas-13-02qywk04.1_contigs.fna",
     "nmdc_mags.gff_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgan-11-7ma7ty92.1/nmdc_wfmgan-11-7ma7ty92.1_functional_annotation.gff",
     "nmdc_mags.crispr_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgan-11-7ma7ty92.1/nmdc_wfmgan-11-7ma7ty92.1_crt.crisprs",
     "nmdc_mags.cog_file": "https://data.microbiomedata.org/data/nmdc:omprc-13-bs19pv94/nmdc:wfmgan-11-7ma7ty92.1/nmdc_wfmgan-11-7ma7ty92.1_cog.gff",
