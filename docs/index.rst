@@ -7,7 +7,7 @@
          https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html#confval-github_url
 
 
-Metagenome Assembled Genomes Workflow (v1.4.0)
+Metagenome Assembled Genomes Workflow
 =============================================
 
 .. image:: mags_workflow2025.svg
@@ -151,7 +151,7 @@ A JSON file containing the following:
 An example JSON file is shown below::
 
     {
-        "nmdc_mags.proj_name": "nmdc_wfmga-xx-xxxxxxxx",
+        "nmdc_mags.proj_name": "nmdc_wfmag-xx-xxxxxxxx",
         "nmdc_mags.contig_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_contigs.fna",
         "nmdc_mags.sam_file": "/path/to/Assembly/nmdc_wfmgas-xx-xxxxxxx_pairedMapped_sorted.bam",
         "nmdc_mags.gff_file": "/path/to/Annotation/nmdc_wfmgan-xx-xxxxxxx_functional_annotation.gff",
