@@ -1,6 +1,6 @@
 FROM mambaorg/micromamba:latest
 ## python 3.7
-LABEL version="0.7.1"
+LABEL version="0.8.2"
 LABEL software="NMDC_MAG_vis"
 LABEL tags="bioinformatics"
 LABEL maintainer="Chienchi Lo"
@@ -16,7 +16,7 @@ ENV conda_env="mags_vis"
 USER root
 
 RUN \
-    micromamba create -n $conda_env -c conda-forge -c bioconda -c dnachun -c defaults -y python=3.7 \
+    micromamba create -n $conda_env -c conda-forge -c bioconda -c dnachun -c defaults -y python=3.7 zip \
          pip microbeannotator=2.0.5 pandas scipy matplotlib seaborn krona && \
     chmod 775 /opt/conda/envs/$conda_env/lib/python3.7/site-packages/microbeannotator/pipeline/*.py && \
     micromamba clean -y -a
