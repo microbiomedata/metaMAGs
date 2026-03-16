@@ -434,7 +434,7 @@ task check_id_map{
         for line in c_file:
             if line.startswith(">"):
                 seq_id = line[1:].rstrip().split()[0]
-                if ((seq_id not in contig_anno_IDs) and (seq_id not in contigIDs)):
+                if seq_id not in contig_anno_IDs:
                     print(f"{seq_id} is not in {map_file_name}.", file=sys.stderr)
                     sys.exit(1)
 
