@@ -1,6 +1,6 @@
 version 1.0
 
-import "https://code.jgi.doe.gov/metagenome-science-program/mbin-docker/-/raw/dba904ac7650fe310b032557b7b489c14ba60f0f/v2-wdl/mbin_v2.wdl" as mbin_v2
+import "https://code.jgi.doe.gov/metagenome-science-program/mbin-docker/-/raw/v2.1.0/v2-wdl/mbin_v2.wdl" as mbin_v2
 
 workflow nmdc_mags {
     input {
@@ -26,7 +26,7 @@ workflow nmdc_mags {
         String gtdbtk_mash_db = '/refdata/GTDBTK_DB/mash_sketch_db_r220.msh'
         String checkm2_db="/refdata/CheckM2_database/uniref100.KO.1.dmnd"
         String eukcc2_db="/refdata/EUKCC2_DB/eukcc2_db_ver_1.2"
-        String package_container = "microbiomedata/nmdc-mbin_vis:0.8.1"
+        String package_container = "microbiomedata/nmdc-mbin_vis:0.8.3"
         #String prok_bin_methods = 'SemiBin2:v2.2.0, CheckM2:v1.0.2, GTDB-Tk:v2.4.0, GTDB-Tk-database:release220'
         #String euk_bin_methods = 'SemiBin2:v2.2.0, EukCC:v2.1.2'
     }
@@ -105,7 +105,7 @@ workflow nmdc_mags {
             gtdbtk_json= mbin.gtdbtk_json,
             checkm = mbin.checkm_out,
             mbin_sdb = mbin.mbin_sdb,
-            mbin_version = mbin_v2_stats.mbin_methods,
+            mbin_version = mbin.methods_file,
             stats_json = package.stats_json,
             stats_tsv = mbin_v2_stats.stats_tsv,
             hqmq_bin_tarfiles = package.hqmq_bin_tarfiles,
@@ -139,15 +139,13 @@ task mbin_v2_stats{
         String container
     }
     command<<<
-        if [[ -f "~{mbin_sdb}" ]]; then
-            mbin_stats.py --sdb ~{mbin_sdb} --fasta ~{contigs_file}
-        fi
-        if [ -f "MAGs_stats.tsv" ]; then
-            grep "^#" "MAGs_stats.tsv" > mbin_methods.txt
-        fi
+        ~{if defined(mbin_sdb)
+            then "mbin_stats.py --sdb " + mbin_sdb + " --fasta " + contigs_file
+            else "mbin_stats.py --fasta " + contigs_file
+        }
+        
         touch MAGs_stats.json
         touch MAGs_stats.tsv
-        touch mbin_methods.txt
     >>>
 
     runtime{
@@ -159,7 +157,6 @@ task mbin_v2_stats{
     output {
         File stats_json = "MAGs_stats.json"
         File stats_tsv = "MAGs_stats.tsv"
-        File mbin_methods = "mbin_methods.txt"
     }
 
 }
@@ -480,13 +477,15 @@ task package{
     }
     command<<<
         set -euo pipefail
-        tar xvf ~{bins_tar}
-        create_tarfiles.py ~{prefix} \
-                    ~{json_stats} ~{gff_file} ~{proteins_file} ~{cog_file} \
-                    ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
-                    ~{crispr_file} ~{gene_phylogeny_file} \
-                    ~{product_names_file} \
-                    semibin2_out/output_bins/*
+        if [[ -f "~{bins_tar}" ]]; then
+            tar xvf ~{bins_tar}
+            create_tarfiles.py ~{prefix} \
+                        ~{json_stats} ~{gff_file} ~{proteins_file} ~{cog_file} \
+                        ~{ec_file} ~{ko_file} ~{pfam_file} ~{tigrfam_file} \
+                        ~{crispr_file} ~{gene_phylogeny_file} \
+                        ~{product_names_file} \
+                        semibin2_out/output_bins/*
+        fi
 
         if [ -f ~{prefix}_heatmap.pdf ]; then
             if [ -f ~{prefix}_barplot.pdf ]; then
@@ -499,6 +498,10 @@ task package{
             echo "No KO analysis result for ~{proj}" && touch ~{prefix}_barplot.pdf
             echo "No KO analysis result for ~{proj}" > ~{prefix}_ko_krona.html
             echo "No KO analysis result for ~{proj}" > ~{prefix}_module_completeness.tab
+        fi
+
+        if [ ! -f ~{prefix}_stats.json ]; then
+            cp ~{json_stats} ~{prefix}_stats.json
         fi
     >>>
     output {
@@ -561,23 +564,31 @@ task finish_mags {
         mkdir -p hqmq
         if [ ~{n_hqmq} -gt 0 ] ; then
             (cd hqmq && cp ~{sep=" " hqmq_bin_tarfiles} .)
-            (cd hqmq && cp ~{mbin_sdb} .)
-            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip *tar.gz *.sdb ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
+            if [[ -f "~{mbin_sdb}" ]]; then
+                (cd hqmq && cp ~{mbin_sdb} .)
+            fi
+            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip * ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
         else
             (cd hqmq && touch no_hqmq_mags.txt)
-            (cd hqmq && cp ~{mbin_sdb} .)
-            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip *.txt *.sdb)
+            if [[ -f "~{mbin_sdb}" ]]; then
+                (cd hqmq && cp ~{mbin_sdb} .)
+            fi
+            (cd hqmq && zip -j ../~{prefix}_hqmq_bin.zip *)
         fi
 
         mkdir -p lq
         if [ ~{n_lq} -gt 0 ] ; then
             (cd lq && cp ~{sep=" " lq_bin_tarfiles} .)
-            (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip -j ../~{prefix}_lq_bin.zip *tar.gz *.sdb ../~{prefix}_eukcc.csv ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
+            if [[ -f "~{mbin_sdb}" ]]; then
+                (cd lq && cp ~{mbin_sdb} .)
+            fi
+            (cd lq && zip -j ../~{prefix}_lq_bin.zip * ../~{prefix}_eukcc.csv ../*pdf ../*kronaplot.html ../*ko_matrix.txt)
         else
             (cd lq && touch no_lq_mags.txt)
-            (cd lq && cp ~{mbin_sdb} .)
-            (cd lq && zip -j ../~{prefix}_lq_bin.zip *.txt *.sdb ../~{prefix}_eukcc.csv )
+            if [[ -f "~{mbin_sdb}" ]]; then
+                (cd lq && cp ~{mbin_sdb} .)
+            fi
+            (cd lq && zip -j ../~{prefix}_lq_bin.zip * ../~{prefix}_eukcc.csv )
         fi
 
         # Fix up attribute name
