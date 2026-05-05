@@ -213,7 +213,7 @@ def parse_eukcc(dbname, bin_list):
 
 def main():
     parser = argparse.ArgumentParser(description="MAGs meta/stat collector")
-    parser.add_argument("--sdb", required=True, help="Input .sdb file")
+    parser.add_argument("--sdb", required=False, help="Input .sdb file [Optional]")
     parser.add_argument("--fasta", required=True, help="Input FASTA file")
     parser.add_argument("--outdir", default=os.getcwd(), help="Output directory")
     args = parser.parse_args()
@@ -229,20 +229,26 @@ def main():
     metadata['input_contig_num'] = total_contigs
     metadata['too_short_contig_num'] = short_contigs
 
-    # Extract MAG stats from .sdb (no TSV here)
-    mag_list, total_bin_contig_num, prok_bin_method, euk_bin_method = mag_meta(
-        args.sdb
-    )
-    mag_list = parse_eukcc(args.sdb, mag_list)
-
+    if args.sdb:
+        # Extract MAG stats from .sdb (no TSV here)
+        mag_list, total_bin_contig_num, prok_bin_method, euk_bin_method = mag_meta(
+            args.sdb
+        )
+        mag_list = parse_eukcc(args.sdb, mag_list)
+    # Else no bins provided
+    else:
+        mag_list = []
+        total_bin_contig_num = 0
+        
     metadata['binned_contig_num'] = total_bin_contig_num
     metadata['unbinned_contig_num'] = total_contigs - total_bin_contig_num - short_contigs
 
     metadata['mags_list'] = mag_list
     with open(outfile, 'w') as outjson:
         json.dump(metadata, outjson, indent=4)
-    # Write TSV from the same JSON-style dicts
-    write_mags_tsv(mag_list, outtsvfile, prok_bin_method, euk_bin_method)
+    if args.sdb:
+        # Write TSV from the same JSON-style dicts
+        write_mags_tsv(mag_list, outtsvfile, prok_bin_method, euk_bin_method)
 
 
 if __name__ == "__main__":
