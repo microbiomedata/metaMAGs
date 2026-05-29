@@ -196,7 +196,7 @@ def parse_eukcc(dbname, bin_list):
         eukcc[row[0]]['completeness'] = float(row[1])
         eukcc[row[0]]['contamination'] = float(row[2])
         eukcc[row[0]]['ncbi_lineage_tax_ids'] = row[3]
-        eukcc[row[0]]['bin_methods'] = row[4]
+        #eukcc[row[0]]['bin_methods'] = row[4]
     update_bin_list=[]
     
     for bin in bin_list:
@@ -206,7 +206,7 @@ def parse_eukcc(dbname, bin_list):
             bin['eukaryotic_evaluation']['completeness'] = float(eukcc[bin['bin_name']]['completeness'])
             bin['eukaryotic_evaluation']['contamination'] = float(eukcc[bin['bin_name']]['contamination'])
             bin['eukaryotic_evaluation']['ncbi_lineage_tax_ids'] = eukcc[bin['bin_name']]['ncbi_lineage_tax_ids']
-            bin['eukaryotic_evaluation']['bin_methods'] = eukcc[bin['bin_name']]['bin_methods']
+            #bin['eukaryotic_evaluation']['bin_methods'] = eukcc[bin['bin_name']]['bin_methods']
         update_bin_list.append(bin)
     conn.close()
     return update_bin_list
